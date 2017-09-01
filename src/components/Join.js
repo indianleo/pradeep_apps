@@ -2,6 +2,8 @@ import React from 'react';
 import {  
   Text, 
   View, 
+  ScrollView,
+  Keyboard
 } from 'react-native';
 
 import {
@@ -30,12 +32,32 @@ export default class Join extends React.Component {
     this.state ={
       menu : 0,
       isOpen : false,
+      scrollHeight : 0,
     };
     _this = this;
     this.name = "";
     this.email = "";
+    this.pass = "";
     this.contact = "";
-    this.job = "";
+    this.city = "";
+  }
+
+  componentWillMount () {
+      this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+      this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+  }
+
+  componentWillUnmount () {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
+  _keyboardDidShow (e) {
+    _this.setState({ scrollHeight : height - e.endCoordinates.height});
+  }
+
+  _keyboardDidHide (e) {
+     _this.setState({ scrollHeight : height });
   }
 
   onMenuNavigation() {
@@ -55,7 +77,9 @@ export default class Join extends React.Component {
       name : this.name,
       email : this.email,
       contact : this.contact,
-      job : this.job,
+      pass : this.pass,
+      city : this.city,
+      action : "join",
     };
 
     let call = new XMLHttpRequest();
@@ -82,9 +106,11 @@ export default class Join extends React.Component {
          break;
          case 'email' : this.email = char;
          break;
+         case 'pass' : this.pass = char;
+         break;
          case 'contact' : this.contact = char;
          break;
-         case 'job' : this.job = char;
+         case 'city' : this.city = char;
          break;
          default : alert("Field Does't Match");
          break;
@@ -111,7 +137,7 @@ export default class Join extends React.Component {
             </View>
 
             <View style={[theme.center]}>
-          
+              <ScrollView style= {[ UI.setHeight((this.state.scrollHeight)-200)]}>
                 <View>
                     <TextBox 
                         height = {50}
@@ -129,6 +155,15 @@ export default class Join extends React.Component {
                     />
                 </View>
 
+                 <View>
+                    <TextBox 
+                        height = {50}
+                        placeholder= {"Password"}
+                        secure = {true}
+                        onType = {( char )=>{ this.store('pass',char ) }}
+                    />
+                </View>
+
                 <View>
                     <TextBox 
                         height = {50}
@@ -140,8 +175,8 @@ export default class Join extends React.Component {
                 <View>
                     <TextBox 
                         height = {50}
-                        placeholder= {"Occupation"}
-                        onType = {( char )=>{ this.store('job', char ) }}
+                        placeholder= {"City"}
+                        onType = {( char )=>{ this.store('city', char ) }}
                     />
                 </View>
                 <View
@@ -163,7 +198,7 @@ export default class Join extends React.Component {
                       onTouch = { ()=>{ UI.location('Home') }}
                     />
                 </View>
-                
+              </ScrollView>
             </View>
 
             {

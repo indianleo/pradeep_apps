@@ -84,7 +84,6 @@ export default class Menu extends Component {
         	 	UI.setScreen(width*.8,height),
         	 ]}
         >
-            <View style={[ UI.setHeight(25),UI.setBg('rgba(2, 83, 105, 0.61)')]} />
             <View
                 style = {[
                   UI.setBg('#006666'),
@@ -131,7 +130,9 @@ export default class Menu extends Component {
                     </Text>
                 </View>
             </View>
-            <ScrollView>
+            <ScrollView
+              style = {[ UI.setHeight(height-100)]}
+            >
               { this.renderMenu() }
             </ScrollView>
   		</View>

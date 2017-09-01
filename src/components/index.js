@@ -33,5 +33,9 @@ export { default as BidItem }			 from './BidItem';
 export { default as AddBid }			 from './AddBid';
 export { default as Upload }			 from './Upload';
 export { default as Invite }			 from './Invite';
-
+export { default as BidReq }			 from './BidReq';
+export { default as BidUpdate }			 from './BidUpdate';
+export { default as ManageUsers }		 from './ManageUsers';
+export { default as ManageBid }			 from './ManageBid';
+export { default as WelcomeAdmin }		 from './WelcomeAdmin';
 

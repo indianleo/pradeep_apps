@@ -2,6 +2,8 @@ import React from 'react';
 import {
 	View,
 	Text,
+	Keyboard,
+	ScrollView,
 } from 'react-native';
 import Drawer from 'react-native-drawer';
 import{
@@ -24,7 +26,7 @@ export default class Upload extends React.Component {
 	constructor(){
 		super();
 		_this = this;
-		this.state = { isOpen : false };
+		this.state = { isOpen : false, scrollHeight : height };
 		this.sidePane = "";
 		this.title = "";
 		this.details = "";
@@ -34,9 +36,24 @@ export default class Upload extends React.Component {
 		this.userEmail = "";
 	}
 
-	componentWillMount(){
-		this.sidePane = <Menu />;
-	}
+	componentWillMount () {
+      this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+      this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+      this.sidePane = <Menu />;
+  }
+
+  componentWillUnmount () {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
+  _keyboardDidShow (e) {
+    _this.setState({ scrollHeight : height - e.endCoordinates.height});
+  }
+
+  _keyboardDidHide (e) {
+     _this.setState({ scrollHeight : height });
+  }
 
 	onMenuNavigation() {
 	   this.refs.drawer.open();
@@ -54,11 +71,12 @@ export default class Upload extends React.Component {
 	    let data = {
 	      title : this.title,
 	      pic : this.pic,
-	      type : this.type,
+	      cat : this.type,
 	      place : this.place,
-	      details : this.details,
-	      userEmail : this.userEmail,
-	      program : "news",
+	      info : this.details,
+	      date : "00-00-0000",
+	      uploadBy : this.userEmail,
+	      action : "update_mobile_news",
 	    };
 
 
@@ -67,16 +85,16 @@ export default class Upload extends React.Component {
 	    {
 	      if(call.readyState==4 && call.status==200)
 	      {
-	         //console.log("data = ",call.responseText); 
+	         let data = call.responseText; 
 	         _this.setState({ isOpen : false }); 
-	        _this.openModal("News Submited Succesfully! \n Congaratulations! You have get 1 Bid Coin");
+	        _this.openModal(data);
 	      }
 	      else
 	      {
 	           _this.setState({ isOpen : true });
 	      }
 	    }
-	    call.open( "GET", UI.localhost + "guest.php?data=" + JSON.stringify(data), true );
+	    call.open( "GET", UI.server + "action.php?data=" + JSON.stringify(data), true );
 	    call.send(); 
 	}
 
@@ -120,56 +138,60 @@ export default class Upload extends React.Component {
 	                   height = {150}
 	                />
 	            </View>
-		    	<View
-		    		style = {[
-		    			theme.center,
-		    		]}
-		    	>
-		    		<View>
-		    			<TextBox 
-	                        height = {50}
-	                        placeholder= {"Title"}
-	                        onType = {( char )=>{ this.store('title', char ) }}
-	                    />
-		    		</View>
-		    		<View>
-		    			<TextBox 
-	                        height = {50}
-	                        placeholder= {"Type"}
-	                        onType = {( char )=>{ this.store('type', char ) }}
-	                    />
-		    		</View>
-		    		<View>
-		    			<TextBox 
-	                        height = {50}
-	                        placeholder= {"Picture"}
-	                        onType = {( char )=>{ this.store('pic', char ) }}
-	                    />
-		    		</View>
-		    		<View>
-		    			<TextBox 
-	                        height = {50}
-	                        placeholder= {"Place"}
-	                        onType = {( char )=>{ this.store('contact', char ) }}
-	                    />
-		    		</View>
-		    		<View>
-		    			<TextBox 
-	                        height = {50}
-	                        placeholder= {"News Details"}
-	                        onType = {( char )=>{ this.store('details', char ) }}
-	                    />
-		    		</View>
-		    		<View>
-		    			<Button
-		    				height = {40}
-		    				width = {100}
-		    				label = {"Submit"}
-		    				theme = {'btnSuccess'}
-		    				onTouch = { this.send.bind(this) }
-		    			/>
-		    		</View>
-		    	</View>
+	            <ScrollView
+	            	style = {[ UI.setHeight( (this.state.scrollHeight) - 220 ) ]}
+	            >
+			    	<View
+			    		style = {[
+			    			theme.center,
+			    		]}
+			    	>
+			    		<View>
+			    			<TextBox 
+		                        height = {50}
+		                        placeholder= {"Title"}
+		                        onType = {( char )=>{ this.store('title', char ) }}
+		                    />
+			    		</View>
+			    		<View>
+			    			<TextBox 
+		                        height = {50}
+		                        placeholder= {"News Category"}
+		                        onType = {( char )=>{ this.store('type', char ) }}
+		                    />
+			    		</View>
+			    		<View>
+			    			<TextBox 
+		                        height = {50}
+		                        placeholder= {"Picture"}
+		                        onType = {( char )=>{ this.store('pic', char ) }}
+		                    />
+			    		</View>
+			    		<View>
+			    			<TextBox 
+		                        height = {50}
+		                        placeholder= {"News Place"}
+		                        onType = {( char )=>{ this.store('place', char ) }}
+		                    />
+			    		</View>
+			    		<View>
+			    			<TextBox 
+		                        height = {50}
+		                        placeholder= {"News Details"}
+		                        onType = {( char )=>{ this.store('details', char ) }}
+		                    />
+			    		</View>
+			    		<View>
+			    			<Button
+			    				height = {40}
+			    				width = {100}
+			    				label = {"Submit"}
+			    				theme = {'btnSuccess'}
+			    				onTouch = { this.send.bind(this) }
+			    			/>
+			    		</View>
+			    	</View>
+			    </ScrollView>
 		    	{
 		    		this.state.isOpen 
 		    			?

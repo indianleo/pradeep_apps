@@ -3,7 +3,8 @@ import {
   Text, 
   View,
   ScrollView,
-  TouchableOpacity 
+  TouchableOpacity,
+  WebView, 
 } from 'react-native';
 
 import {
@@ -19,10 +20,11 @@ import {
   Pic,
 } from './';
 
-var UI = ActionList();
-var width = UI.width;
-var height = UI.height;
-var _this;
+const UI = ActionList();
+let width = UI.width;
+let height = UI.height;
+let _this;
+const appPath = "file:///android_asset/";
 export default class User extends React.Component {
 
   constructor(){
@@ -31,17 +33,54 @@ export default class User extends React.Component {
       menu : 0,
     };
     _this = this;
+    this.html = "";
     this.userDetails = {
         name : 'Anamika Singh',
         email : 'singh.anamika.19.01@gmail.com',
         contact : '7310016892',
-        job : 'Application Devleloper',
+        city : 'Allahabad',
     };
   }
 
   onMenuNavigation() {
     this.refs.drawer.open();
     this.setState({ menu : 0 });
+  }
+
+  componentWillMount(){
+
+  }
+
+  storePicture(){
+      console.log( imagePath );
+      let imageName = 'selfie.jpg';
+      if (imagePath) {
+        // Create the form data object
+        var data = new FormData();
+        data.append('picture', {uri: imagePath, name: imageName, type: 'image/jpg'});
+
+        // Create the config object for the POST
+        // You typically have an OAuth2 token that you use for authentication
+        const config = {
+         method: 'POST',
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'multipart/form-data;',
+           'Authorization': 'Bearer ' + 'SECRET_OAUTH2_TOKEN_IF_AUTH',
+         },
+         body: data,
+        }
+
+        fetch("https://postman-echo.com/post", config)
+         .then((responseData) => {
+             // Log the response form the server
+             // Here we get what we sent to Postman back
+             console.log(responseData);
+         })
+         .catch(err => {
+           console.log(err);
+         })
+    }
   }
 
   renderDetails(){
@@ -112,7 +151,6 @@ export default class User extends React.Component {
               title = {"Profile"}
               onMenuTouch = {this.onMenuNavigation.bind(this)}
           />
-    
           <ScrollView
               style = {[
                 UI.setHeight(height-75),
@@ -127,10 +165,10 @@ export default class User extends React.Component {
                       ]}
                   >
                       <Pic
-                        source = {require('../image/user_male.jpg')}
-                        height = {100}
-                        width = {100}
-                      />
+                          source = {require('../image/user_male.jpg')}
+                          height = {100}
+                          width = {100}
+                        />
                   </View>
 
                   <View
@@ -161,9 +199,8 @@ export default class User extends React.Component {
 
                  { this.renderDetails() }
 
-              </View>      
+              </View> 
           </ScrollView>
-
         </View>
       </Drawer>
     );

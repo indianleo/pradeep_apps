@@ -9,6 +9,7 @@ import {Router, Route, Schema, Scene, Reducer, Actions, ActionConst } from 'reac
 import {
   Home,
   Welcome,
+  WelcomeAdmin,
   FreshNews,
   International,
   National,
@@ -24,6 +25,10 @@ import {
   AddBid,
   Upload,
   Invite,
+  ManageBid,
+  ManageUsers,
+  BidUpdate,
+  BidReq,
 } from './src/components/';
 
 const reducerCreate = params => {
@@ -75,6 +80,11 @@ export default class App extends React.Component {
             <Route panHandlers={null} duration={10}  key="AddBid" component={AddBid} title="Add Bid" />
             <Route panHandlers={null} duration={10}  key="Upload" component={Upload} title="Upload News" />
             <Route panHandlers={null} duration={10}  key="Invite" component={Invite} title="Invite Others" />
+            <Route panHandlers={null} duration={10}  key="WelcomeAdmin" component={WelcomeAdmin} title="Welcome Admin" />
+            <Route panHandlers={null} duration={10}  key="ManageUsers" component={ManageUsers} title="Manage Users" />
+            <Route panHandlers={null} duration={10}  key="ManageBid" component={ManageBid} title="Manage Bid Products" />
+            <Route panHandlers={null} duration={10}  key="BidReq" component={BidReq} title="Bid Request" />
+            <Route panHandlers={null} duration={10}  key="BidUpdate" component={BidUpdate} title="Bid Prodcuts Update" />
         </Scene>
       );
     return actionsVar;

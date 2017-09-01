@@ -1,7 +1,8 @@
 import React from 'react';
 import {  
   Text, 
-  View 
+  View,
+  Keyboard,
 } from 'react-native';
 
 import {
@@ -10,7 +11,7 @@ import {
 import theme from '../css/theme';
 import {
   Button,
-  Title,
+  Loader,
   Menu,
   Navbar,
   Pic,
@@ -28,8 +29,30 @@ export default class Login extends React.Component {
     super();
     this.state ={
       menu : 0,
+      isOpen : false,
+      scrollHeight : 0,
     };
     _this = this;
+    this.user = "";
+    this.pass = "";
+  }
+
+  componentWillMount () {
+      this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+      this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+  }
+
+  componentWillUnmount () {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
+  _keyboardDidShow (e) {
+    _this.setState({ scrollHeight : height - e.endCoordinates.height});
+  }
+
+  _keyboardDidHide (e) {
+     _this.setState({ scrollHeight : height });
   }
 
   onMenuNavigation() {
@@ -38,6 +61,67 @@ export default class Login extends React.Component {
       'msg'       : "Login to open Menu",
     };
     this.refs.modal.show(msgData);
+  }
+
+  openModal( msg ){
+    let msgData = {
+      'modalType' : 'notify',
+      'msg'       : msg,
+    };
+    this.refs.modal.show(msgData);
+  }
+
+  checkUser(){
+    let admin = { user : "admin", pass : "admin" };
+    if( admin.user == this.user && admin.pass == this.pass ){
+        UI.location('WelcomeAdmin');
+    } else {
+      this.send();
+      //_this.openModal("!!! Access Denied !!!");
+    }
+  }
+
+  store( field, char ) {
+      switch( field ) {
+         case 'user' : this.user = char;
+         break;
+         case 'pass' : this.pass = char;
+         break;
+         default : alert("Field Does't Match");
+         break;
+      }
+  }
+
+  send(){
+    let data = {
+      email : this.user,
+      pass : this.pass,
+      action : "login",
+    };
+
+    let call = new XMLHttpRequest();
+    call.onreadystatechange = function()
+    {
+      if(call.readyState==4 && call.status==200)
+      {
+         this.isValid = call.responseText;
+         if( this.isValid ){
+            UI.location('Welcome');
+         } 
+         else {
+            _this.openModal("!! Access Denied !!"); 
+         }
+        _this.setState({ isOpen : false }); 
+      }
+      else
+      {
+          if( !_this.state.isOpen ){
+            _this.setState({ isOpen : true });
+          }
+      }
+    }
+    call.open( "GET", UI.server + "action.php?data=" + JSON.stringify(data), true );
+    call.send(); 
   }
 
   render(){
@@ -64,11 +148,14 @@ export default class Login extends React.Component {
             >
               <TextBox
                   height = {60}
+                  onType = {( char )=>{ this.store('user',char ) }}
                   placeholder = {"User"}             
                />
 
               <TextBox
                   height = {60}
+                  secure = {true}
+                  onType = {( char )=>{ this.store('pass',char ) }}
                   placeholder = {"Password"}             
                />
             </View>
@@ -80,7 +167,7 @@ export default class Login extends React.Component {
                     theme = {'btnSuccess'}
                     height = {30}
                     width = {70}
-                    onTouch = {()=>{ UI.location('Welcome') }}
+                    onTouch = {()=>{ this.checkUser() }}
                 />
                 <Button
                     label = {"Back"}
@@ -88,9 +175,27 @@ export default class Login extends React.Component {
                     theme = {'btnWarning'}
                     height = {30}
                     width = {70}
-                    onTouch = {()=>{ UI.location('Home') }}
+                    onTouch = {()=>{ this.send() }}
                 />
             </View>
+            {
+              this.state.isOpen 
+                    ?
+                      <View
+                          style={[
+                              theme.absolute,
+                          ]}
+                      >
+                          <Loader
+                              animating = { this.state.isOpen }
+                              height = {height}
+                              width = {width}
+                              color = { '#178484'}
+                          />
+                      </View>
+                    :
+                      null
+            }
             <ThemeModal ref={"modal"}/>
         </View>
     );

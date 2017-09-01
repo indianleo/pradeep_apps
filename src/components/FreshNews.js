@@ -17,6 +17,7 @@ import {
   Menu,
   Navbar,
   Pic,
+  Loader
 } from './';
 
 var UI = ActionList();
@@ -31,11 +32,16 @@ export default class FreshNews extends React.Component {
       menu : 0,
     };
     _this = this;
+    FreshNews = {};
+  }
+
+  componentWillMount(){
+    this.send();
   }
 
   onMenuNavigation() {
     this.refs.drawer.open();
-    this.setState({ menu : 0 });
+    this.setState({ menu : 0, load : false });
   }
 
   openModal( data ){
@@ -50,26 +56,43 @@ export default class FreshNews extends React.Component {
 
   getNews(news, send = function(){}) {
     let newsContent = (
-          <View
+          <ScrollView
               style = {[
-                  UI.setVpadding(20),
+                  UI.setScreen(width,height),
               ]}
-          >
+          > 
+              {
+                (news.news_pic == "")
+                  ?
+                    <Pic
+                        source = {require('../image/freshNews.jpg')}
+                        height = {300}
+                        width = {width}
+                    />
+                  :
+                    <Pic
+                        uri = {news.news_pic}
+                        height = {300}
+                        width = {width}
+                    />
+              }
               <Text
                   style = {[ 
                       UI.setFont(24),
+                      UI.setPaddingAll(10),
                   ]}
               >
-                   {news.heading}
+                   {news.news_title}
               </Text>
               <Text
                   style = {[
                       UI.setFont(18),
+                      UI.setPaddingAll(10),
                   ]}
               >
-                   {news.details}
+                   {news.news_info}
               </Text>
-          </View>
+          </ScrollView>
         );
 
       send(newsContent);
@@ -81,12 +104,35 @@ export default class FreshNews extends React.Component {
     });
   }
 
+  send(){
+    let data = {
+      table : "app_news",
+      cat   : "latest",
+      action : "load_news",
+    };
+
+    let call = new XMLHttpRequest();
+    call.onreadystatechange = function()
+    {
+      if(call.readyState==4 && call.status==200)
+      {
+         FreshNews = JSON.parse(call.responseText);
+         _this.setState({ load : true }); 
+      }
+      else
+      {
+          
+      }
+    }
+    call.open( "GET", UI.server + "action.php?data=" + JSON.stringify(data), true );
+    call.send(); 
+  }
+
   renderNews(){
     let newsItems = [];
     let i = 0;
-    let FreshNews = UI.getNews();
     for(let key in FreshNews){
-      let news = FreshNews[i];
+      let news = FreshNews[key];
       newsItems.push(
           <View
             key = {key+i}
@@ -105,28 +151,44 @@ export default class FreshNews extends React.Component {
                     UI.setWidth(width*.35),
                   ]}
               >
-                  <Pic
-                        source = {require('../image/freshNews.jpg')}
-                        height = {100}
-                        width = {width*.35}
-                    />
+                  {
+                    (news.news_pic == "")
+                      ?
+                        <Pic
+                            source = {require('../image/freshNews.jpg')}
+                            height = {100}
+                            width = {width*.35}
+                        />
+                      :
+                        <Pic
+                            uri = {news.news_pic}
+                            height = {100}
+                            width = {width*.35}
+                        />
+                  }
               </View>
               <TouchableOpacity
                   style = {[
                     UI.setHeight(100),
                     UI.setWidth(width*.6),
-                    theme.center,
+                    theme.hCenter,
+                    UI.setPaddingLeft(10)
                   ]}
 
                   onPress = {()=>{ this.readNews(news) }}
               >
-                  <Text>
-                      {news.heading}
+                  <Text
+                      style = {[
+                          UI.setFont(18),
+                          theme.textDanger,
+                      ]}
+                  >
+                      {news.news_title}
                   </Text>
                   <Text
                       numberOfLines = {1}
                   >
-                      {news.details}
+                      {news.news_info}
                   </Text>
               </TouchableOpacity> 
           </View>
@@ -174,7 +236,17 @@ export default class FreshNews extends React.Component {
                   />
               </View>
 
-              {this.renderNews()}
+              { 
+                this.state.load
+                  ?
+                    this.renderNews()
+                  : 
+                    <View
+                        style = {[ UI.setScreen(width,height-200),theme.center,]}
+                    >
+                        <Text style = {[ UI.setFont(18) ]} >Loading News...</Text>
+                    </View>
+               }
           </ScrollView>
           <ThemeModal ref={"themeModal"} />
       </Drawer>
