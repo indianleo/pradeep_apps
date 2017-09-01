@@ -37,6 +37,7 @@ export default class WelcomeAdmin extends React.Component {
           BidUpdate       : { title : "Bid Product Update",  icon : "user", details : "Admin can update Bid Products" },
           ManageBid       : { title : "Manage Bid Products",  icon : "user", details : "Admin can Manage Bid Products" },
           ManageUsers     : { title : "View Users",  icon : "users", details : "Admin can Manage Users" },
+          BidReq          : { title : "Bid Request",  icon : "users", details : "Admin can Add Bids to Users" },
           Upload          : { title : "Upload News",  icon : "cloud-upload", details : "Upload news and get Bid Coins" },
           FreshNews       : { title : "Latest News",  icon : "newspaper-o", details : "Latest News Updates" },
           National        : { title : "National", icon : "flag", details : "National News Updates" }, 

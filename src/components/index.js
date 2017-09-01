@@ -13,6 +13,7 @@ export { default as Lable }    			 from './Lable';
 export { default as ThemeModal }         from './ThemeModal';
 export { default as Title }         	 from './Title';
 export { default as Menu }         	     from './Menu';
+export { default as AdminMenu }         	     from './AdminMenu';
 export { default as Home }         	     from './Home';
 export { default as Welcome }         	 from './Welcome';
 export { default as State }         	 from './State';

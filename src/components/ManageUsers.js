@@ -14,7 +14,7 @@ import VectorIcon from 'react-native-vector-icons/FontAwesome';
 import theme from '../css/theme';
 import {
   Button,
-  Menu,
+  AdminMenu,
   Navbar,
   Pic,
   ThemeModal,
@@ -24,7 +24,7 @@ var UI = ActionList();
 var width = UI.width;
 var height = UI.height;
 var _this;
-export default class WelcomeAdmin extends React.Component {
+export default class ManageUsers extends React.Component {
 
   constructor(){
     super();
@@ -230,7 +230,7 @@ export default class WelcomeAdmin extends React.Component {
   }
 
   render(){
-    var sidePane = <Menu />;
+    var sidePane = <AdminMenu />;
     return(
       <Drawer 
         ref = "drawer" 
