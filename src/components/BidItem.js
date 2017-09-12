@@ -36,6 +36,30 @@ export default class BidItem extends React.Component{
 	    };
 	    this.refs.modal.show(msgData);
 	}
+
+	bidRequest(){
+		let data = {
+	      bid_coins : 10,
+	      email : this.props.userEmail,
+	      action : "bid_req_user",
+	    };
+
+	    let call = new XMLHttpRequest();
+	    call.onreadystatechange = function()
+	    {
+	      if(call.readyState==4 && call.status==200)
+	      {
+	         let data = call.responseText;
+	         _this.openModal(data); 
+	      }
+	      else
+	      {
+	          
+	      }
+	    }
+	    call.open( "GET", UI.server + "action.php?data=" + JSON.stringify(data), true );
+	    call.send();
+	}
 	
 	counting(){
 		let local = this;
@@ -62,7 +86,7 @@ export default class BidItem extends React.Component{
 			let msgData = {
 		      'modalType' : 'feedback',
 		      'msg'       : msg,
-		      onConfirm   : ()=>{ UI.location('AddBid') },
+		      onConfirm   : ()=>{ _this.bidRequest() },
 		    };
 		    this.refs.modal.show(msgData);
 		}

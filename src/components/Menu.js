@@ -43,8 +43,9 @@ export default class Menu extends Component {
       };
   }
 
-  onMenuNavigation(PageName){
-    Actions[PageName]();
+  onMenuNavigation(PageName) {
+    let data = { use : this.props.user, userEmail : this.props.userEmail };
+    UI.location( PageName, data);
   }
 
   renderMenu() {
@@ -100,9 +101,9 @@ export default class Menu extends Component {
                     ]}
                 >
                     <Pic 
-                       source = {require('../image/user_female.png')}
-                       height = {50}
-                       width  = {50}
+                       source = {require('../image/abc.png')}
+                       height = {100}
+                       width  = {100}
                     />
                 </View>
                 <View
@@ -117,7 +118,7 @@ export default class Menu extends Component {
                         ]}
                         numberOfLines = {1}
                     >
-                        Anamika Singh
+                        { this.props.user || "User" }
                     </Text>
                     <Text
                         style = {[
@@ -126,7 +127,7 @@ export default class Menu extends Component {
                         ]}
                         numberOfLines = {1}
                     >
-                        singh.anamika.19.01@gmail.com
+                        { this.props.userEmail || "user@gmail.com" }
                     </Text>
                 </View>
             </View>

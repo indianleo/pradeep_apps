@@ -16,6 +16,7 @@ import {
 	Button,
 	Navbar,
 	Menu,
+	AdminMenu,
 	Pic,
 	TextBox,
 } from './';
@@ -236,7 +237,7 @@ export default class AddBid extends React.Component{
 	}
 
 	render(){
-		let sidePane = <Menu />;
+		let sidePane = ( this.props.user == "admin" ? <AdminMenu /> : <Menu  user={this.props.user} userEmail = {this.props.userEmail} /> );
 		return(
 			<Drawer 
 		        ref = "drawer" 

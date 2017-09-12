@@ -3,7 +3,8 @@ import {
   Text, 
   View, 
   ScrollView,
-  Keyboard
+  Keyboard,
+  Picker,
 } from 'react-native';
 
 import {
@@ -33,6 +34,7 @@ export default class Join extends React.Component {
       menu : 0,
       isOpen : false,
       scrollHeight : 0,
+      selected : "Gender"
     };
     _this = this;
     this.name = "";
@@ -61,7 +63,7 @@ export default class Join extends React.Component {
   }
 
   onMenuNavigation() {
-    this.openModal("Login to ")
+    this.openModal("Register then Login to View Menu");
   }
 
   openModal( msg ){
@@ -78,6 +80,7 @@ export default class Join extends React.Component {
       email : this.email,
       contact : this.contact,
       pass : this.pass,
+      gender : this.state.selected,
       city : this.city,
       action : "join",
     };
@@ -179,6 +182,19 @@ export default class Join extends React.Component {
                         onType = {( char )=>{ this.store('city', char ) }}
                     />
                 </View>
+
+                <View>
+                    <Picker
+                        selectedValue  = { this.state.selected }
+                        onValueChange =  {(itemValue, itemIndex) => this.setState({ selected : itemValue }) }
+                        mode = {"dropdown"}
+                    >
+                        <Picker.Item label="Gender" value="Other" />
+                        <Picker.Item label="Male" value="Male" />
+                        <Picker.Item label="Female" value="Female" />
+                    </Picker>
+                </View>
+                
                 <View
                     style = {[ theme.row, theme.center, ]}
                 >

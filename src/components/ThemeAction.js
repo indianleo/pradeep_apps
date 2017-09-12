@@ -8,7 +8,8 @@
  */
 import {
 	Dimensions,
-	Platform
+	Platform,
+	BackHandler,
 } from 'react-native';
 	
 import Ratio						 	from '../css/DynamicDimension';
@@ -539,41 +540,23 @@ export function ActionList() {
 			return css;
 		},
 
-		location : function( PageName ) {
-       			Actions[PageName]();
+		location : function( PageName, param ) {
+       			Actions[PageName](param);
   		},
 
-		getNews : function(newsId){
-		    let news = [
-		      {
-		        heading : "News Heading 1",
-		        details : "News details",
-		        image   : "News Image 1",
-		      },
-		      {
-		        heading : "News Heading 2",
-		        details : "News details",
-		        image   : "News Image 2",
-		      },
-		      {
-		        heading : "News Heading 3",
-		        details : "News details",
-		        image   : "News Image 3",
-		      },
-		      {
-		        heading : "News Heading 4",
-		        details : "News details",
-		        image   : "News Image 4",
-		      },
-		      {
-		        heading : "News Heading 5",
-		        details : "News details",
-		        image   : "News Image 5",
-		      },
-		    ];
-
-		    return news;
+		setBack : function() {
+			BackHandler.addEventListener('hardwareBackPress', function() {
+				 Actions.pop();
+				 //BackHandler.exitApp();
+			});
 		},
+
+		unsetBack : function() {
+			BackHandler.removeEventListener('hardwareBackPress', function() {
+				 Actions.pop();
+			});
+		},
+
 		bidItemList : function(){
 			let item = [
 		      {

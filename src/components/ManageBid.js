@@ -31,9 +31,15 @@ export default class ManageBid extends React.Component {
     this.state ={
       menu : 0,
       load : false,
+      reload : 0,
     };
     _this = this;
     this.itemList = {};
+    this.proxy = "";
+    this.item_name = "";
+    this.bid_info = "";
+    this.bid_state = "";
+    this.item_image = "";
   }
 
   onMenuNavigation() {
@@ -43,6 +49,108 @@ export default class ManageBid extends React.Component {
 
   componentWillMount(){
     this.send();
+  }
+
+
+
+  reload(){
+    _this.setState({ reload : _this.state.reload++ });
+    _this.send();
+  }
+
+
+  delete_bidItem( id ) {
+      let data = {
+      table : "bid_items",
+      id : id,
+      action : "bid_mobile_delete",
+    };
+
+    let call = new XMLHttpRequest();
+    call.onreadystatechange = function()
+    {
+      if(call.readyState==4 && call.status==200)
+      {
+         let res = call.responseText;
+         let msgData = {
+              modalType : 'notify',
+              msg       : res,
+              onClose   : ()=>{ _this.reload() }
+            };
+            _this.refs.modal.show(msgData);
+      }
+      else
+      {
+          
+      }
+    }
+    call.open( "GET", UI.server + "action.php?data=" + JSON.stringify(data), true );
+    call.send();
+  }
+
+  store( field, char ) {
+      switch( field ) {
+         case 'item_name' : this.item_name = char;
+         break;
+         case 'image' : this.item_image = char;
+         break;
+         case 'state' : this.bid_state = char;
+         break;
+         case 'info' : this.bid_info = char;
+         break;
+         case 'proxy' : this.proxy = char;
+         break;
+         default : alert("Field Does't Match");
+         break;
+      }
+  }
+
+  show_editor( item ) {
+      let data = (
+        <View>
+            <Text>Hello Pradeep </Text>
+        </View>
+      );
+      let msgData = {
+        ui          : true,
+        children    : data,
+      };
+      _this.refs.modal.show(msgData);
+  }
+
+  edit_bidItem( id ) {
+      let data = {
+        table     : "bid_items",
+        proxy     : this.proxy,
+        item_name : this.item_name,
+        image     : this.item_image,
+        item_info : this.item_info,
+        bid_state : this.bid_state,
+        id        : id,
+        action    : "bidItem_mobile_edit",
+      };
+
+      let call = new XMLHttpRequest();
+      call.onreadystatechange = function()
+      {
+        if(call.readyState==4 && call.status==200)
+        {
+           let res = call.responseText;
+           let msgData = {
+              modalType : 'notify',
+              msg       : res,
+              onClose   : ()=>{ _this.reload() }
+            };
+            _this.refs.modal.show(msgData);
+
+        }
+        else
+        {
+            
+        }
+      }
+      call.open( "GET", UI.server + "action.php?data=" + JSON.stringify(data), true );
+      call.send();
   }
 
   send(){
@@ -104,6 +212,7 @@ export default class ManageBid extends React.Component {
                                 height= {30}
                                 width = {70}
                                 margin= {10}
+                                onTouch = {()=>{ this.show_editor(this.itemList[key]) } }
                             />
                             <Button
                                 label = {"Delete"}
@@ -111,6 +220,7 @@ export default class ManageBid extends React.Component {
                                 height= {30}
                                 width = {70}
                                 margin= {10}
+                                onTouch = {()=>{ this.delete_bidItem(this.itemList[key].id) } }
                             />
                         </View>
                       </View>
@@ -273,7 +383,7 @@ export default class ManageBid extends React.Component {
           />
           <ScrollView
               style = {[
-                UI.setHeight(height - 150),
+                UI.setHeight(height - 200),
               ]}
           >
               <View

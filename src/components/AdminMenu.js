@@ -10,7 +10,6 @@ import {
 	ActionList,
 } from './ThemeAction';
 import theme from '../css/theme';
-import { Actions } from 'react-native-router-flux';
 import {
   Button,
   Pic,
@@ -24,9 +23,9 @@ export default class AdminMenu extends Component {
   constructor(){
   	super();
     this.menuList = {
-          Welcome         : "AdminWelcome",
-          Bid             : "Live Bid",
+          AdminWelcome    : "Welcome Admin",
           BidUpdate       : "Bid Update",
+          BidReq          : "Bid Request",
           ManageBid       : "Manage Bids",
           ManageUsers     : "Manage Users",
           Invite          : "Invite",
@@ -37,17 +36,16 @@ export default class AdminMenu extends Component {
           International   : "International", 
           Business        :  "Business",
           Entertainments  : "Entertainments",
-          Business        : "Business",
           Sports          : "Sports",
           Education       : "Education",
           AddBid          : "Add Bid",
-          BidReq          : "Bid Request",
           Home            :  "Logout"
       };
   }
 
   onMenuNavigation(PageName){
-    Actions[PageName]();
+    let data = { user : 'admin' };
+     UI.location( PageName, data);
   }
 
   renderMenu() {
@@ -120,7 +118,7 @@ export default class AdminMenu extends Component {
                         ]}
                         numberOfLines = {1}
                     >
-                        Arun Dwivedi
+                        Atul Dwivedi
                     </Text>
                     <Text
                         style = {[
@@ -129,7 +127,7 @@ export default class AdminMenu extends Component {
                         ]}
                         numberOfLines = {1}
                     >
-                        .........@gmail.com
+                        Administartor of ABC
                     </Text>
                 </View>
             </View>

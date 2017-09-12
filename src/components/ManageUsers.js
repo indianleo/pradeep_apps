@@ -31,6 +31,7 @@ export default class ManageUsers extends React.Component {
     this.state ={
       menu : 0,
       load : false,
+      reload : 0,
     };
     _this = this;
     this.itemList = {};
@@ -43,6 +44,42 @@ export default class ManageUsers extends React.Component {
 
   componentWillMount(){
     this.send();
+  }
+
+  reload(){
+    _this.setState({ reload : _this.state.reload++ });
+    _this.send();
+  }
+
+  set_userState( id, state, bid_req ){
+    let data = {
+      table : "users",
+      user_state : state,
+      user_id : id,
+      bids : bid_req,
+      action : "set_mobile_user_state",
+    };
+
+    let call = new XMLHttpRequest();
+    call.onreadystatechange = function()
+    {
+      if(call.readyState==4 && call.status==200)
+      {
+         let res = call.responseText;
+         let msgData = {
+              modalType : 'notify',
+              msg       : res,
+              onClose   : ()=>{ _this.reload() }
+            };
+          _this.refs.modal.show(msgData);
+      }
+      else
+      {
+          
+      }
+    }
+    call.open( "GET", UI.server + "action.php?data=" + JSON.stringify(data), true );
+    call.send(); 
   }
 
   send(){
@@ -91,11 +128,21 @@ export default class ManageUsers extends React.Component {
                           ]}
                       >
                         <View>
-                            <Pic
-                                source = {require('../image/user_female.png')}
-                                height = {100}
-                                width = { 100 }
-                            />
+                          {
+                            this.itemList[key].gender == "Male"
+                              ?
+                                <Pic
+                                    source = {require('../image/user_male.jpg')}
+                                    height = {100}
+                                    width = { 100 }
+                                />
+                              :
+                                <Pic
+                                    source = {require('../image/user_female.png')}
+                                    height = {100}
+                                    width = { 100 }
+                                />
+                          }
                         </View>
                         <View>
                             <Button
@@ -104,6 +151,7 @@ export default class ManageUsers extends React.Component {
                                 height= {30}
                                 width = {70}
                                 margin= {10}
+                                onTouch = {()=>{ this.set_userState(this.itemList[key].id, 'Active', 0) } }
                             />
                             <Button
                                 label = {"Block"}
@@ -111,6 +159,15 @@ export default class ManageUsers extends React.Component {
                                 height= {30}
                                 width = {70}
                                 margin= {10}
+                                onTouch = {()=>{ this.set_userState(this.itemList[key].id, 'Blocked', 0) } }
+                            />
+                            <Button
+                                label = {"Approve"}
+                                theme = {"btnSuccess"}
+                                height= {30}
+                                width = {70}
+                                margin= {10}
+                                onTouch = {()=>{ this.set_userState(this.itemList[key].id, 'bid_req', this.itemList[key].bid_req) } }
                             />
                         </View>
                       </View>
@@ -190,6 +247,16 @@ export default class ManageUsers extends React.Component {
                                   UI.setFont(20),
                                 ]}
                             >
+                                Gender : { this.itemList[key].gender }
+                            </Text>
+                          </View>
+                          <View>
+                            <Text
+                                style = {[
+                                  UI.setColor('#fff'),
+                                  UI.setFont(20),
+                                ]}
+                            >
                                 Bids : { this.itemList[key].bids }
                             </Text>
                           </View>
@@ -201,6 +268,16 @@ export default class ManageUsers extends React.Component {
                                 ]}
                             >
                                 State : { this.itemList[key].state }
+                            </Text>
+                          </View>
+                          <View>
+                            <Text
+                                style = {[
+                                  UI.setColor('#fff'),
+                                  UI.setFont(20),
+                                ]}
+                            >
+                                Bid Request : { this.itemList[key].bid_req > 0 ? this.itemList[key].bid_req : "No" }
                             </Text>
                           </View>
                       </View>

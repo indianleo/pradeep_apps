@@ -10,6 +10,7 @@ import{
 	Navbar,
 	ThemeModal,
 	Menu,
+	AdminMenu,
 	TextBox,
 	Loader,
 } from './';
@@ -25,7 +26,6 @@ export default class Invite extends React.Component {
 		super();
 		_this = this;
 		this.state = { isOpen : false };
-		this.sidePane = "";
 		this.userEmail = "singh.anamika.19.01@gmail.com";
 		this.allyName = "";
 		this.allyMobile = "";
@@ -33,7 +33,6 @@ export default class Invite extends React.Component {
 	}
 
 	componentWillMount(){
-		this.sidePane = <Menu />;
 	}
 
 	onMenuNavigation() {
@@ -90,12 +89,12 @@ export default class Invite extends React.Component {
   	}
 
 	render() {
-
+		const sidePane = ( this.props.user == "admin" ? <AdminMenu /> : <Menu  user={this.props.user} userEmail = {this.props.userEmail} /> );
 		return(
 			<Drawer 
 		        ref = "drawer" 
 		        type = "overlay" 
-		        content = {this.sidePane} 
+		        content = {sidePane} 
 		        tapToClose = {true} 
 		        openDrawerOffset = {0.2} 
 		        panCloseMask = {0.2} 

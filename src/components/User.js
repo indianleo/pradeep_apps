@@ -31,6 +31,7 @@ export default class User extends React.Component {
     super();
     this.state ={
       menu : 0,
+      load : false,
     };
     _this = this;
     this.html = "";
@@ -48,7 +49,7 @@ export default class User extends React.Component {
   }
 
   componentWillMount(){
-
+      this.send();
   }
 
   storePicture(){
@@ -83,54 +84,227 @@ export default class User extends React.Component {
     }
   }
 
+  send(){
+    let data = {
+      table : "users",
+      email : this.props.userEmail,
+      action : "view_mobile_user_records",
+    };
+
+    let call = new XMLHttpRequest();
+    call.onreadystatechange = function()
+    {
+      if(call.readyState==4 && call.status==200)
+      {
+         _this.userDetails = JSON.parse(call.responseText);
+         _this.setState({ load : true }); 
+      }
+      else
+      {
+          
+      }
+    }
+    call.open( "GET", UI.server + "action.php?data=" + JSON.stringify(data), true );
+    call.send(); 
+  }
+
   renderDetails(){
     let details = [];
     let i =0;
-    for( let key in this.userDetails ) {
-        details.push(
-            <View
-                key = {i}
-                style = {[
-                    theme.row,
-                    theme.center,
-                ]}
-            >
-                <View
-                    style = {[
-                      theme.borderInfo,
-                      theme.border1,
-                      UI.setWidth(width*.3),
-                      UI.setHeight(40),
-                      theme.center,
-                    ]}
-                >
-                    <Text>
-                        {key}
-                    </Text>
-                </View>
-                <View
-                    style = {[
-                        theme.borderInfo,
-                        theme.border1,
-                        theme.center,
-                        UI.setWidth(width*.6),
-                        UI.setHeight(40),
-                    ]}
-                >
-                    <Text>
-                        { this.userDetails[key] }
-                    </Text>
-                </View>
-            </View>
-        );
-        i++;
-    }
+    if( this.state.load ) {
+          for( let key in this.userDetails ) {
+            details.push(
+                  <View key = {i} >  
 
-    return details;
+                    <View
+                        style = {[
+                            theme.row,
+                            theme.center,
+                        ]}
+                    >
+                        <View
+                            style = {[
+                              theme.borderInfo,
+                              theme.border1,
+                              UI.setWidth(width*.3),
+                              UI.setHeight(40),
+                              theme.center,
+                            ]}
+                        >
+                            <Text>
+                                Name
+                            </Text>
+                        </View>
+                        <View
+                            style = {[
+                                theme.borderInfo,
+                                theme.border1,
+                                theme.center,
+                                UI.setWidth(width*.6),
+                                UI.setHeight(40),
+                            ]}
+                        >
+                            <Text>
+                                { this.userDetails[key].name }
+                            </Text>
+                        </View>
+                    </View>
+
+                    <View
+                        style = {[
+                            theme.row,
+                            theme.center,
+                        ]}
+                    >
+                        <View
+                            style = {[
+                              theme.borderInfo,
+                              theme.border1,
+                              UI.setWidth(width*.3),
+                              UI.setHeight(40),
+                              theme.center,
+                            ]}
+                        >
+                            <Text>
+                                Email
+                            </Text>
+                        </View>
+                        <View
+                            style = {[
+                                theme.borderInfo,
+                                theme.border1,
+                                theme.center,
+                                UI.setWidth(width*.6),
+                                UI.setHeight(40),
+                            ]}
+                        >
+                            <Text>
+                                { this.userDetails[key].email }
+                            </Text>
+                        </View>
+                    </View>
+
+                    <View
+                        style = {[
+                            theme.row,
+                            theme.center,
+                        ]}
+                    >
+                        <View
+                            style = {[
+                              theme.borderInfo,
+                              theme.border1,
+                              UI.setWidth(width*.3),
+                              UI.setHeight(40),
+                              theme.center,
+                            ]}
+                        >
+                            <Text>
+                                Contact
+                            </Text>
+                        </View>
+                        <View
+                            style = {[
+                                theme.borderInfo,
+                                theme.border1,
+                                theme.center,
+                                UI.setWidth(width*.6),
+                                UI.setHeight(40),
+                            ]}
+                        >
+                            <Text>
+                                { this.userDetails[key].contact }
+                            </Text>
+                        </View>
+                    </View>
+
+                    <View
+                        style = {[
+                            theme.row,
+                            theme.center,
+                        ]}
+                    >
+                        <View
+                            style = {[
+                              theme.borderInfo,
+                              theme.border1,
+                              UI.setWidth(width*.3),
+                              UI.setHeight(40),
+                              theme.center,
+                            ]}
+                        >
+                            <Text>
+                                City
+                            </Text>
+                        </View>
+                        <View
+                            style = {[
+                                theme.borderInfo,
+                                theme.border1,
+                                theme.center,
+                                UI.setWidth(width*.6),
+                                UI.setHeight(40),
+                            ]}
+                        >
+                            <Text>
+                                { this.userDetails[key].city }
+                            </Text>
+                        </View>
+                    </View>
+
+                    <View
+                        style = {[
+                            theme.row,
+                            theme.center,
+                        ]}
+                    >
+                        <View
+                            style = {[
+                              theme.borderInfo,
+                              theme.border1,
+                              UI.setWidth(width*.3),
+                              UI.setHeight(40),
+                              theme.center,
+                            ]}
+                        >
+                            <Text>
+                                Bid Coins
+                            </Text>
+                        </View>
+                        <View
+                            style = {[
+                                theme.borderInfo,
+                                theme.border1,
+                                theme.center,
+                                UI.setWidth(width*.6),
+                                UI.setHeight(40),
+                            ]}
+                        >
+                            <Text>
+                                { this.userDetails[key].bids }
+                            </Text>
+                        </View>
+                    </View>
+
+                  </View>
+            );
+            i++;
+         }
+         return details;
+      } 
+      else {
+        return(
+          <View
+              style = {[ UI.setScreen(width,height),theme.center,]}
+          >
+              <Text style = {[ UI.setFont(18) ]} >Loading...</Text>
+          </View>
+        );
+      }
   }
 
   render(){
-    var sidePane = <Menu />;
+    const sidePane = ( <Menu  user = {this.props.user} userEmail = {this.props.userEmail} /> );
     return(
       <Drawer 
         ref = "drawer" 

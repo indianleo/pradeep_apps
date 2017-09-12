@@ -12,7 +12,6 @@ import theme from '../css/theme';
 import {
   Button,
   Loader,
-  Menu,
   Navbar,
   Pic,
   TextBox,
@@ -73,9 +72,10 @@ export default class Login extends React.Component {
 
   checkUser(){
     let admin = { user : "admin", pass : "admin" };
-    if( admin.user == this.user && admin.pass == this.pass ){
-        UI.location('WelcomeAdmin');
-    } else {
+    if( admin.user == this.user && admin.pass == this.pass ) {
+        UI.location('WelcomeAdmin', admin);
+    } 
+    else {
       this.send();
       //_this.openModal("!!! Access Denied !!!");
     }
@@ -104,9 +104,10 @@ export default class Login extends React.Component {
     {
       if(call.readyState==4 && call.status==200)
       {
-         this.isValid = call.responseText;
-         if( this.isValid ){
-            UI.location('Welcome');
+         let res = call.responseText;
+         if( res != "false" ){
+            let data = { user : res, userEmail : _this.user };
+            UI.location('Welcome', data);
          } 
          else {
             _this.openModal("!! Access Denied !!"); 

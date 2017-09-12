@@ -4,6 +4,7 @@ import {
 	Text,
 	Keyboard,
 	ScrollView,
+	Picker
 } from 'react-native';
 import Drawer from 'react-native-drawer';
 import{
@@ -12,6 +13,7 @@ import{
 	Navbar,
 	ThemeModal,
 	Menu,
+	AdminMenu,
 	TextBox,
 	Loader,
 } from './';
@@ -26,7 +28,11 @@ export default class Upload extends React.Component {
 	constructor(){
 		super();
 		_this = this;
-		this.state = { isOpen : false, scrollHeight : height };
+		this.state = { 
+			isOpen 			: false, 
+			scrollHeight 	: height,
+			selected 		: "Category", 
+		};
 		this.sidePane = "";
 		this.title = "";
 		this.details = "";
@@ -39,12 +45,14 @@ export default class Upload extends React.Component {
 	componentWillMount () {
       this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
       this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
-      this.sidePane = <Menu />;
+      UI.setBack();
+      this.sidePane = ( this.props.user == "admin" ? <AdminMenu /> : <Menu /> );
   }
 
   componentWillUnmount () {
     this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
+    UI.unsetBack();
   }
 
   _keyboardDidShow (e) {
@@ -71,7 +79,7 @@ export default class Upload extends React.Component {
 	    let data = {
 	      title : this.title,
 	      pic : this.pic,
-	      cat : this.type,
+	      cat : this.state.selected.toLowerCase(),
 	      place : this.place,
 	      info : this.details,
 	      date : "00-00-0000",
@@ -116,7 +124,6 @@ export default class Upload extends React.Component {
   	}
 
 	render() {
-
 		return(
 			<Drawer 
 		        ref = "drawer" 
@@ -146,18 +153,29 @@ export default class Upload extends React.Component {
 			    			theme.center,
 			    		]}
 			    	>
+			    		
+			    		<View style ={[ UI.setWidth(width - 30),UI.setBorderBottom(1,'#ccc')]} >
+		                    <Picker
+		                        selectedValue  = { this.state.selected }
+		                        onValueChange =  {(itemValue, itemIndex) => this.setState({ selected : itemValue }) }
+		                        mode = {"dropdown"}
+		                    >
+		                        <Picker.Item label="Category" value="latest" />
+								<Picker.Item value="latest" label="Latest" />
+								<Picker.Item value="state" label="State" />
+								<Picker.Item value="sports" label="Sports" />
+								<Picker.Item value="marketing" label="Bssiness" />
+								<Picker.Item value="national" label="National" />
+								<Picker.Item value="international" label="International" />
+								<Picker.Item value="education" label="Education" />
+								<Picker.Item value="entertainment" label="Entertainment" />
+		                    </Picker>
+		                </View>
 			    		<View>
 			    			<TextBox 
 		                        height = {50}
 		                        placeholder= {"Title"}
 		                        onType = {( char )=>{ this.store('title', char ) }}
-		                    />
-			    		</View>
-			    		<View>
-			    			<TextBox 
-		                        height = {50}
-		                        placeholder= {"News Category"}
-		                        onType = {( char )=>{ this.store('type', char ) }}
 		                    />
 			    		</View>
 			    		<View>
@@ -170,7 +188,7 @@ export default class Upload extends React.Component {
 			    		<View>
 			    			<TextBox 
 		                        height = {50}
-		                        placeholder= {"News Place"}
+		                        placeholder= {"News Source"}
 		                        onType = {( char )=>{ this.store('place', char ) }}
 		                    />
 			    		</View>

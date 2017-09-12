@@ -14,6 +14,7 @@ import {
 	Button,
 	Navbar,
 	Menu,
+	AdminMenu,
 	Pic,
 	BidItem,
 } from './';
@@ -21,10 +22,44 @@ import {
 const UI = ActionList();
 var width = UI.width;
 var height = UI.height;
+let _this;
 export default class Bid extends React.Component{
 	constructor(){
 		super();
-		this.state = { menu : 0};
+		this.state = { 
+			menu : 0, 
+			bidCoins : 0,
+			load : false,
+		};
+		_this = this;
+	}
+
+	componentWillMount(){
+	    this.send();
+	}
+
+	send(){
+	    let data = {
+	      table : "users",
+	      email : this.props.userEmail,
+	      action : "view_mobile_user_records",
+	    };
+
+	    let call = new XMLHttpRequest();
+	    call.onreadystatechange = function()
+	    {
+	      if(call.readyState==4 && call.status==200)
+	      {
+	         _this.userDetails = JSON.parse(call.responseText);
+	         _this.setState({ bidCoins : _this.userDetails[0].bids }); 
+	      }
+	      else
+	      {
+	          
+	      }
+	    }
+	    call.open( "GET", UI.server + "action.php?data=" + JSON.stringify(data), true );
+	    call.send(); 
 	}
 
 	onMenuNavigation() {
@@ -36,6 +71,7 @@ export default class Bid extends React.Component{
 		let items = [];
 		let i = 0;
 		let bidItemList = UI.bidItemList();
+		let coin = this.state.bidCoins;
 		for( let item in bidItemList ) {
 			items.push(
 				<View
@@ -52,7 +88,7 @@ export default class Bid extends React.Component{
 						itemName = { bidItemList[item].name }
 						image = { UI.imageStore + bidItemList[item].itemImage }
 						info = {bidItemList[item].info}
-						bidCoins = {0}
+						bidCoins = {coin}
 					/>
 				</View>
 			);
@@ -63,7 +99,7 @@ export default class Bid extends React.Component{
 	}
 
 	render(){
-		var sidePane = <Menu />;
+		let sidePane = ( this.props.user == "admin" ? <AdminMenu /> : <Menu  user={this.props.user} userEmail = {this.props.userEmail} /> );
 		return(
 			<Drawer 
 		        ref = "drawer" 

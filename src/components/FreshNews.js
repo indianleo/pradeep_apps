@@ -11,10 +11,12 @@ import {
 } from './ThemeAction';
 import Drawer         from 'react-native-drawer';
 import theme from '../css/theme';
+import HTMLView from 'react-native-htmlview';
 import {
   Button,
   ThemeModal,
   Menu,
+  AdminMenu,
   Navbar,
   Pic,
   Loader
@@ -56,43 +58,47 @@ export default class FreshNews extends React.Component {
 
   getNews(news, send = function(){}) {
     let newsContent = (
-          <ScrollView
+          <View
               style = {[
-                  UI.setScreen(width,height),
+                    UI.setScreen(width,height),
               ]}
-          > 
-              {
-                (news.news_pic == "")
-                  ?
-                    <Pic
-                        source = {require('../image/freshNews.jpg')}
-                        height = {300}
-                        width = {width}
-                    />
-                  :
-                    <Pic
-                        uri = {news.news_pic}
-                        height = {300}
-                        width = {width}
-                    />
-              }
-              <Text
+          >
+            <ScrollView
+                style = {[
+                    UI.setScreen(width,height),
+                ]}
+            > 
+                {
+                  (news.news_pic == "")
+                    ?
+                      <Pic
+                          source = {require('../image/freshNews.jpg')}
+                          height = {300}
+                          width = {width}
+                      />
+                    :
+                      <Pic
+                          uri = { news.news_pic.startsWith("native_image") ? UI.server + news.news_pic : news.news_pic}
+                          height = {300}
+                          width = {width}
+                      />
+                }
+               <HTMLView
                   style = {[ 
                       UI.setFont(24),
                       UI.setPaddingAll(10),
                   ]}
-              >
-                   {news.news_title}
-              </Text>
-              <Text
-                  style = {[
-                      UI.setFont(18),
-                      UI.setPaddingAll(10),
-                  ]}
-              >
-                   {news.news_info}
-              </Text>
-          </ScrollView>
+                  value={news.news_title}
+              />
+              <HTMLView
+                    style = {[
+                        UI.setFont(18),
+                        UI.setPaddingAll(10),
+                    ]}
+                    value={news.news_info}
+              />
+            </ScrollView>
+          </View>
         );
 
       send(newsContent);
@@ -161,7 +167,7 @@ export default class FreshNews extends React.Component {
                         />
                       :
                         <Pic
-                            uri = {news.news_pic}
+                            uri = {news.news_pic.startsWith("native_image") ? UI.server + news.news_pic : news.news_pic}
                             height = {100}
                             width = {width*.35}
                         />
@@ -177,19 +183,17 @@ export default class FreshNews extends React.Component {
 
                   onPress = {()=>{ this.readNews(news) }}
               >
-                  <Text
-                      style = {[
-                          UI.setFont(18),
-                          theme.textDanger,
-                      ]}
-                  >
-                      {news.news_title}
-                  </Text>
-                  <Text
-                      numberOfLines = {1}
-                  >
-                      {news.news_info}
-                  </Text>
+                  <HTMLView
+                        style = {[
+                            UI.setFont(24),
+                            theme.textDanger,
+                            UI.setWidth(width*.55),
+                        ]}
+                        value={news.news_title}
+                    />
+                  <HTMLView
+                    value={news.news_info}
+                  />
               </TouchableOpacity> 
           </View>
       );
@@ -200,7 +204,7 @@ export default class FreshNews extends React.Component {
   }
 
   render(){
-    var sidePane = <Menu />;
+    const sidePane = ( this.props.user == "admin" ? <AdminMenu /> : <Menu  user={this.props.user} userEmail = {this.props.userEmail} /> );
     return(
       <Drawer 
         ref = "drawer" 

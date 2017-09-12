@@ -53,12 +53,13 @@ export default class Welcome extends React.Component {
     this.setState({ menu : 0 });
   }
 
-  itemResponder(pageName){
-    UI.location(pageName);
+  itemResponder(pageName, props ){
+    let data = { user : props.user, userEmail : props.userEmail };
+    UI.location( pageName, data );
   }
 
 
-  renderItems(){
+  renderItems( props ){
       let mArr = [];
       for( let key in this.itemList ) {
           mArr.push(
@@ -71,7 +72,7 @@ export default class Welcome extends React.Component {
                     theme.btnInfo,
                     UI.setMarginTop(10),
                   ]}
-                  onPress = {()=> { this.itemResponder(key) }}
+                  onPress = {()=> { this.itemResponder(key, props) }}
               >
                   <View
                       style = {[ 
@@ -127,7 +128,7 @@ export default class Welcome extends React.Component {
   }
 
   render(){
-    var sidePane = <Menu />;
+    const sidePane = ( <Menu  user={this.props.user} userEmail = {this.props.userEmail} /> );
     return(
       <Drawer 
         ref = "drawer" 
@@ -156,7 +157,7 @@ export default class Welcome extends React.Component {
               <View
                   style = {[ theme.center ]}
               >
-                { this.renderItems() }
+                { this.renderItems(this.props) }
               </View>
           </ScrollView>
       
