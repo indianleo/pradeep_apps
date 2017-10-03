@@ -1,0 +1,43 @@
+{
+  "name": "AbcNewsExpress",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "react": "16.0.0-alpha.12",
+    "react-native": "0.48.1",
+    "react-native-circular-progress": "0.0.8",
+    "react-native-device-info": "^0.9.9",
+    "react-native-drawer": "^2.3.0",
+    "react-native-fs": "^1.5.1",
+    "react-native-htmlview": "^0.12.0",
+    "react-native-material-design": "^0.3.7",
+    "react-native-orientation": "^1.17.0",
+    "react-native-responsive": "^1.0.0",
+    "react-native-restart": "0.0.1",
+    "react-native-root-modal": "^1.0.4",
+    "react-native-router-flux": "^3.37.0",
+    "react-native-sqlite-storage": "^3.3.2",
+    "react-native-vector-icons": "^2.1.0",
+    "react-native-video": "^0.8.0",
+    "react-redux": "^4.4.1",
+    "realm": "^0.14.1",
+    "redux": "^3.3.1",
+    "redux-thunk": "^1.0.3",
+    "stream": "0.0.2",
+    "timers": "^0.1.1",
+    "xml2js": "^0.4.17"
+  },
+  "devDependencies": {
+    "babel-jest": "21.0.0",
+    "babel-preset-react-native": "3.0.2",
+    "jest": "21.0.1",
+    "react-test-renderer": "16.0.0-alpha.12"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
