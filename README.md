@@ -1,5 +1,5 @@
 # pradeep_apps
-Author : Pradeep Yadav \n
-Desription : This repository contains Apps code of Native and Node Based \n
+# Author : Pradeep Yadav 
+# Desription : This repository contains Apps code of Native and Node Based 
 
 www.iiw.world
