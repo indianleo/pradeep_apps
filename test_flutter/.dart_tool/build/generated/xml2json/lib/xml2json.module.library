@@ -1,0 +1,1 @@
+{"isEntrypoint":true,"deps":["xml|lib/xml.dart"],"parts":["xml2json|lib/src/xml2json.dart","xml2json|lib/src/xml2json_exception.dart","xml2json|lib/src/xml2json_badgerfish.dart","xml2json|lib/src/xml2json_parker.dart","xml2json|lib/src/xml2json_gdata.dart","xml2json|lib/src/xml2json_utils.dart"],"conditionalDeps":[],"sdkDeps":[],"hasMain":false}

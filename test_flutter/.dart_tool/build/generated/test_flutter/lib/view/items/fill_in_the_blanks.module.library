@@ -1,0 +1,1 @@
+{"isEntrypoint":true,"deps":["flutter_web|lib/material.dart","xml2json|lib/xml2json.dart","html|lib/parser.dart"],"parts":[],"conditionalDeps":[],"sdkDeps":["html","convert"],"hasMain":false}
