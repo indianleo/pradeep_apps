@@ -23,6 +23,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  esys_flutter_share: ^1.0.0
+  flutter_share:  ^1.0.2
+  flutter_document_picker: ^4.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
