@@ -98,8 +98,32 @@ const Enrollment = (props)=> {
                             commonStyle.textOrange, 
                             commonStyle.textLightBold, 
                             commonStyle.textStyle
+                        ]}
+                    >
+                        Attachment
+                    </Text>
+                </View>
+                <View>
+                    <Text
+                        style={[
+                            commonStyle.textBoxBorderColor,
+                            commonStyle.bgWhite,
+                            UI.setHeight(50),
+                            commonStyle.p,
+                            commonStyle.textStyle,
+                            commonStyle.placeHolderFont
+                        ]}
+                    >...</Text>
+                </View>
+                <View style={[commonStyle.ptLg, commonStyle.pb,]}>
+                    <Text 
+                        style={[
+                            commonStyle.orangeFontSize, 
+                            commonStyle.textOrange, 
+                            commonStyle.textLightBold, 
+                            commonStyle.textStyle
                         ]}>
-                        Password
+                        OTP
                     </Text>
                 </View>
                 <View>

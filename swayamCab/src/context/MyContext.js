@@ -6,6 +6,9 @@ class MyProvider extends React.Component {
         this.state = {
             lang: "en",
             portrait: true,
+            user: {},
+            isLogined: false,
+            isRider: false,
         }
         this.dimRef = null;
     }
@@ -30,7 +33,8 @@ class MyProvider extends React.Component {
     loginAction = (data)=> {
         this.setState({
             user: data,
-            isLogined: data.role == "guest" ? false : true,
+            isLogined: data.role.toLocaleLowerCase() == "driver" ? false : true,
+            isRider: data.role.toLocaleLowerCase() == "driver" ? false : true,
         })
     }
 

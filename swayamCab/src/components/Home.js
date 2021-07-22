@@ -1,13 +1,30 @@
 import React from  'react';
-import { View, Text } from 'react-native';
-
+import { SafeAreaView, StatusBar} from 'react-native';
+import MyContext from '../context/MyContext';
+import commonStyle from '../css/commonStyle';
+import Driver from './Driver';
+import Rider from './Rider';
+const TRANSITIONS = ['fade', 'slide', 'none'];
 const Home = (props)=> {
+    const contextOptions = React.useContext(MyContext);
+    const getPage = () => {
+        console.log(contextOptions);
+        if (contextOptions.isRider) {
+            return <Rider />
+        }
+        return <Driver />
+    }
+
     return (
-        <View>
-            <Text>
-                Home
-            </Text>
-        </View>
+        <SafeAreaView>
+            <StatusBar
+                animated={true}
+                translucent={true}
+                backgroundColor="transparent"
+                showHideTransition={TRANSITIONS[2]}
+            />
+            {getPage()}
+        </SafeAreaView>
     )
 }
 

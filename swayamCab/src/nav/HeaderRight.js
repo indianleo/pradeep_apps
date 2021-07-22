@@ -4,8 +4,13 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import commonStyle from '../css/commonStyle';
 const HeaderRight = (props) => {
     const [modalVisible, updateModal] = React.useState(false);
-    const handleNotification = ()=> {
-        updateModal(!modalVisible);
+    const handleAction= ()=> {
+        //updateModal(!modalVisible);
+        props.navigation.reset({
+            index: 0,
+            routes: [{name: 'Home'}]
+        });
+        props.handleLoginAction("logout");
     }
 
     const loadModal = ()=> {
@@ -35,8 +40,8 @@ const HeaderRight = (props) => {
 
     return(
         <View style={[style.row]}>
-            <TouchableOpacity onPress={handleNotification}>
-                <Icon name="refresh" style={[style.bell]} size={18} />
+            <TouchableOpacity onPress={handleAction}>
+                <Icon name="power-off" style={[style.bell]} size={18} />
             </TouchableOpacity>
             {loadModal()}
         </View>

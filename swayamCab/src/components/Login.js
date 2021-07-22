@@ -13,16 +13,17 @@ import MyContext from '../context/MyContext';
 
 const Login = (props)=> {
     const contextOptions = React.useContext(MyContext);
-    const setPassword = (pass)=> {
+    const [phone, updatePhone] = React.useState("");
+    const setOtp = (pass)=> {
         console.log({pass})
     }
 
-    const setEmail = (email)=> {
-        console.log({email});
+    const setPhone = (phoneNo)=> {
+        updatePhone(phoneNo);
     }
     
     const handleBtnAction = (type)=> {
-        contextOptions.handleLogin({userName: "Pradeep Yadav", role: type});
+        contextOptions.handleLogin({userName: "Pradeep Yadav", role: phone});
         props.handleAction(type, '');
     }
 
@@ -49,18 +50,18 @@ const Login = (props)=> {
                         <View style={[commonStyle.textBoxBorderColor]}>
                             <TextInput
                                 style={styles.TextInput}
-                                placeholder={"Email"}
+                                placeholder={"Phone"}
                                 placeholderTextColor="#003f5c"
-                                onChangeText={(email) => setEmail(email)}
+                                onChangeText={(email) => setPhone(email)}
                             />
                         </View>
                         <View style={[commonStyle.textBoxBorderColor, commonStyle.mtmd]}>
                             <TextInput
                                 style={styles.TextInput}
-                                placeholder={"Password"}
+                                placeholder={"OTP"}
                                 placeholderTextColor="#003f5c"
                                 secureTextEntry={true}
-                                onChangeText={(password) => setPassword(password)}
+                                onChangeText={(password) => setOtp(password)}
                             />
                         </View>
                         <View style={commonStyle.vCenter}>

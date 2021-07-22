@@ -12,6 +12,8 @@ import {
   Text,
   View,
 } from 'react-native';
+import Drawer from 'react-native-drawer'
+import SidePane from './src/components/SidePane';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -26,14 +28,19 @@ import InfoModal from './src/libs/InfoModal';
 import Login from './src/components/Login';
 import Enrollment from './src/components/Enrollment';
 import Home from './src/components/Home';
+import Driver from './src/components/Driver';
+import Rider from './src/components/Rider';
 
 const Stack = createStackNavigator();
 global.UI = themeAction();
 const App: () => Node = () => {
     let infoModalRef = React.useRef();
+    let _drawer = React.useRef();
+    let navigationRef = React.useRef();
     const [showIntro, updateIntro] = React.useState(true);
     const [_user, setUser] = React.useState("");
     const [_needEnroll, setEnroll] = React.useState(false);
+    const [drawerState, setDrawer] = React.useState(false);
 
     const onSkipIntro = ()=> {
       updateIntro(false);
@@ -48,8 +55,8 @@ const App: () => Node = () => {
         case 'reg':
           setEnroll(true);
         break;
-        case 'back': 
-          setEnroll(false);
+        case 'logout': 
+          setUser("");
         break;
         case 'login':  
           setUser(action);
@@ -87,7 +94,7 @@ const App: () => Node = () => {
                 info: "Slide 2",
               },
               {
-                src: require('./src/images/intro3.png'),
+                src: require('./src/images/intro3.jpeg'),
                 info: "Slide 3",
               },
             ]}
@@ -102,27 +109,61 @@ const App: () => Node = () => {
           <Stack.Navigator 
             key={"stackNav"}
             screenOptions = {(_navData) => ({
-            headerBackground: props => <HeaderBackground />,
-            headerTitle: props => <HeaderTitle {...props} {..._navData} />,
-            headerRight: props => <HeaderRight {...props} {..._navData} />,
-            headerLeft: props => <HeaderLeft {...props} {..._navData} hideBack={true} />,
+              headerBackground: props => <HeaderBackground />,
+              headerTitle: props => <HeaderTitle {...props} {..._navData} />,
+              headerRight: props => <HeaderRight {...props} {..._navData} handleLoginAction={handleLoginAction} />,
+              headerLeft: props => <HeaderLeft {...props} {..._navData} hideBack={true} openDrawer={openDrawer} closeDrawer={closeDrawer} drawerState={drawerState} />,
             })}
           >
             <Stack.Screen
               name="Home"
               component={Home}
-              options={{title: "SwyamCab"}}
+              options={{title: "Swyam Cab"}}
+            />
+            <Stack.Screen
+              name="Driver"
+              component={Driver}
+              options={{title: "Driver"}}
+            />
+            <Stack.Screen
+              name="Rider"
+              component={Rider}
+              options={{title: "Rider"}}
             />
           </Stack.Navigator>,
           <InfoModal ref={infoModalRef} key="intorModal" />
         ]
       )
     }
+
+    const openDrawer = ()=> {
+      _drawer.open();
+      setDrawer(true);
+    }
+  
+    const closeDrawer = ()=> {
+      _drawer.close();
+      setDrawer(false);
+    }
   
     return (
       <MyProvider>
         <NavigationContainer>
-        { showIntro ? loadDefault() : ( _user ? loadStack() : loginPage()) }
+          <Drawer
+            type="overlay"
+            tapToClose={true}
+            ref={(ref)=> _drawer = ref}
+            content={<SidePane navRef={navigationRef.current} closeDrawer={closeDrawer} />}
+            openDrawerOffset={0.2}
+            panCloseMask={0.2}
+            closedDrawerOffset={-3}
+            tweenHandler={(ratio) => ({
+              main: { opacity:(2-ratio)/2 }
+            })}
+            onClose={()=> setDrawer(false)}
+          >
+            { showIntro ? loadDefault() : ( _user ? loadStack() : loginPage()) }
+          </Drawer>
         </NavigationContainer>
       </MyProvider>
     );

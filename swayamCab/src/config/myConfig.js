@@ -1,0 +1,1 @@
+export const gAPiKey = "AIzaSyAAJ5_IzEBEC9LjJKo8qZJRALCGOhMAHgQ";

@@ -134,6 +134,33 @@ export default StyleSheet.create({
 		borderWidth: 1,
 		borderRadius: 2
 	},
+	themeHeadingText: {
+		fontFamily: 'Roboto',
+		fontSize: 30,
+		fontWeight: 'bold',
+		color: '#223c99'
+	},
+	themeOrangeText: {
+		fontFamily: 'Roboto',
+		fontSize: 20,
+		fontWeight: '600',
+		color: '#f15a24'
+	},
+	themeNormalText: {
+		fontFamily: 'Roboto',
+		fontWeight: '500',
+		fontSize: 15,
+	},
+	themeText: {
+		fontFamily: 'Roboto',
+		fontWeight: '600',
+		fontSize: 17
+	},
+	themeSubText: {
+		fontFamily: 'Roboto',
+		fontWeight: '600',
+		fontSize: 25
+	},
 	pageIcons: {
 		width: 110,
 		height: 110,
@@ -167,4 +194,12 @@ export default StyleSheet.create({
         width:80, 
         height:80
     },
+	inputBox: {
+        height: 50,
+        flex: 1,
+        padding: 10,
+        marginLeft: 20,
+        fontFamily: 'Roboto',
+        fontSize: 18,
+      }
 });
