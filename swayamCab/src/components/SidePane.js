@@ -2,6 +2,7 @@ import React from 'react';
 import { View , Text, FlatList, TouchableOpacity, Image} from 'react-native';
 import MyContext from '../context/MyContext';
 import commonStyle from '../css/commonStyle';
+import Icons from '../libs/Icons';
 
 const SidePane = (props) => {
     const contextOption = React.useContext(MyContext);
@@ -12,43 +13,50 @@ const SidePane = (props) => {
                     id: 1,
                     title: "Profile",
                     pageName: "",
-                    img: require('../images/logo2.png')
+                    iconName: "user",
+                    iconSet: "fontAwesome"
                 },
                 {
                     id: 2,
                     title: "Ongoing",
                     pageName: "",
-                    img: require('../images/logo2.png')
+                    iconName: "direction",
+                    iconSet: "entypo"
                 },
                 {
                     id: 3,
                     title: "Finished",
                     pageName: "",
-                    img: require('../images/logo2.png')
+                    iconName: "clock-end",
+                    iconSet: "materialComIcons"
                 },
                 {
                     id: 4,
                     title: "Canceled",
                     pageName: "",
-                    img: require('../images/logo2.png')
+                    iconName: "account-cancel",
+                    iconSet: "materialComIcons"
                 },
                 {
                     id: 5,
                     title: "Feedback",
                     pageName: "",
-                    img: require('../images/logo2.png')
+                    iconName: "feedback",
+                    iconSet: "materialIcons"
                 },
                 {
                     id: 6,
                     title: "Share My Location",
                     pageName: "",
-                    img: require('../images/logo2.png')
+                    iconName: "location",
+                    iconSet: "entypo"
                 },
                 {
                     id: 7,
                     title: "About",
                     pageName: "",
-                    img: require('../images/logo2.png')
+                    iconName: "car-info",
+                    iconSet: "materialComIcons"
                 }
             ]
         } else {
@@ -57,31 +65,36 @@ const SidePane = (props) => {
                     id: 1,
                     title: "Basic Info",
                     pageName: "",
-                    img: require('../images/logo2.png')
+                    iconName: "user",
+                    iconSet: "fontAwesome"
                 },
                 {
                     id: 2,
                     title: "Online/Offline",
                     pageName: "",
-                    img: require('../images/logo2.png')
+                    iconName: "online-prediction",
+                    iconSet: "materialIcons"
                 },
                 {
                     id: 3,
                     title: "Pending Request",
                     pageName: "",
-                    img: require('../images/logo2.png')
+                    iconName: "pending-actions",
+                    iconSet: "materialIcons"
                 },
                 {
                     id: 4,
                     title: "Completed Ride",
                     pageName: "",
-                    img: require('../images/logo2.png')
+                    iconName: "tachometer",
+                    iconSet: "fontAwesome"
                 },
                 {
                     id: 5,
                     title: "Canceled Ride",
                     pageName: "",
-                    img: require('../images/logo2.png')
+                    iconName: "cancel-schedule-send",
+                    iconSet: "materialIcons"
                 }
             ]
         }
@@ -94,7 +107,7 @@ const SidePane = (props) => {
 
     const renderHeader = () => {
         return (
-            <View>
+            <View style={[UI.setPadding(0, 5, 2, 0, '%')]}>
                 <Text style={[commonStyle.themeHeadingText]}>
                     Svayam App
                 </Text>
@@ -109,18 +122,31 @@ const SidePane = (props) => {
                     commonStyle.row, 
                     commonStyle.center, 
                     commonStyle.bgWhite, 
-                    commonStyle.p,
-                    commonStyle.mbmd
+                    commonStyle.pMd,
+                    commonStyle.mbmd,
+                    UI.setRadiusOn(30, 'topEnd'),
+                    UI.setRadiusOn(30, 'bottomEnd')
                 ]} 
                 onPress={handlePageAction.bind(this, item)}
             >
-                <Image
-                    source={item.img}
-                    style={[UI.setScreen(60,60)]}
-                />
+                <View 
+                    style={[
+                        UI.setScreen(50,50),
+                        UI.setRadius(25), 
+                        commonStyle.center, 
+                        commonStyle.bgOffSky
+                    ]}
+                >
+                    <Icons
+                        iconSet={item.iconSet}
+                        name={item.iconName}
+                        size={30}
+                        style={[commonStyle.textWhite]}
+                    />
+                </View>
                 <Text 
                     style={[
-                        commonStyle.plMd, 
+                        UI.setPaddingLeft(15), 
                         commonStyle.themeOrangeText,
                         UI.setWidth(70, '%'),
                     ]}
@@ -132,13 +158,13 @@ const SidePane = (props) => {
     }
 
     return (
-        <View style={[commonStyle.themeBg, UI.setPadding(20,5,5,5, '%'), UI.setHeight()]}>
+        <View style={[commonStyle.themeBg, UI.setPadding(20,2,5,5, '%')]}>
             <FlatList
                 ListHeaderComponent={renderHeader}
                 data={getMenuList()}
                 keyExtractor={item => item.id}
                 renderItem={renderListItem}
-                style={[UI.setMarginTop(10), UI.setHeight(96.5, '%')]}
+                style={[UI.setMarginTop(10)]}
                 showsVerticalScrollIndicator={false}
             />
         </View>

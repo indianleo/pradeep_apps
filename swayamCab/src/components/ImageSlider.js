@@ -21,12 +21,16 @@ const ImageSlider = (props)=> {
                     style={[
                         style.logoContainer, 
                         UI.setLeft(5, '%'),
-                        UI.setTop(isPortrait ? 5 : -20, '%')
+                        UI.setTop(isPortrait ? 0 : -20, '%')
                     ]}
                 >
                     <Image 
                         source={props.logo}
-                        style={style.logo}
+                        style={[
+                            props.logoHeight && props.logoWidth
+                                ? UI.setScreen(props.logoWidth, props.logoHeight) 
+                                : style.logo
+                        ]}
                     />
                 </View>
             )
@@ -74,7 +78,7 @@ const ImageSlider = (props)=> {
                                     style={[
                                         UI.setWidth(100, '%'), 
                                         UI.setHeight(50, '%'), 
-                                        context.portrait ? commonStyle.imgCover : commonStyle.imgContain,
+                                        commonStyle.imgCover,
                                     ]}
                                 />
                             </View>

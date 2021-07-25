@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import Drawer from 'react-native-drawer'
 import SidePane from './src/components/SidePane';
+import SplashScreen from 'react-native-splash-screen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -41,6 +42,11 @@ const App: () => Node = () => {
     const [_user, setUser] = React.useState("");
     const [_needEnroll, setEnroll] = React.useState(false);
     const [drawerState, setDrawer] = React.useState(false);
+
+    React.useEffect(()=> {
+      UI.initGeoCoading();
+      SplashScreen.hide()
+    }, [])
 
     const onSkipIntro = ()=> {
       updateIntro(false);
@@ -82,20 +88,22 @@ const App: () => Node = () => {
           <ImageSlider
             onSkip={onSkipIntro}
             hideOnSlide={3}
-            logo={require('./src/images/logo-icon.png')}
+            logo={require('./src/images/icon.png')}
+            logoHeight={100}
+            logoWidth={200}
             uri={false}
             data={[
               {
                 src: require('./src/images/intro1.png'),
-                info: "Slide 1",
+                info: "Welcome to Svayam Cab",
               },
               {
-                src: require('./src/images/intro2.png'),
-                info: "Slide 2",
+                src: require('./src/images/intro2.jpeg'),
+                info: "Choose Whether you want to go.",
               },
               {
                 src: require('./src/images/intro3.jpeg'),
-                info: "Slide 3",
+                info: "Select driver according to you.",
               },
             ]}
           />
@@ -160,6 +168,10 @@ const App: () => Node = () => {
             tweenHandler={(ratio) => ({
               main: { opacity:(2-ratio)/2 }
             })}
+            styles={{
+              drawer: { shadowColor: '#000000', shadowOpacity: 0.8, shadowRadius: 3},
+              main: {paddingLeft: 0},
+            }}
             onClose={()=> setDrawer(false)}
           >
             { showIntro ? loadDefault() : ( _user ? loadStack() : loginPage()) }

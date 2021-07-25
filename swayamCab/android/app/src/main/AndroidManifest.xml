@@ -13,7 +13,7 @@
     >
       <meta-data
         android:name="com.google.android.geo.API_KEY"
-        android:value="AIzaSyAAJ5_IzEBEC9LjJKo8qZJRALCGOhMAHgQ"/>
+        android:value="AIzaSyCdmmRRO2G6kpwL5C601xFRouLd0g9MQLE"/>
 
       <!-- You will also only need to add this uses-library tag -->
       <uses-library android:name="org.apache.http.legacy" android:required="false"/>
@@ -33,6 +33,7 @@
         android:launchMode="singleTask"
         android:windowSoftInputMode="adjustResize"
         android:exported="true"
+        android:screenOrientation="portrait"
       >
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />

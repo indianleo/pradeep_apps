@@ -15,8 +15,9 @@
     StatusBar
 } from 'react-native';
 
-// import Orientation from 'react-native-orientation-locker';
 // import PushNotification from 'react-native-push-notification';
+import Geocoder from 'react-native-geocoding';
+import { gAPiKey } from './myConfig';
 let dimObj = {};
 let { height, width } = Dimensions.get('window');
 let localStorage = {};
@@ -210,13 +211,11 @@ export function themePanel() {
 
 export function themeAction() {
 	return {
-		getDataIndex: function(list, selected) {
-			if (list && selected != null) {
-				let result = list.findIndex( (x) => x.data == selected);
-				return result == -1 ? 0 : result;
-			} else {
-				return false;
-			}
+		initGeoCoading: function() {
+			Geocoder.init(gAPiKey);
+		},
+		geoFrom: function(cord) {
+			return Geocoder.from(cord);
 		},
 		updateDim : function (_width,_height){
 			height = _height;
@@ -225,11 +224,6 @@ export function themeAction() {
 		triggerDimEvent: function(event) {
 			for (let i in dimObj) {
 				dimObj[i](event);
-			}
-		},
-		abortAllAjax: function() {
-			for (let i in objRequestPool) {
-				objRequestPool[i] && objRequestPool[i].abort && objRequestPool[i].abort();
 			}
 		},
 		dimOn: function(inf){
@@ -269,16 +263,6 @@ export function themeAction() {
 			return result;
 		},
 
-		array_flip: function(trans) {
-			let tmp_ar = {};
-			for (let key in trans ) {
-				if (trans.hasOwnProperty(key)) {
-					tmp_ar[trans[key]] = key;
-				}
-			}
-			return tmp_ar;
-		},
-
 		filterObjKeys: function (obj, keys = '') {
 			let retObj = {};
 			keys = keys.split(',');
@@ -304,10 +288,6 @@ export function themeAction() {
 			return localStorage[arg];
 		},
 
-		userInfo: () => localStorage['userInfo'],
-		isOnline: () => localStorage['__isOnline'],
-		clientId: () => localStorage['clientId'],
-		requestPool: objRequestPool,
 		animate: function(obj, type) {
 			if (['easeInEaseOut', "linear", "spring"].includes(type)) {
 				LayoutAnimation.configureNext(LayoutAnimation.Presets[type]);
@@ -324,6 +304,7 @@ export function themeAction() {
 				this.setState(obj);
 			}
 		},
+
 		jsonToFormData(obj) {
 	        let formData = new FormData();
 	        for (let key in obj) {
@@ -331,60 +312,6 @@ export function themeAction() {
 	        }
 	        return formData;
 	    },
-
-		client: function() {
-			let clientData = {};
-			if (localStorage['isSocial']) {
-				clientData = {
-					email: localStorage['email'],
-					password: '',
-					isSocial: 'true',
-				};
-			} else if (localStorage['email'] && localStorage['password']) {
-				clientData = {
-					email: localStorage['email'],
-					password: localStorage['password'],
-					isSocial: 'false',
-				};
-			} else {
-				let clientStore = appAction.getModalState('client');
-				if (clientStore) {
-					clientData = {
-						email: clientStore.email,
-						password: clientStore.password,
-						isSocial: clientStore.isSocial,
-					};
-				} else {
-					let uData = appAction.getUserPermission();
-					try {
-						localStorage['email'] = uData.user.email;
-						localStorage['password'] = uData.user.password;
-						clientData = {
-							email: uData.user.email,
-							password: uData.user.password,
-							isSocial: this.isValid(uData.user.password) ? 'false' : 'true',
-						}
-						appAction.setModalState('client', clientData);
-					} catch (e) {
-						console.log(`Error in store of client Data = ${e}`);
-					}
-				}
-			}
-			let inf = {
-				clientId: localStorage['clientId'],
-				email: clientData.email,
-				password: clientData.password,
-				isSocial: clientData.isSocial,
-			};
-			return inf;
-		},
-
-		setAccessKey: function (api) {
-			if (api.access_token && api.access_token.length > 50) {
-				localStorage['accessKey'] = api.access_token;
-				appAction.setModalState('accessKey', api.access_token);
-			}
-		},
 
 		accessKey: function() {
 			if (localStorage['accessKey']) {
@@ -398,33 +325,6 @@ export function themeAction() {
 			}
 		},
 
-		convey: function(receiverName, fun) {
-			localStorage.receivers = localStorage.receivers || {};
-			if (typeof fun == 'function') {
-				localStorage.receivers[receiverName] = fun;
-			} else if (fun == null) {
-				delete localStorage.receivers[receiverName];
-			} else {
-				localStorage.receivers[receiverName] && localStorage.receivers[receiverName](fun);
-			}
-		},
-
-		ping: function (target) {
-			return new Promise((resolve, reject) => {
-				fetch(target, {
-					method: 'POST', // *GET, POST, PUT, DELETE, etc.
-					mode: 'no-cors', // no-cors, cors, *same-origin
-				})
-					.then((res) => {
-						resolve(res);
-					})
-					.catch((error) => {
-						console.log("Fetch error = ", error);
-						reject(reject);
-					});
-			});
-		},
-
 		checkBack: function (action) {
 			BackAndroid.addEventListener('hardwareBackPress', action);
 		},
@@ -433,62 +333,11 @@ export function themeAction() {
 			BackAndroid.removeEventListener('hardwareBackPress');
 		},
 
-		deviceInfo: function (status, send = function () { }) {
-			Orientation && Orientation.getOrientation((err, orientation) => {
-				let inf = {
-					height: height,
-					width: width,
-					type: Platform.OS,
-					view: orientation,
-					ios: _IOS,
-				};
-				send(inf);	
-			});
-		},
-
-		lockToPortrait: function () {
-			Orientation.lockToPortrait();
-		},
-
-		lockToLandscape: function () {
-			Orientation.lockToLandscape();
-		},
-
-		unlockAll: function () {
-			Orientation.unlockAllOrientations();
-		},
-
-		onStartApp: function () {
-            return new Promise((resolve, reject)=>{
-                Orientation.getOrientation((err, orientation) => {
-                    if (width > height) {
-                        resolve(true);
-                    } else {
-                        resolve(false);
-                    }
-                });
-            })
-		},
-
-		layout: function (send = function () { }) {
-			Orientation.getOrientation((err, orientation) => {
-				send(orientation);
-			});
-		},
-
 		ios: _IOS,
 		type: Platform.OS,
 		width: ()=> Dimensions.get('window').width,
 		statusBarHeight,
 		height: ()=> Dimensions.get('window').height + statusBarHeight(),
-
-		display: function (attr) {
-			Orientation && Orientation.addOrientationListener(attr.onChange);
-		},
-
-		displayOff: function (attr) {
-			Orientation && Orientation.removeOrientationListener(attr.onChange);
-		},
 
 		setZindex: function (n) {
 			return {

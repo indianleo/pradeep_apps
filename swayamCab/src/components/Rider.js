@@ -1,46 +1,64 @@
 import React from  'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import Geocoder from 'react-native-geocoding';
+import MapView, {Marker, Polyline, PROVIDER_GOOGLE} from 'react-native-maps';
 import MyContext from '../context/MyContext';
 import commonStyle from '../css/commonStyle';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { gAPiKey } from '../config/myConfig';
+import Geolocation from "react-native-geolocation-service";
+import { requestLocation } from '../config/myConfig';
 
 const Rider = (props)=> {
-    const [currentLayout, setLayout] = React.useState("");
-    const [locationRegion, updateLocationRegion] = React.useState({
-        latitude: 37.78825,
-        longitude: -122.4324,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-    });
+    const [currentLayout, setLayout] = React.useState("initial");
+    const [locationRegion, updateLocationRegion] = React.useState(null);
     const [locationMarkers, updateMarkers] = React.useState([]);
     const [query, setQuery] = React.useState({pickup: "", destination: ""});
 
     React.useEffect(()=> {
-        Geocoder.init(gAPiKey)
+        if (!UI.ios) requestLocation();
+        Geolocation.getCurrentPosition((position) => {
+                let tempMarker = [];
+                updateLocationRegion({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                });
+                tempMarker.push({
+                    title: "Pickup Location",
+                    co: {latitude: position.coords.latitude,longitude: position.coords.longitude},
+                    description: "Driver will pickup you from here."
+                });
+                updateMarkers([...tempMarker]);
+            },
+            (error) => {
+              // See error code charts below.
+              console.log(error.code, error.message);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+        );
+    
     }, []);                                     
 
     const onRegionChange = (newRegion)=> {
-        console.log(newRegion);
         updateLocationRegion(newRegion);
     }
 
     const onMapTouch = (event)=> {
-        let tempMarker = locationMarkers;
-        Geocoder.from(event.nativeEvent.coordinate).then((addJson)=> {
-            console.log(addJson);
-        }).catch((err)=> {
-            console.log(err);
-        })
-        if (tempMarker.length < 2) {
-            tempMarker.push({
-                title: tempMarker.length == 1 ? "Destination" : "Pickup Location",
-                co: event.nativeEvent.coordinate,
-                description: tempMarker.length == 1 ? "Driver will be drop you here." : "Driver will pickup you from here."
-            })
-            updateMarkers([...tempMarker]);
+        if (currentLayout == "selectArea") {
+            let tempMarker = locationMarkers;
+            // UI.geoFrom(event.nativeEvent.coordinate).then((addJson)=> {
+            //     console.log({addJson});
+            // }).catch((err)=> {
+            //     console.log(err);
+            // });
+            if (tempMarker.length == 1) {
+                tempMarker.push({
+                    title: tempMarker.length == 1 ? "Destination" : "Pickup Location",
+                    co: event.nativeEvent.coordinate,
+                    description: tempMarker.length == 1 ? "Driver will be drop you here." : "Driver will pickup you from here."
+                })
+                updateMarkers([...tempMarker]);
+            }
         }
     }
 
@@ -57,17 +75,81 @@ const Rider = (props)=> {
         setQuery({...temp});
     }
 
+    const getMapRoute = () => {
+        if (locationMarkers.length == 2) {
+            return(
+                <Polyline
+                    coordinates={locationMarkers}
+                    strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
+                    strokeColors={['#7F0000']}
+                    strokeWidth={6}
+                />
+            )
+        } 
+        return null;
+    }
+
     const selectLayout = ()=> {
         switch(currentLayout) {
-            case 'status': 
-                return (
-                    <View>
-                        <Text>Status</Text>
-                    </View>
-                );
+            case 'detailRide': 
+                    return (
+                        <View 
+                            style={[
+                                commonStyle.bgWhite,
+                                UI.setPadding(20,20,20,20),
+                                commonStyle.shadow,
+                                UI.setBorder(1, '#ccc'),
+                                UI.setRadiusOn(20, "bottomStart"),
+                                UI.setRadiusOn(20, "bottomEnd")
+                            ]}
+                        >
+                            <View style={[commonStyle.pbLg]}>
+                                <Text style={[commonStyle.themeNormalText, commonStyle.textBold,commonStyle.textOffSky]}>
+                                    {"Details: "}
+                                    <Text style={[commonStyle.textDark]}>Hello pickup</Text>
+                                </Text>
+                                <Text style={[commonStyle.themeNormalText, commonStyle.textBold, commonStyle.textOffSky]}> 
+                                    {"Distance: "} <Text style={[commonStyle.textDark]}>20 K.M</Text>
+                                </Text>
+                                <Text style={[commonStyle.themeNormalText, commonStyle.textBold,commonStyle.textOffSky]}>
+                                    {"Fare: "}<Text style={[commonStyle.textDark]}>100 Rs.</Text>
+                                </Text>
+                            </View>
+                            <TouchableOpacity
+                                style={[
+                                    commonStyle.bgOffSky,
+                                    UI.setHeight(50),
+                                    UI.setWidth(50, '%'),
+                                    commonStyle.center,
+                                    commonStyle.br,
+                                    commonStyle.shadow
+                                ]}
+                                onPress={()=> setLayout("status")}
+                            >
+                                <Text 
+                                    style={[
+                                        commonStyle.textStyle, 
+                                        commonStyle.fs5, 
+                                        commonStyle.textWhite
+                                    ]}
+                                >
+                                    Send Request
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    )
             case 'selectArea':
                 return (
-                    <View style={[commonStyle.pLg]}>
+                    <View 
+                        style={[
+                            commonStyle.bgWhite,
+                            UI.setPadding(20,20,20,20),
+                            commonStyle.shadow,
+                            UI.setBorder(1, '#ccc'),
+                            UI.setRadiusOn(20, "bottomStart"),
+                            UI.setRadiusOn(20, "bottomEnd")
+                        ]}
+                    >
                         <View 
                             style={[
                                 commonStyle.textBoxBorderColor, 
@@ -84,7 +166,10 @@ const Rider = (props)=> {
                                 value={query.pickup}
                             />
                             <TouchableOpacity 
-                                style={[commonStyle.pMd, UI.setBorderLeft(1, '#ccc')]}
+                                style={[
+                                    commonStyle.pMd, 
+                                    UI.setBorderLeft(1, '#ccc'),
+                                ]}
                                 onPress={getLocationFor.bind(this, "pickup")}
                             >
                                 <Icon name="my-location" size={25} />
@@ -114,28 +199,67 @@ const Rider = (props)=> {
                         </View>
                         <TouchableOpacity
                             style={[
-                                commonStyle.bgOrange,
+                                commonStyle.bgOffSky,
                                 UI.setHeight(50),
                                 UI.setWidth(50, '%'),
                                 commonStyle.center,
-                                commonStyle.br
+                                commonStyle.br,
+                                commonStyle.shadow
                             ]}
+                            onPress={()=> setLayout("detailRide")}
                         >
-                            <Text style={[commonStyle.textStyle, commonStyle.fs5, commonStyle.textWhite]}>
+                            <Text 
+                                style={[
+                                    commonStyle.textStyle, 
+                                    commonStyle.fs5, 
+                                    commonStyle.textWhite
+                                ]}
+                            >
                                 Confirm
                             </Text>
                         </TouchableOpacity>
                     </View>
                 )
+            case 'status': 
+                return (
+                    <TouchableOpacity
+                        style={[
+                            commonStyle.bgOffSky,
+                            UI.setHeight(50),
+                            commonStyle.hPadLg,
+                            commonStyle.center,
+                            commonStyle.br,
+                            commonStyle.shadow,
+                            commonStyle.mbmd
+                        ]}
+                        onPress={()=> alert("status")}
+                    >
+                        <Text 
+                            style={[
+                                commonStyle.textStyle, 
+                                commonStyle.fs5, 
+                                commonStyle.textWhite,
+                                commonStyle.textBold
+                            ]}
+                        >
+                            {"Status: "}
+                            <Text style={[commonStyle.textLight]}>
+                                Pending from Driver
+                            </Text>
+                        </Text>
+                    </TouchableOpacity>
+                );
             default:
                 return (
                     <TouchableOpacity
                         style={[
-                            commonStyle.bgOrange,
+                            commonStyle.bgOffSky,
                             UI.setHeight(50),
                             UI.setWidth(50, '%'),
                             commonStyle.center,
-                            commonStyle.br
+                            commonStyle.br,
+                            commonStyle.shadow,
+                            commonStyle.mbmd
                         ]}
                         onPress={()=> setLayout("selectArea")}
                     >
@@ -151,10 +275,10 @@ const Rider = (props)=> {
         <MyContext.Consumer>
             {context=>
                 <ScrollView style={[UI.setScreen()]}>
-                    <View style={[UI.setWidth(), UI.setHeight(UI.height()/2)]}>
+                    <View style={[UI.setWidth(), UI.setHeight()]}>
                         <MapView
-                            provider={PROVIDER_GOOGLE}
-                            initialRegion={locationRegion}
+                            provider={UI.ios ? null : PROVIDER_GOOGLE}
+                            initialRegion={null}
                             onRegionChange={onRegionChange}
                             onLongPress={onMapTouch}
                             style={css.map}
@@ -172,9 +296,17 @@ const Rider = (props)=> {
                                     description={_marker.description}
                                 />
                             ))} 
+                            {getMapRoute()}
                         </MapView>
                     </View>
-                    <View style={[commonStyle.ptLg]}>
+                    <View 
+                        style={[
+                            UI.setWidth(),
+                            currentLayout == "initial" ||  currentLayout == "status" ? commonStyle.pLg : commonStyle.hPadLg,
+                            commonStyle.absolute, 
+                            currentLayout == "initial" ||  currentLayout == "status" ? UI.setBottom(UI.ios ? 10 : 5, '%') : UI.setTop(0, '%'),
+                        ]}
+                    >
                         {selectLayout()}
                     </View>
                 </ScrollView>

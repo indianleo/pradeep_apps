@@ -10,6 +10,7 @@ import {
     Image
 } from 'react-native';
 import MyContext from '../context/MyContext';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const Login = (props)=> {
     const contextOptions = React.useContext(MyContext);
@@ -32,22 +33,33 @@ const Login = (props)=> {
             {context =>
                 <ScrollView style={[commonStyle.bgWhite, UI.setHeight(98, '%')]}>
                     <View 
-                        style={[
-                            commonStyle.vCenter, 
+                        style={[ 
                             commonStyle.row, 
-                            commonStyle.center,
                         ]}
                     >
                         <Image
-                            source={require('../images/banner.png')}
-                            style={[UI.setWidth(100, '%'), UI.setHeight(250), commonStyle.imgCover]}
+                            source={require('../images/bgBook3.jpeg')}
+                            style={[
+                                UI.setWidth(100, '%'), 
+                                UI.setHeight(250),
+                                commonStyle.imgStretch,
+                            ]}
                         />
                     </View>
                     <View style={[UI.setPadding(5,8,5,8, '%')]}>
-                        <Text style={[commonStyle.vPadMd, styles.label]}>
-                            Please Login To Continue
+                        <Text style={[commonStyle.vPadMd, styles.label, commonStyle.textOffSky]}>
+                            Please Login To Continue:
                         </Text>
-                        <View style={[commonStyle.textBoxBorderColor]}>
+                        <View style={[commonStyle.textBoxBorderColor, commonStyle.row]}>
+                            <View style={[commonStyle.center, UI.setScreen(50,40), UI.setBorderRight(1, "#ccc")]}>
+                                <Icon 
+                                    name="phone-portrait"
+                                    size={20}
+                                    style={[
+                                        UI.setColor("#79a6d2")
+                                    ]}
+                                />
+                            </View>
                             <TextInput
                                 style={styles.TextInput}
                                 placeholder={"Phone"}
@@ -55,11 +67,21 @@ const Login = (props)=> {
                                 onChangeText={(email) => setPhone(email)}
                             />
                         </View>
-                        <View style={[commonStyle.textBoxBorderColor, commonStyle.mtmd]}>
+                        <View style={[commonStyle.textBoxBorderColor, commonStyle.mtmd, commonStyle.row]}>
+                            <View style={[commonStyle.center, UI.setScreen(50,40), UI.setBorderRight(1, "#ccc")]}>
+                                <Icon 
+                                    name="barcode"
+                                    size={20}
+                                    style={[
+                                        UI.setColor("#79a6d2")
+                                    ]}
+                                />
+                            </View>
                             <TextInput
                                 style={styles.TextInput}
                                 placeholder={"OTP"}
                                 placeholderTextColor="#003f5c"
+                                keyboardType="number-pad"
                                 secureTextEntry={true}
                                 onChangeText={(password) => setOtp(password)}
                             />
@@ -72,8 +94,9 @@ const Login = (props)=> {
                                     UI.setWidth(100, '%'), 
                                     commonStyle.mtmd, 
                                     commonStyle.middle,
-                                    commonStyle.bgOrange,
-                                    commonStyle.brSm
+                                    commonStyle.bgOffSky,
+                                    commonStyle.brSm,
+                                    commonStyle.shadow
                                 ]}
                             >
                                 <Text 
@@ -93,8 +116,16 @@ const Login = (props)=> {
                                 onPress={handleBtnAction.bind(this, 'reg')} 
                                 style={[UI.setWidth(50, '%')]}
                             >
-                                <Text style={[styles.label, commonStyle.textLeft]}>
-                                    Registration
+                                <Text style={[styles.label, commonStyle.textOffSky,commonStyle.textLeft]}>
+                                    Sign-up
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity 
+                                onPress={()=> alert("Wait")} 
+                                style={[UI.setWidth(50, '%')]}
+                            >
+                                <Text style={[styles.label, commonStyle.textOffSky,commonStyle.textRight]}>
+                                    Forgot Password
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -127,7 +158,7 @@ const styles = StyleSheet.create({
         height: 50,
         flex: 1,
         padding: 10,
-        marginLeft: 20,
+        marginLeft: 5,
         fontFamily: 'Roboto',
         fontSize: 18,
       },

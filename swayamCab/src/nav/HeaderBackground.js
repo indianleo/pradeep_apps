@@ -7,7 +7,7 @@ const HeaderBackground = (props) => {
            <LinearGradient
                 start={{x: 1, y: 0}}
                 end={{x: 0, y: 0}}
-                colors={[ '#8f055b', '#ed0707', '#f58207' ]}
+                colors={[ '#204060', '#6ab2cb', '#204060' ]}
                 style={style.headerBg}
            />
         </View>

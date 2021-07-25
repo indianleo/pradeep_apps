@@ -32,7 +32,7 @@ const Enrollment = (props)=> {
                                 commonStyle.textStyle
                             ]}
                         >
-                            Registration
+                            Sign-up
                         </Text>
                     </View>
                     <Image
@@ -143,7 +143,7 @@ const Enrollment = (props)=> {
                     <TouchableOpacity 
                         style={[
                             UI.setHeight(40),
-                            commonStyle.bgOrange,
+                            commonStyle.bgOffSky,
                             commonStyle.center,
                             commonStyle.pMd,
                             commonStyle.br

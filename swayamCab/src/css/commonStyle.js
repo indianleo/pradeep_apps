@@ -118,10 +118,12 @@ export default StyleSheet.create({
 	noBg: {backgroundColor: 'transparent'},
 	bgDark: {backgroundColor: "#4d4d4d"},
 	bgWhite: {backgroundColor: '#fff'},
+	bgOffSky: {backgroundColor: "#336699"},
 	bgCyan: { backgroundColor: 'cyan' },
 	bgDarkRed: {backgroundColor: '#990000'},
 	themeBg: { backgroundColor: '#f2f2f2' },
 	bgOrange: { backgroundColor: '#f15a24' },
+	textOffSky: {color: "#2d5986"},
 	textWhite: {color: '#fff'},
 	textDark: { color: "#4d4d4d" },
 	textBlack: {color: '#000' },
@@ -130,7 +132,7 @@ export default StyleSheet.create({
 	textOrange: { color: '#f15a24' },
 	textOrangeDark: { color: '#d8440e'},
 	textBoxBorderColor: {
-		borderColor: '#707070',
+		borderColor: '#b3cce6',
 		borderWidth: 1,
 		borderRadius: 2
 	},
@@ -201,5 +203,12 @@ export default StyleSheet.create({
         marginLeft: 20,
         fontFamily: 'Roboto',
         fontSize: 18,
-      }
+    },
+	shadow: {
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.8,
+		shadowRadius: 2,  
+		elevation: 5
+	}
 });
