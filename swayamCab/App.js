@@ -31,6 +31,13 @@ import Enrollment from './src/components/Enrollment';
 import Home from './src/components/Home';
 import Driver from './src/components/Driver';
 import Rider from './src/components/Rider';
+import Profile from './src/components/Profile';
+import Ongoing from './src/components/Ongoing';
+import Finished from './src/components/Finished';
+import About from './src/components/About';
+import Canceled from './src/components/Canceled';
+import Feedback from './src/components/Feedback';
+import ShareLocation from './src/components/ShareLocation';
 
 const Stack = createStackNavigator();
 global.UI = themeAction();
@@ -138,6 +145,41 @@ const App: () => Node = () => {
               component={Rider}
               options={{title: "Rider"}}
             />
+             <Stack.Screen
+              name="Profile"
+              component={Profile}
+              options={{title: "Profile"}}
+            />
+             <Stack.Screen
+              name="Ongoing"
+              component={Ongoing}
+              options={{title: "Ongoing"}}
+            />
+             <Stack.Screen
+              name="Finished"
+              component={Finished}
+              options={{title: "Finished Ride"}}
+            />
+             <Stack.Screen
+              name="Canceled"
+              component={Canceled}
+              options={{title: "Canceled"}}
+            />
+             <Stack.Screen
+              name="Feedback"
+              component={Feedback}
+              options={{title: "Feedback"}}
+            />
+             <Stack.Screen
+              name="ShareLocation"
+              component={ShareLocation}
+              options={{title: "Share Location"}}
+            />
+             <Stack.Screen
+              name="About"
+              component={About}
+              options={{title: "About"}}
+            />
           </Stack.Navigator>,
           <InfoModal ref={infoModalRef} key="intorModal" />
         ]
@@ -156,7 +198,7 @@ const App: () => Node = () => {
   
     return (
       <MyProvider>
-        <NavigationContainer>
+        <NavigationContainer ref={navigationRef}>
           <Drawer
             type="overlay"
             tapToClose={true}

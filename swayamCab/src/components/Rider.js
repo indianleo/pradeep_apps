@@ -11,24 +11,36 @@ const Rider = (props)=> {
     const [currentLayout, setLayout] = React.useState("initial");
     const [locationRegion, updateLocationRegion] = React.useState(null);
     const [locationMarkers, updateMarkers] = React.useState([]);
+    const [route, updateRoute] = React.useState([]);
     const [query, setQuery] = React.useState({pickup: "", destination: ""});
 
     React.useEffect(()=> {
         if (!UI.ios) requestLocation();
         Geolocation.getCurrentPosition((position) => {
                 let tempMarker = [];
+                let userCo = [{
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                }];
                 updateLocationRegion({
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
                     latitudeDelta: 0.0922,
                     longitudeDelta: 0.0421,
                 });
+                updateRoute([...userCo]);
                 tempMarker.push({
                     title: "Pickup Location",
-                    co: {latitude: position.coords.latitude,longitude: position.coords.longitude},
+                    co: userCo[0],
                     description: "Driver will pickup you from here."
                 });
                 updateMarkers([...tempMarker]);
+                handleAddress('pickup', "User Current Location");
+                UI.geoFrom(userCo[0]).then((addJson)=> {
+                    console.log(addJson);
+                }).catch((err)=> {
+                    console.log(err);
+                });
             },
             (error) => {
               // See error code charts below.
@@ -46,11 +58,11 @@ const Rider = (props)=> {
     const onMapTouch = (event)=> {
         if (currentLayout == "selectArea") {
             let tempMarker = locationMarkers;
-            // UI.geoFrom(event.nativeEvent.coordinate).then((addJson)=> {
-            //     console.log({addJson});
-            // }).catch((err)=> {
-            //     console.log(err);
-            // });
+            UI.geoFrom(event.nativeEvent.coordinate).then((addJson)=> {
+                console.log(addJson);
+            }).catch((err)=> {
+                console.log(err);
+            });
             if (tempMarker.length == 1) {
                 tempMarker.push({
                     title: tempMarker.length == 1 ? "Destination" : "Pickup Location",
@@ -58,6 +70,8 @@ const Rider = (props)=> {
                     description: tempMarker.length == 1 ? "Driver will be drop you here." : "Driver will pickup you from here."
                 })
                 updateMarkers([...tempMarker]);
+                updateRoute([...route, ...[event.nativeEvent.coordinate] ]);
+                handleAddress('destination', "Destination Location 1");
             }
         }
     }
@@ -76,10 +90,10 @@ const Rider = (props)=> {
     }
 
     const getMapRoute = () => {
-        if (locationMarkers.length == 2) {
+        if (route.length == 2) {
             return(
                 <Polyline
-                    coordinates={locationMarkers}
+                    coordinates={route}
                     strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
                     strokeColors={['#7F0000']}
                     strokeWidth={6}
@@ -278,7 +292,7 @@ const Rider = (props)=> {
                     <View style={[UI.setWidth(), UI.setHeight()]}>
                         <MapView
                             provider={UI.ios ? null : PROVIDER_GOOGLE}
-                            initialRegion={null}
+                            initialRegion={locationRegion}
                             onRegionChange={onRegionChange}
                             onLongPress={onMapTouch}
                             style={css.map}

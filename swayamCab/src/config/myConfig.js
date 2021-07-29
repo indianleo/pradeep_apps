@@ -21,5 +21,5 @@ export const requestLocation = async () => {
     } catch (err) {
       console.warn({permissionError: err});
     }
-  };
+};
   

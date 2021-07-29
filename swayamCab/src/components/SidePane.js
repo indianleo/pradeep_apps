@@ -12,49 +12,49 @@ const SidePane = (props) => {
                 {
                     id: 1,
                     title: "Profile",
-                    pageName: "",
+                    pageName: "Profile",
                     iconName: "user",
                     iconSet: "fontAwesome"
                 },
                 {
                     id: 2,
                     title: "Ongoing",
-                    pageName: "",
+                    pageName: "Ongoing",
                     iconName: "direction",
                     iconSet: "entypo"
                 },
                 {
                     id: 3,
                     title: "Finished",
-                    pageName: "",
+                    pageName: "Finished",
                     iconName: "clock-end",
                     iconSet: "materialComIcons"
                 },
                 {
                     id: 4,
                     title: "Canceled",
-                    pageName: "",
+                    pageName: "Canceled",
                     iconName: "account-cancel",
                     iconSet: "materialComIcons"
                 },
                 {
                     id: 5,
                     title: "Feedback",
-                    pageName: "",
+                    pageName: "Feedback",
                     iconName: "feedback",
                     iconSet: "materialIcons"
                 },
                 {
                     id: 6,
                     title: "Share My Location",
-                    pageName: "",
+                    pageName: "ShareLocation",
                     iconName: "location",
                     iconSet: "entypo"
                 },
                 {
                     id: 7,
                     title: "About",
-                    pageName: "",
+                    pageName: "About",
                     iconName: "car-info",
                     iconSet: "materialComIcons"
                 }
@@ -101,8 +101,9 @@ const SidePane = (props) => {
     }
 
     const handlePageAction = (item) => {
-        alert(item.pageName);
-        //props.navRef.navigate(item.pageName);
+        //alert(item.pageName);
+        props.navRef.navigate(item.pageName);
+        props.closeDrawer()
     }
 
     const renderHeader = () => {
