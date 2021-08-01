@@ -1,27 +1,63 @@
 import React from  'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextComponent } from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import Geocoder from 'react-native-geocoding';
 import MyContext from '../context/MyContext';
 import commonStyle from '../css/commonStyle';
+import Geolocation from "react-native-geolocation-service";
+import { dbOff, gAPiKey, getTableRef, pushDb, requestLocation, updatDb } from '../config/myConfig';
+import MapViewDirections from 'react-native-maps-directions';
 
 const Driver = (props)=> {
-    const [locationRegion, updateLocationRegion] = React.useState({
-        latitude: 37.78825,
-        longitude: -122.4324,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-    });
-    const [locationMarkers, updateMarkers] = React.useState([
-        {
-            title: "Marker 1",
-            co: { latitude : 178.33334350585938 , longitude : 119.33332824707031 },
-            description: "It testing marker"
-        }
-    ]);
+    const [currentLayout, setLayout] = React.useState("");
+    const [locationRegion, updateLocationRegion] = React.useState(null);
+    const [locationMarkers, updateMarkers] = React.useState([]);
+    const [userData, setUserData] = React.useState({});
+    const [bookingData, setBooking] = React.useState({});
+    const [route, updateRoute] = React.useState([]);
 
     React.useEffect(()=> {
-        Geocoder.init("AIzaSyDq53moPWDh_Fhi4O7k-iYoZFo5E7OBSy4")
+        const tableRef = getTableRef("/users/7800794002").on('value', snapshot => {
+            let tempData = snapshot.val();
+            setUserData({...tempData});
+            if (tempData.currentBooking == "free") {
+                setLayout("noBooking");
+            } else {
+                getTableRef(`/booking/${tempData.currentBooking}`).once('value').then((res)=> {
+                    setBooking({...res.val()});
+                    console.log(tempData.currentStatus);
+                    if (tempData.currentStatus == "onGoing") {
+                        setLayout("status");
+                    } else {
+                        setLayout(tempData.currentStatus);
+                    }
+                });
+            }
+        });
+        if (!UI.ios) requestLocation();
+        Geolocation.getCurrentPosition((position) => {
+            //let tempMarker = [];
+            let userCo = [{
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+            }];
+            updateLocationRegion({
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+            });
+            //updateRoute([...userCo]);
+        },
+        (error) => {
+          // See error code charts below.
+          console.log(error.code, error.message);
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+
+        return ()=> {
+            dbOff("/users/7800794002", tableRef);
+        }
     }, []);                                     
 
     const onRegionChange = (newRegion)=> {
@@ -29,31 +65,211 @@ const Driver = (props)=> {
         updateLocationRegion(newRegion);
     }
 
-    const onMapTouch = (event)=> {
+    const onConfirmRequest = ()=> {
         let tempMarker = locationMarkers;
-        Geocoder.from(event.nativeEvent.coordinate).then((addJson)=> {
-            console.log(addJson);
-        }).catch((err)=> {
-            console.log(err);
-        })
-        tempMarker.push({
-            title: "Marker Current",
-            co: event.nativeEvent.coordinate,
-            description: "It testing marker"
-        })
+        let _route = route;
+        tempMarker.push(bookingData.from);
+        tempMarker.push(bookingData.to);
+        _route.push(bookingData.from.co);
+        _route.push(bookingData.to.co);
+        updateRoute([..._route]);
         updateMarkers([...tempMarker]);
+
+        //driver
+        updatDb("users/7800794002", {currentStatus: "onGoing"});
+
+        //Rider
+        updatDb("users/7800794003", {currentStatus: "onGoing"});
+        setLayout("onGoing")
+    }
+
+    const onCancelReq = () => {
+        setLayout("free");
+        //Rider
+        updatDb("users/7800794003", {currentStatus: "free", driver: "selectNew"});
+        
+        // Driver
+        updatDb("users/7800794002", {currentStatus: "free", currentBooking: "free"});
+    }
+
+    const onComplete = () => {
+        //Rider
+        updatDb("users/7800794003", {currentStatus: "free", driver: "selectNew", currentBooking: "free"});
+        
+        // Driver
+        updatDb("users/7800794002", {currentStatus: "free", currentBooking: "free"});
+
+        //booking
+        updatDb(`/booking/${bookingData.id}`, {status: "Completed"});
+
+        setLayout("completed");
+    }
+
+    const getMapRoute = () => {
+        if (route.length == 2) {
+            return(
+                <MapViewDirections
+                    origin={route[0]}
+                    destination={route[1]}
+                    apikey={gAPiKey}
+                    mode="DRIVING"
+                    strokeWidth={2}
+                />
+            )
+        } 
+        return null;
+    }
+
+    const selectLayout = ()=> {
+        switch(currentLayout) {
+            case 'noBooking': 
+                return (
+                    <TouchableOpacity
+                        style={[
+                            commonStyle.btnSky,
+                            UI.setHeight(50),
+                            commonStyle.mtmd
+                        ]}
+                    >
+                        <Text 
+                            style={[
+                                commonStyle.textStyle, 
+                                commonStyle.fs5, 
+                                commonStyle.textWhite,
+                                commonStyle.textBold
+                            ]}
+                        >
+                            No Pending Rides
+                        </Text>
+                    </TouchableOpacity>
+                );
+            case 'status': 
+                return (
+                    <TouchableOpacity
+                        style={[
+                            commonStyle.btnSky,
+                            UI.setHeight(50),
+                            commonStyle.mtmd
+                        ]}
+                        onPress={onConfirmRequest}
+                    >
+                        <Text 
+                            style={[
+                                commonStyle.textStyle, 
+                                commonStyle.fs5, 
+                                commonStyle.textWhite,
+                                commonStyle.textBold
+                            ]}
+                        >
+                            Fetch Ongoing Ride
+                        </Text>
+                    </TouchableOpacity>
+                );
+            case 'pending': 
+                    return (
+                        <View 
+                            style={[
+                                commonStyle.bgWhite,
+                                UI.setPadding(20,20,20,20),
+                                commonStyle.shadow,
+                                UI.setBorder(1, '#ccc'),
+                                UI.setRadiusOn(20, "bottomStart"),
+                                UI.setRadiusOn(20, "bottomEnd")
+                            ]}
+                        >
+                            <View style={[commonStyle.pbLg]}>
+                                <Text style={[commonStyle.themeNormalText, commonStyle.textBold,commonStyle.textOffSky]}>
+                                    {"Details: "}
+                                    <Text style={[commonStyle.textDark]}>{bookingData.rider}</Text>
+                                </Text>
+                                <Text style={[commonStyle.themeNormalText, commonStyle.textBold, commonStyle.textOffSky]}> 
+                                    {"Distance: "} <Text style={[commonStyle.textDark]}>{bookingData.distance} K.M</Text>
+                                </Text>
+                                <Text style={[commonStyle.themeNormalText, commonStyle.textBold,commonStyle.textOffSky]}>
+                                    {"Fare: "}<Text style={[commonStyle.textDark]}>{bookingData.fare} Rs.</Text>
+                                </Text>
+                            </View>
+                            <View style={[commonStyle.row, commonStyle.center]}>
+                                <TouchableOpacity
+                                    style={[
+                                        commonStyle.btnSky,
+                                        UI.setHeight(40),
+                                    ]}
+                                    onPress={onConfirmRequest}
+                                >
+                                    <Text 
+                                        style={[
+                                            commonStyle.textStyle, 
+                                            commonStyle.fs5, 
+                                            commonStyle.textWhite
+                                        ]}
+                                    >
+                                        Accept
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[
+                                        commonStyle.btnSky,
+                                        commonStyle.bgDarkRed,
+                                        UI.setHeight(40),
+                                        commonStyle.mlmd
+                                    ]}
+                                    onPress={onCancelReq}
+                                >
+                                    <Text 
+                                        style={[
+                                            commonStyle.textStyle, 
+                                            commonStyle.fs5, 
+                                            commonStyle.textWhite
+                                        ]}
+                                    >
+                                        Cancel
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    )
+            case 'onGoing': 
+                return (
+                    <TouchableOpacity
+                        style={[
+                            commonStyle.bgOffSky,
+                            UI.setHeight(50),
+                            commonStyle.hPadLg,
+                            commonStyle.center,
+                            commonStyle.br,
+                            commonStyle.shadow,
+                            commonStyle.mbmd
+                        ]}
+                        onPress={onComplete}
+                    >
+                        <Text 
+                            style={[
+                                commonStyle.textStyle, 
+                                commonStyle.fs5, 
+                                commonStyle.textWhite,
+                                commonStyle.textBold
+                            ]}
+                        >
+                            Complete
+                        </Text>
+                    </TouchableOpacity>
+                );
+            default:
+                return null;
+        }
     }
 
     return (
         <MyContext.Consumer>
             {context=>
                 <ScrollView style={[UI.setScreen()]}>
-                    <View style={[UI.setWidth(), UI.setHeight(UI.height()/2.5)]}>
+                    <View style={[UI.setWidth(), UI.setHeight(UI.height())]}>
                         <MapView
                             provider={PROVIDER_GOOGLE}
                             initialRegion={locationRegion}
                             onRegionChange={onRegionChange}
-                            onLongPress={onMapTouch}
+                            //onLongPress={onMapTouch}
                             style={css.map}
                             loadingEnabled = {true}
                             loadingIndicatorColor="#666666"
@@ -69,7 +285,18 @@ const Driver = (props)=> {
                                     description={_marker.description}
                                 />
                             ))} 
+                            {getMapRoute()}
                         </MapView>
+                    </View>
+                    <View 
+                        style={[
+                            UI.setWidth(),
+                            currentLayout == "onGoing" ? commonStyle.pLg : commonStyle.hPadLg,
+                            commonStyle.absolute, 
+                            currentLayout == "onGoing" ? UI.setBottom(10, '%') : UI.setTop(0, '%'),
+                        ]}
+                    >
+                        {selectLayout()}
                     </View>
                 </ScrollView>
             }

@@ -68,6 +68,9 @@ const App: () => Node = () => {
         case 'reg':
           setEnroll(true);
         break;
+        case 'back':
+          setEnroll(false);
+        break;
         case 'logout': 
           setUser("");
         break;
@@ -95,7 +98,7 @@ const App: () => Node = () => {
           <ImageSlider
             onSkip={onSkipIntro}
             hideOnSlide={3}
-            logo={require('./src/images/icon.png')}
+            //logo={require('./src/images/icon.png')}
             logoHeight={100}
             logoWidth={200}
             uri={false}
@@ -103,14 +106,17 @@ const App: () => Node = () => {
               {
                 src: require('./src/images/intro1.png'),
                 info: "Welcome to Svayam Cab",
+                subText: "Svayam Cab is portal which help you to find your destination",
               },
               {
                 src: require('./src/images/intro2.jpeg'),
-                info: "Choose Whether you want to go.",
+                info: "Choose whether you want to go.",
+                subText: "Svayam Cab is portal which help you to find your destination",
               },
               {
                 src: require('./src/images/intro3.jpeg'),
                 info: "Select driver according to you.",
+                subText: "Svayam Cab is portal which help you to find your destination",
               },
             ]}
           />

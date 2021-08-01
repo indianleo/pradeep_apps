@@ -59,20 +59,28 @@ const ImageSlider = (props)=> {
                                 style={[ 
                                     UI.setWidth(), 
                                     commonStyle.center,
+                                    commonStyle.wrap
                                 ]}
                             >
-                                <Text 
-                                    style={[
-                                        style.infoText, 
-                                        context.portrait && UI.setPaddingTop(100),
-                                        context.portrait && UI.setPaddingBottom(50),
-                                        commonStyle.textCenter,
-                                        commonStyle.textStyle, 
-                                        commonStyle.textBlue
-                                    ]}
-                                >
-                                    {item.info}
-                                </Text>
+                                <View style={[UI.setWidth(), commonStyle.plMd]}>
+                                    <Text 
+                                        style={[
+                                            commonStyle.themeHeadingText,
+                                            UI.setWidth(90, '%')
+                                        ]}
+                                    >
+                                        {item.info}
+                                    </Text>
+                                    <Text 
+                                        style={[
+                                            UI.setPaddingBottom(10),
+                                            commonStyle.themeSkyText,
+                                            UI.setWidth(90, '%')
+                                        ]}
+                                    >
+                                        {item.subText}
+                                    </Text>
+                                </View>
                                 <Image
                                     source={props.uri ? {uri: item.src} : item.src}
                                     style={[
@@ -138,12 +146,6 @@ const style = StyleSheet.create({
         position:'absolute',
         zIndex: 99,
     },
-    infoText: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        paddingRight: 20,
-        textAlign: 'center'
-    }
 });
 
 export default ImageSlider;

@@ -1,20 +1,36 @@
 import React from  'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, Image } from 'react-native';
 import MapView, {Marker, Polyline, PROVIDER_GOOGLE} from 'react-native-maps';
 import MyContext from '../context/MyContext';
 import commonStyle from '../css/commonStyle';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import Geolocation from "react-native-geolocation-service";
-import { requestLocation } from '../config/myConfig';
+import { dbOff, gAPiKey, getTableRef, pushDb, requestLocation, updatDb } from '../config/myConfig';
+import { getDistance } from 'geolib';
+import MapViewDirections from 'react-native-maps-directions';
+import Icons from '../libs/Icons';
+// getDistance return in meter
 
 const Rider = (props)=> {
     const [currentLayout, setLayout] = React.useState("initial");
     const [locationRegion, updateLocationRegion] = React.useState(null);
     const [locationMarkers, updateMarkers] = React.useState([]);
+    const [driverMarker, updateDriverMarker] = React.useState([]);
+    const [distance, setDistance] = React.useState(0);
+    const [fare, setFare] = React.useState(250);
     const [route, updateRoute] = React.useState([]);
     const [query, setQuery] = React.useState({pickup: "", destination: ""});
+    const [userData, setUserData] = React.useState({});
+    //const [drivers, setDrivers] =  React.useState(null);
+    const [currentDriver, setCurrentDriver] =  React.useState({});
+    const contextOption = React.useContext(MyContext);
 
     React.useEffect(()=> {
+        const tableRef = getTableRef(`/users/${contextOption.userId}`).on('value', snapshot => {
+            setUserData({...snapshot.val()});
+        });
+        getTableRef("drivers").once("value").then((res)=> {
+            setDriverMarker(res.val());
+        })
         if (!UI.ios) requestLocation();
         Geolocation.getCurrentPosition((position) => {
                 let tempMarker = [];
@@ -29,15 +45,14 @@ const Rider = (props)=> {
                     longitudeDelta: 0.0421,
                 });
                 updateRoute([...userCo]);
-                tempMarker.push({
-                    title: "Pickup Location",
-                    co: userCo[0],
-                    description: "Driver will pickup you from here."
-                });
-                updateMarkers([...tempMarker]);
-                handleAddress('pickup', "User Current Location");
                 UI.geoFrom(userCo[0]).then((addJson)=> {
-                    console.log(addJson);
+                    handleAddress('pickup', addJson.results[0].formatted_address);
+                    tempMarker.push({
+                        title: "Pickup Location",
+                        co: userCo[0],
+                        description: addJson.results[0].formatted_address
+                    });
+                    updateMarkers([...tempMarker]);
                 }).catch((err)=> {
                     console.log(err);
                 });
@@ -48,59 +63,136 @@ const Rider = (props)=> {
             },
             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
         );
+
+        return ()=> {
+            dbOff(`/users/${contextOption.userId}`, tableRef);
+        }
     
-    }, []);                                     
+    }, []);   
 
     const onRegionChange = (newRegion)=> {
         updateLocationRegion(newRegion);
     }
 
+    const caluclteDetails = (desti) => {
+        let dis = getDistance(locationMarkers[0].co, desti)/1000;
+        setDistance(dis);
+        if (dis < 4) {
+            setFare(250)
+        } else {
+            let extraDis = dis - 4;
+            let totalFare = extraDis * 30 + 250;
+            setFare(totalFare);
+        }   
+    }
+
     const onMapTouch = (event)=> {
         if (currentLayout == "selectArea") {
+            event.persist();
             let tempMarker = locationMarkers;
-            UI.geoFrom(event.nativeEvent.coordinate).then((addJson)=> {
-                console.log(addJson);
-            }).catch((err)=> {
-                console.log(err);
-            });
             if (tempMarker.length == 1) {
-                tempMarker.push({
-                    title: tempMarker.length == 1 ? "Destination" : "Pickup Location",
-                    co: event.nativeEvent.coordinate,
-                    description: tempMarker.length == 1 ? "Driver will be drop you here." : "Driver will pickup you from here."
-                })
-                updateMarkers([...tempMarker]);
                 updateRoute([...route, ...[event.nativeEvent.coordinate] ]);
-                handleAddress('destination', "Destination Location 1");
+                caluclteDetails(event.nativeEvent.coordinate);
+                
+                UI.geoFrom(event.nativeEvent.coordinate).then((addJson)=> {
+                    handleAddress('destination', addJson.results[0].formatted_address);
+                    tempMarker.push({
+                        title: "Destination",
+                        co: event.nativeEvent.coordinate,
+                        description: addJson.results[0].formatted_address,
+                    })
+                    updateMarkers([...tempMarker]);
+                }).catch((err)=> {
+                    console.log(err);
+                });
             }
         }
     }
 
+    const setDriverMarker = (_driverLocation) => {
+        let tempMarker = driverMarker;
+        for (let key in _driverLocation) {
+            if (_driverLocation[key].isOnline == 1) {
+                tempMarker.push({
+                    title: _driverLocation[key].name,
+                    co: {latitude: _driverLocation[key].latitude, longitude: _driverLocation[key].longitude},
+                    description: key,
+                    driverId: key,
+                    role:  "driver",
+                })
+            }
+        }
+        updateDriverMarker([...tempMarker]);
+    }
+
+    const onSelectDriver = (_marker) => {
+        setCurrentDriver(_marker.driverId);
+    }
+
     const handleAddress = (type, value)=> {
-        console.log(value);
+        console.log({type, value});
         let temp = query;
         temp[type] = value;
         setQuery({...temp});
     }
 
-    const getLocationFor = (type) => {
-        let temp = query;
-        temp[type] = type == "pickup" ? JSON.stringify(locationMarkers[0].co) : JSON.stringify(locationMarkers[1].co);
-        setQuery({...temp});
+    const setLocationFor = (event) => {
+        if (event) {
+            console.log(event.nativeEvent.coordinate);
+            updatDb(`/drivers/7800794003`, event.nativeEvent.coordinate).then(()=> {
+                console.log("location fro driver set");
+            })
+        } else {
+            console.log(driverMarker);
+        }
     }
 
     const getMapRoute = () => {
         if (route.length == 2) {
             return(
-                <Polyline
-                    coordinates={route}
-                    strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
-                    strokeColors={['#7F0000']}
-                    strokeWidth={6}
+                <MapViewDirections
+                    origin={route[0]}
+                    destination={route[1]}
+                    apikey={gAPiKey}
+                    mode="DRIVING"
+                    strokeWidth={2}
                 />
             )
         } 
         return null;
+    }
+
+    const createRequest = () => {
+        if (!locationMarkers[0] && !locationMarkers[1]) {
+            showInfoModal("Select Destination First");
+            return false;
+        }
+        if (!contextOption.userId && !currentDriver) {
+            showInfoModal("Select Driver First");
+            return false;
+        }
+        let _dd = new Date();
+        updatDb(`/users/${contextOption.userId}`, {
+            ...route[0],
+        });
+        pushDb("/booking", 
+            {
+                id: 1, 
+                driver: currentDriver, 
+                rider: contextOption.userId,
+                fare: fare,
+                distance: distance,
+                onDate: _dd.toDateString(),
+                from: locationMarkers[0], 
+                to: locationMarkers[1], 
+                status: "pending"
+            }
+        ).then((key)=> {
+            pushDb(`/users/${contextOption.userId}/history`, {bookingId: key});
+            updatDb(`/users/${contextOption.userId}`, {currentBooking: key, currentStatus: "pending"});
+            updatDb(`users/${currentDriver}`, {currentBooking: key, currentStatus: "pending"});
+        });
+        setLayout("status");
     }
 
     const selectLayout = ()=> {
@@ -123,10 +215,10 @@ const Rider = (props)=> {
                                     <Text style={[commonStyle.textDark]}>Hello pickup</Text>
                                 </Text>
                                 <Text style={[commonStyle.themeNormalText, commonStyle.textBold, commonStyle.textOffSky]}> 
-                                    {"Distance: "} <Text style={[commonStyle.textDark]}>20 K.M</Text>
+                                    {"Distance: "} <Text style={[commonStyle.textDark]}>{distance} K.M</Text>
                                 </Text>
                                 <Text style={[commonStyle.themeNormalText, commonStyle.textBold,commonStyle.textOffSky]}>
-                                    {"Fare: "}<Text style={[commonStyle.textDark]}>100 Rs.</Text>
+                                    {"Fare: "}<Text style={[commonStyle.textDark]}>{fare} Rs.</Text>
                                 </Text>
                             </View>
                             <TouchableOpacity
@@ -138,7 +230,7 @@ const Rider = (props)=> {
                                     commonStyle.br,
                                     commonStyle.shadow
                                 ]}
-                                onPress={()=> setLayout("status")}
+                                onPress={createRequest}
                             >
                                 <Text 
                                     style={[
@@ -184,9 +276,14 @@ const Rider = (props)=> {
                                     commonStyle.pMd, 
                                     UI.setBorderLeft(1, '#ccc'),
                                 ]}
-                                onPress={getLocationFor.bind(this, "pickup")}
+                                onPress={setLocationFor}
                             >
-                                <Icon name="my-location" size={25} />
+                                <Icons
+                                    iconSet="materialIcons"
+                                    name="my-location"
+                                    size={25}
+                                    style={[commonStyle.textWhite]}
+                                />
                             </TouchableOpacity>
                         </View>
                         <View
@@ -206,9 +303,14 @@ const Rider = (props)=> {
                             />
                             <TouchableOpacity 
                                 style={[commonStyle.pMd, UI.setBorderLeft(1, '#ccc')]}
-                                onPress={getLocationFor.bind(this, "destination")}
+                                onPress={setLocationFor}
                             >
-                                <Icon name="my-location" size={25} />
+                                <Icons
+                                    iconSet="materialIcons"
+                                    name="my-location"
+                                    size={25}
+                                    style={[commonStyle.textWhite]}
+                                />
                             </TouchableOpacity>
                         </View>
                         <TouchableOpacity
@@ -294,7 +396,8 @@ const Rider = (props)=> {
                             provider={UI.ios ? null : PROVIDER_GOOGLE}
                             initialRegion={locationRegion}
                             onRegionChange={onRegionChange}
-                            onLongPress={onMapTouch}
+                            onPress={onMapTouch}
+                            onLongPress={setLocationFor}
                             style={css.map}
                             loadingEnabled = {true}
                             loadingIndicatorColor="#666666"
@@ -310,6 +413,21 @@ const Rider = (props)=> {
                                     description={_marker.description}
                                 />
                             ))} 
+                            {driverMarker.map((_marker, index) => (
+                                <Marker
+                                    key={index}
+                                    coordinate={_marker.co}
+                                    title={_marker.title}
+                                    description={_marker.description}
+                                    onPress={onSelectDriver.bind(this, _marker)}
+                                    image={null}
+                                >
+                                    <Image
+                                        source={require("../images/icons/car.png")}
+                                        style={[commonStyle.imgContain, UI.setScreen(40,40)]}
+                                    />
+                                </Marker>
+                            ))}
                             {getMapRoute()}
                         </MapView>
                     </View>

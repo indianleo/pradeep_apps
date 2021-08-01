@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import MyContext from '../context/MyContext';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { getTableRef } from '../config/myConfig';
 
 const Login = (props)=> {
     const contextOptions = React.useContext(MyContext);
@@ -24,8 +25,19 @@ const Login = (props)=> {
     }
     
     const handleBtnAction = (type)=> {
-        contextOptions.handleLogin({userName: "Pradeep Yadav", role: phone});
-        props.handleAction(type, '');
+        if (type == 'reg') {
+            props.handleAction(type, '');
+        } else {
+            getTableRef(`/users/${phone}`).once("value").then((res)=> {
+                let _data = res.val();
+                if (UI.isValid(_data)) {
+                    contextOptions.handleLogin({userName: "Pradeep Yadav", userId: phone, ..._data});
+                    props.handleAction(type, '');
+                } else {
+                    showInfoModal("Incorrect UserID or Password");
+                }
+            })
+        }
     }
 
     return (

@@ -148,6 +148,18 @@ export default StyleSheet.create({
 		fontWeight: '600',
 		color: '#f15a24'
 	},
+	themeSkyText: {
+		fontFamily: 'Roboto',
+		fontSize: 20,
+		fontWeight: '600',
+		color: '#2d5986'
+	},
+	themeSkyTextSm: {
+		fontFamily: 'Roboto',
+		fontSize: 18,
+		fontWeight: '600',
+		color: '#2d5986'
+	},
 	themeNormalText: {
 		fontFamily: 'Roboto',
 		fontWeight: '500',
@@ -162,6 +174,35 @@ export default StyleSheet.create({
 		fontFamily: 'Roboto',
 		fontWeight: '600',
 		fontSize: 25
+	},
+	themeTextBox: {
+		borderColor: '#b3cce6',
+		borderWidth: 1,
+		borderRadius: 2,
+		fontFamily: 'Roboto',
+		fontSize: 18,
+		padding: 5,
+	},
+	themeBtnText: {
+		color: "#fff",
+		fontFamily: "Roboto",
+		fontWeight: "600",
+		fontSize: 18
+	},
+	btnSky: {
+		borderRadius: 3,
+		backgroundColor: '#336699',
+		alignItems     : 'center',
+		justifyContent : 'center',
+		alignSelf      : 'center',
+		paddingHorizontal: 15,
+		shadowColor: "#000",
+		shadowOffset: {
+		  width: 0,
+		  height: 2
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 4
 	},
 	pageIcons: {
 		width: 110,

@@ -1,21 +1,42 @@
 import React from 'react';
 import {View, Text, TextInput, ScrollView, Image, TouchableOpacity} from 'react-native';
+import { addDb } from '../config/myConfig';
 import MyContext from '../context/MyContext';
 import commonStyle from '../css/commonStyle';
+
 const Enrollment = (props)=> {
+    const [formObj, setForm] = React.useState({});
 
-    const handleInput = () => {
-
+    const handleInput = (type, value) => {
+        setForm({ ...formObj, ...{[type]: value} });
     }
 
     const onSubmit = () => {
-        props.handleLoginAction("login");
+        let extraProps = {
+            currentStatus: "free",
+            currentBooking: "free",
+            driver: "selectNew",
+            role: "rider"
+        }
+        addDb(`/users/${formObj.phone}`, { ...formObj, ...extraProps}).then(()=> {
+            props.handleLoginAction("back");
+        })
+    }
+
+    const onBack = () => {
+        props.handleLoginAction("back");
     }
 
     return(
         <MyContext.Consumer>
             {context =>
-                <ScrollView style={[commonStyle.themeBg, UI.setPadding(20,30,20,30), UI.setScreen()]} >
+                <ScrollView 
+                    style={[
+                        commonStyle.themeBg, 
+                        UI.setPadding(20,30,20,30), 
+                        UI.setScreen()
+                    ]} 
+                >
                 <View 
                     style={[
                         commonStyle.vCenter, 
@@ -44,9 +65,7 @@ const Enrollment = (props)=> {
                     <Text 
                         style={[
                             commonStyle.pb, 
-                            commonStyle.orangeFontSize, 
-                            commonStyle.textOrange, 
-                            commonStyle.textLightBold
+                            commonStyle.themeSkyText
                         ]}
                     >
                         Name
@@ -57,47 +76,35 @@ const Enrollment = (props)=> {
                         placeholder={"Name"}
                         onChangeText={handleInput.bind(this, 'name')}
                         style={[
-                            commonStyle.textBoxBorderColor,
-                            commonStyle.p,
+                            commonStyle.themeTextBox,
                             commonStyle.bgWhite,
                             UI.setHeight(50),
-                            commonStyle.textStyle,
-                            commonStyle.placeHolderFont
                         ]}
                     />
                 </View>
                 <View style={[commonStyle.ptLg, commonStyle.pb,]}>
                     <Text 
                         style={[
-                            commonStyle.orangeFontSize, 
-                            commonStyle.textOrange, 
-                            commonStyle.textLightBold, 
-                            commonStyle.textStyle
+                            commonStyle.themeSkyText
                         ]}
                     >
-                        Email
+                        Phone
                     </Text>
                 </View>
                 <View>
                     <TextInput
-                        onChangeText={handleInput.bind(this, 'email')}
+                        onChangeText={handleInput.bind(this, 'phone')}
                         style={[
-                            commonStyle.textBoxBorderColor,
+                            commonStyle.themeTextBox,
                             commonStyle.bgWhite,
                             UI.setHeight(50),
-                            commonStyle.p,
-                            commonStyle.textStyle,
-                            commonStyle.placeHolderFont
                         ]}
                     />
                 </View>
                 <View style={[commonStyle.ptLg, commonStyle.pb,]}>
                     <Text 
                         style={[
-                            commonStyle.orangeFontSize, 
-                            commonStyle.textOrange, 
-                            commonStyle.textLightBold, 
-                            commonStyle.textStyle
+                            commonStyle.themeSkyText,
                         ]}
                     >
                         Attachment
@@ -106,59 +113,63 @@ const Enrollment = (props)=> {
                 <View>
                     <Text
                         style={[
-                            commonStyle.textBoxBorderColor,
+                            commonStyle.themeTextBox,
                             commonStyle.bgWhite,
                             UI.setHeight(50),
-                            commonStyle.p,
-                            commonStyle.textStyle,
-                            commonStyle.placeHolderFont
                         ]}
                     >...</Text>
                 </View>
                 <View style={[commonStyle.ptLg, commonStyle.pb,]}>
                     <Text 
                         style={[
-                            commonStyle.orangeFontSize, 
-                            commonStyle.textOrange, 
-                            commonStyle.textLightBold, 
-                            commonStyle.textStyle
-                        ]}>
+                            commonStyle.themeSkyText, 
+                        ]}
+                    >
                         OTP
                     </Text>
                 </View>
                 <View>
                     <TextInput
-                        onChangeText={handleInput.bind(this, 'pass')}
+                        onChangeText={handleInput.bind(this, 'otp')}
+                        secureTextEntry={true}
                         style={[
-                            commonStyle.textBoxBorderColor,
+                            commonStyle.themeTextBox,
                             commonStyle.bgWhite,
                             UI.setHeight(50),
-                            commonStyle.p,
-                            commonStyle.textStyle,
-                            commonStyle.placeHolderFont
                         ]}
                     />
                 </View>
-                <View style={[commonStyle.center, commonStyle.ptLg]}>
+                <View style={[commonStyle.center, commonStyle.ptLg, commonStyle.row]}>
                     <TouchableOpacity 
                         style={[
                             UI.setHeight(40),
-                            commonStyle.bgOffSky,
-                            commonStyle.center,
-                            commonStyle.pMd,
-                            commonStyle.br
+                            commonStyle.btnSky,
                         ]} 
                         onPress={onSubmit}
                     >
                         <Text 
                             style={[
-                                commonStyle.backFontSize, 
-                                commonStyle.textWhite, 
-                                commonStyle.textLightBold,
-                                commonStyle.textStyle
+                                commonStyle.themeBtnText
                             ]}
                         >
                             Submit
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                        style={[
+                            UI.setHeight(40),
+                            commonStyle.btnSky,
+                            commonStyle.bgDark,
+                            commonStyle.ml
+                        ]} 
+                        onPress={onBack}
+                    >
+                        <Text 
+                            style={[
+                                commonStyle.themeBtnText
+                            ]}
+                        >
+                            Back
                         </Text>
                     </TouchableOpacity>
                 </View>
