@@ -189,7 +189,7 @@ const Rider = (props)=> {
             }
         ).then((key)=> {
             pushDb(`/users/${contextOption.userId}/history`, {bookingId: key});
-            updatDb(`/users/${contextOption.userId}`, {currentBooking: key, currentStatus: "pending"});
+            updatDb(`/users/${contextOption.userId}`, {currentBooking: key, currentStatus: "pending", driver: currentDriver});
             updatDb(`users/${currentDriver}`, {currentBooking: key, currentStatus: "pending"});
         });
         setLayout("status");

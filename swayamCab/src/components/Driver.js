@@ -8,6 +8,7 @@ import { dbOff, gAPiKey, getTableRef, pushDb, requestLocation, updatDb } from '.
 import MapViewDirections from 'react-native-maps-directions';
 
 const Driver = (props)=> {
+    const contextOption = React.useContext(MyContext);
     const [currentLayout, setLayout] = React.useState("");
     const [locationRegion, updateLocationRegion] = React.useState(null);
     const [locationMarkers, updateMarkers] = React.useState([]);
@@ -16,7 +17,7 @@ const Driver = (props)=> {
     const [route, updateRoute] = React.useState([]);
 
     React.useEffect(()=> {
-        const tableRef = getTableRef("/users/7800794002").on('value', snapshot => {
+        const tableRef = getTableRef(`/users/${contextOption.userId}`).on('value', snapshot => {
             let tempData = snapshot.val();
             setUserData({...tempData});
             if (tempData.currentBooking == "free") {
@@ -24,7 +25,6 @@ const Driver = (props)=> {
             } else {
                 getTableRef(`/booking/${tempData.currentBooking}`).once('value').then((res)=> {
                     setBooking({...res.val()});
-                    console.log(tempData.currentStatus);
                     if (tempData.currentStatus == "onGoing") {
                         setLayout("status");
                     } else {
@@ -35,7 +35,6 @@ const Driver = (props)=> {
         });
         if (!UI.ios) requestLocation();
         Geolocation.getCurrentPosition((position) => {
-            //let tempMarker = [];
             let userCo = [{
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude,
@@ -46,7 +45,6 @@ const Driver = (props)=> {
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
             });
-            //updateRoute([...userCo]);
         },
         (error) => {
           // See error code charts below.
@@ -56,7 +54,7 @@ const Driver = (props)=> {
     );
 
         return ()=> {
-            dbOff("/users/7800794002", tableRef);
+            dbOff(`/users/${contextOption.userId}`, tableRef);
         }
     }, []);                                     
 
@@ -76,28 +74,28 @@ const Driver = (props)=> {
         updateMarkers([...tempMarker]);
 
         //driver
-        updatDb("users/7800794002", {currentStatus: "onGoing"});
+        updatDb(`/users/${contextOption.userId}`, {currentStatus: "onGoing"});
 
         //Rider
-        updatDb("users/7800794003", {currentStatus: "onGoing"});
+        updatDb(`users/${bookingData.rider}`, {currentStatus: "onGoing"});
         setLayout("onGoing")
     }
 
     const onCancelReq = () => {
         setLayout("free");
         //Rider
-        updatDb("users/7800794003", {currentStatus: "free", driver: "selectNew"});
+        updatDb(`users/${bookingData.rider}`, {currentStatus: "free", driver: "selectNew"});
         
         // Driver
-        updatDb("users/7800794002", {currentStatus: "free", currentBooking: "free"});
+        updatDb(`/users/${contextOption.userId}`, {currentStatus: "free", currentBooking: "free"});
     }
 
     const onComplete = () => {
         //Rider
-        updatDb("users/7800794003", {currentStatus: "free", driver: "selectNew", currentBooking: "free"});
+        updatDb(`users/${bookingData.rider}`, {currentStatus: "free", driver: "selectNew", currentBooking: "free"});
         
         // Driver
-        updatDb("users/7800794002", {currentStatus: "free", currentBooking: "free"});
+        updatDb(`/users/${contextOption.userId}`, {currentStatus: "free", currentBooking: "free"});
 
         //booking
         updatDb(`/booking/${bookingData.id}`, {status: "Completed"});
