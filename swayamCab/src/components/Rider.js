@@ -8,6 +8,7 @@ import { dbOff, gAPiKey, getTableRef, pushDb, requestLocation, updatDb } from '.
 import { getDistance } from 'geolib';
 import MapViewDirections from 'react-native-maps-directions';
 import Icons from '../libs/Icons';
+import InfoModal from '../libs/InfoModal';
 // getDistance return in meter
 
 const Rider = (props)=> {
@@ -23,10 +24,18 @@ const Rider = (props)=> {
     //const [drivers, setDrivers] =  React.useState(null);
     const [currentDriver, setCurrentDriver] =  React.useState({});
     const contextOption = React.useContext(MyContext);
+    const [layoutModal, setModalLayout] = React.useState(null);
+    const [isModal, showModal] = React.useState(false);
 
     React.useEffect(()=> {
         const tableRef = getTableRef(`/users/${contextOption.userId}`).on('value', snapshot => {
-            setUserData({...snapshot.val()});
+            let _td = snapshot.val();
+            setUserData({..._td});
+            if (_td.driver == "selectNew" && _td.currentBooking != "free") {
+                setLayout("detailRide")
+            } else if (_td.currentBooking != "free") {
+                loadCurrentRide(_td);
+            }
         });
         getTableRef("drivers").once("value").then((res)=> {
             setDriverMarker(res.val());
@@ -72,6 +81,26 @@ const Rider = (props)=> {
 
     const onRegionChange = (newRegion)=> {
         updateLocationRegion(newRegion);
+    }
+
+    const loadCurrentRide = (_ud) => {
+        getTableRef(`/booking/${_ud.currentBooking}`).once('value').then((res)=> {
+            let bookingData = res.val();
+            if (_ud.currentStatus == "onGoing") {
+                setDistance(bookingData.distance);
+                setFare(bookingData.fare);
+                let tempMarker = locationMarkers;
+                let _route = route;
+                tempMarker.push(bookingData.from);
+                tempMarker.push(bookingData.to);
+                _route.push(bookingData.from.co);
+                _route.push(bookingData.to.co);
+                updateRoute([..._route]);
+                updateMarkers([...tempMarker]);
+
+                setLayout("status");
+            } 
+        });
     }
 
     const caluclteDetails = (desti) => {
@@ -195,8 +224,8 @@ const Rider = (props)=> {
         setLayout("status");
     }
 
-    const selectLayout = ()=> {
-        switch(currentLayout) {
+    const selectLayout = (type)=> {
+        switch(type || currentLayout) {
             case 'detailRide': 
                     return (
                         <View 
@@ -360,7 +389,7 @@ const Rider = (props)=> {
                         >
                             {"Status: "}
                             <Text style={[commonStyle.textLight]}>
-                                Pending from Driver
+                                {userData.currentStatus}
                             </Text>
                         </Text>
                     </TouchableOpacity>
@@ -390,8 +419,8 @@ const Rider = (props)=> {
     return (
         <MyContext.Consumer>
             {context=>
-                <ScrollView style={[UI.setScreen()]}>
-                    <View style={[UI.setWidth(), UI.setHeight()]}>
+                <View style={[UI.setScreen()]}>
+                    <View style={[UI.setWidth(), UI.setHeight(UI.height()/1.5)]}>
                         <MapView
                             provider={UI.ios ? null : PROVIDER_GOOGLE}
                             initialRegion={locationRegion}
@@ -434,14 +463,17 @@ const Rider = (props)=> {
                     <View 
                         style={[
                             UI.setWidth(),
-                            currentLayout == "initial" ||  currentLayout == "status" ? commonStyle.pLg : commonStyle.hPadLg,
-                            commonStyle.absolute, 
-                            currentLayout == "initial" ||  currentLayout == "status" ? UI.setBottom(UI.ios ? 10 : 5, '%') : UI.setTop(0, '%'),
+                            commonStyle.bgWhite
                         ]}
                     >
                         {selectLayout()}
                     </View>
-                </ScrollView>
+                    <InfoModal 
+                        isVisible={isModal}
+                        extranal={layoutModal}
+                        onClose={()=> showModal(false)}
+                    />
+                </View>
             }
         </MyContext.Consumer>
     )

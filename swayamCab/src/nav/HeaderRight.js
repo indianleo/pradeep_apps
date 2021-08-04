@@ -40,9 +40,7 @@ const HeaderRight = (props) => {
 
     return(
         <View style={[style.row]}>
-            <TouchableOpacity onPress={handleAction}>
-                <Icon name="power-off" style={[style.bell]} size={18} />
-            </TouchableOpacity>
+            
             {loadModal()}
         </View>
     )

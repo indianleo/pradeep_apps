@@ -28,14 +28,47 @@ const InfoModal = React.forwardRef((props, ref) => {
         )
     }
 
+    const getLayout = () => {
+        if (props.external) {
+            return props.external;
+        } else {
+            return (
+                <View style={[UI.setMinHeight(100)]}>
+                    <Text 
+                        style={[
+                            commonStyle.textStyle, 
+                            commonStyle.fs3, 
+                            commonStyle.textBlue,
+                            commonStyle.textLightBold
+                        ]}
+                    >
+                        {infoData || Lang("home.infoModalData")}
+                    </Text>
+                    <Text 
+                        style={[
+                            commonStyle.mt,
+                            commonStyle.textStyle, 
+                            commonStyle.fs6, 
+                            commonStyle.textOrange,
+                            commonStyle.textLightBold
+                        ]}
+                    >
+                        {Lang("home.infoModalSubText")}
+                    </Text>
+                </View>
+            )
+        }
+    }
+
     return (
         <Modal
             animationType={props.viewStyle || "slide"}
             transparent={true}
-            visible={modalVisible}
+            visible={props.isVisble  || modalVisible}
             statusBarTranslucent={true}
             onRequestClose={() => {
                 updateModal(false);
+                props.onClose?.();
             }}
         >
             <View style={[commonStyle.centeredView, UI.setWidth()]}>
@@ -51,36 +84,17 @@ const InfoModal = React.forwardRef((props, ref) => {
                             UI.setMarginTop(-25),
                             UI.setBorderBottom(1, '#ccc')
                         ]}
-                        onPress={() => updateModal(false)}
+                        onPress={() => {
+                            updateModal(false);
+                            props.onClose?.();
+                        }}
                     >
                         <Icon
                             name={"chevron-down"}
                             size={35}
                         />
                     </TouchableOpacity>
-                    <View style={[UI.setMinHeight(100)]}>
-                        <Text 
-                            style={[
-                                commonStyle.textStyle, 
-                                commonStyle.fs3, 
-                                commonStyle.textBlue,
-                                commonStyle.textLightBold
-                            ]}
-                        >
-                            {infoData || "Please check your Internet."}
-                        </Text>
-                        <Text 
-                            style={[
-                                commonStyle.mt,
-                                commonStyle.textStyle, 
-                                commonStyle.fs6, 
-                                commonStyle.textOrange,
-                                commonStyle.textLightBold
-                            ]}
-                        >
-                            Current action need Internet to proceed.
-                        </Text>
-                    </View>
+                    {getLayout()}
                 </View>
             </View>
         </Modal>

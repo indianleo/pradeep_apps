@@ -15,6 +15,9 @@ import {
 import Drawer from 'react-native-drawer'
 import SidePane from './src/components/SidePane';
 import SplashScreen from 'react-native-splash-screen';
+import i18n from './src/config/i18n';
+import ChangeLang from './src/components/ChangeLang';
+
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -46,6 +49,7 @@ const App: () => Node = () => {
     let _drawer = React.useRef();
     let navigationRef = React.useRef();
     const [showIntro, updateIntro] = React.useState(true);
+    const [showLang, updateShowLang] = React.useState(false);
     const [_user, setUser] = React.useState("");
     const [_needEnroll, setEnroll] = React.useState(false);
     const [drawerState, setDrawer] = React.useState(false);
@@ -53,7 +57,23 @@ const App: () => Node = () => {
     React.useEffect(()=> {
       UI.initGeoCoading();
       SplashScreen.hide()
-    }, [])
+    }, []);
+
+    global.Lang = (text, _data)=> {
+      if (typeof _data == 'string') {
+        i18n.locale = _data;
+        return;
+      }
+      if (_data) {
+        return i18n.t(text, _data);
+      } else {
+        return i18n.t(text);
+      }
+    }
+
+    const setLang = () => {
+      updateShowLang(true);
+    }
 
     const onSkipIntro = ()=> {
       updateIntro(false);
@@ -72,6 +92,7 @@ const App: () => Node = () => {
           setEnroll(false);
         break;
         case 'logout': 
+          closeDrawer();
           setUser("");
         break;
         case 'login':  
@@ -93,35 +114,39 @@ const App: () => Node = () => {
     }
 
     const loadDefault = ()=> {
-      return(
-        <View style={{paddingTop: '10%'}}>
-          <ImageSlider
-            onSkip={onSkipIntro}
-            hideOnSlide={3}
-            //logo={require('./src/images/icon.png')}
-            logoHeight={100}
-            logoWidth={200}
-            uri={false}
-            data={[
-              {
-                src: require('./src/images/intro1.png'),
-                info: "Welcome to Svayam Cab",
-                subText: "Svayam Cab is portal which help you to find your destination",
-              },
-              {
-                src: require('./src/images/intro2.jpeg'),
-                info: "Choose whether you want to go.",
-                subText: "Svayam Cab is portal which help you to find your destination",
-              },
-              {
-                src: require('./src/images/intro3.jpeg'),
-                info: "Select driver according to you.",
-                subText: "Svayam Cab is portal which help you to find your destination",
-              },
-            ]}
-          />
-        </View>
-      )
+      if (!showLang) {
+        return(<View style={{paddingTop: 50}}><ChangeLang setLang={setLang} callApi={showIntro} /></View>);
+      } else {
+        return(
+          <View style={{paddingTop: '10%'}}>
+            <ImageSlider
+              onSkip={onSkipIntro}
+              hideOnSlide={3}
+              //logo={require('./src/images/icon.png')}
+              logoHeight={100}
+              logoWidth={200}
+              uri={false}
+              data={[
+                {
+                  src: require('./src/images/intro1.png'),
+                  info: Lang("slider.info1"),
+                  subText: Lang("slider.subText1"),
+                },
+                {
+                  src: require('./src/images/intro2.jpeg'),
+                  info: Lang("slider.info2"),
+                  subText: Lang("slider.subText2"),
+                },
+                {
+                  src: require('./src/images/intro3.jpeg'),
+                  info: Lang("slider.info3"),
+                  subText: Lang("slider.subText3"),
+                },
+              ]}
+            />
+          </View>
+        )
+      }
     }
   
     const loadStack = ()=> {
@@ -186,8 +211,7 @@ const App: () => Node = () => {
               component={About}
               options={{title: "About"}}
             />
-          </Stack.Navigator>,
-          <InfoModal ref={infoModalRef} key="intorModal" />
+          </Stack.Navigator>
         ]
       )
     }
@@ -209,7 +233,7 @@ const App: () => Node = () => {
             type="overlay"
             tapToClose={true}
             ref={(ref)=> _drawer = ref}
-            content={<SidePane navRef={navigationRef.current} closeDrawer={closeDrawer} />}
+            content={<SidePane navRef={navigationRef.current} closeDrawer={closeDrawer} handleLoginAction={handleLoginAction} />}
             openDrawerOffset={0.2}
             panCloseMask={0.2}
             closedDrawerOffset={-3}
@@ -223,6 +247,7 @@ const App: () => Node = () => {
             onClose={()=> setDrawer(false)}
           >
             { showIntro ? loadDefault() : ( _user ? loadStack() : loginPage()) }
+            <InfoModal ref={infoModalRef} key="intorModal" />
           </Drawer>
         </NavigationContainer>
       </MyProvider>

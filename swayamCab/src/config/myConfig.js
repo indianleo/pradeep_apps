@@ -54,4 +54,12 @@ export const requestLocation = async () => {
       console.warn({permissionError: err});
     }
 };
+
+export const getItem = (data, index) => {
+  return data[index];
+}
+
+export const getItemCount = (listData) => {
+  return listData.length;
+}
   

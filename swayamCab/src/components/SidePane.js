@@ -106,13 +106,33 @@ const SidePane = (props) => {
         props.closeDrawer()
     }
 
+    const logOut = () => {
+        props.navRef.reset({
+            index: 0,
+            routes: [{name: 'Home'}]
+        });
+        props.handleLoginAction("logout");
+    }
+
     const renderHeader = () => {
         return (
-            <View style={[UI.setPadding(0, 5, 2, 0, '%')]}>
-                <Text style={[commonStyle.themeHeadingText]}>
-                    Svayam App
-                </Text>
-            </View>
+            <View 
+                style={[
+                    commonStyle.pbMd, 
+                    commonStyle.row, 
+                    commonStyle.vCenter, 
+                    commonStyle.alignCorner,
+                ]}
+            >
+                <View style={[UI.setPadding(0, 5, 2, 0, '%')]}>
+                    <Text style={[commonStyle.themeHeadingText]}>
+                        Svayam App
+                    </Text>
+                </View>
+                <TouchableOpacity onPress={logOut}>
+                    <Icons name="md-power-sharp" iconSet={"ionicons"} style={[commonStyle.themeHeadingText]} />
+                </TouchableOpacity>
+        </View>
         )
     }
 

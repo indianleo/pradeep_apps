@@ -12,10 +12,13 @@ import {
 import MyContext from '../context/MyContext';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { getTableRef } from '../config/myConfig';
+import Loader from '../libs/Loader';
 
 const Login = (props)=> {
     const contextOptions = React.useContext(MyContext);
     const [phone, updatePhone] = React.useState("");
+    const [isLoading, setLoading] = React.useState(false);
+
     const setOtp = (pass)=> {
         console.log({pass})
     }
@@ -28,6 +31,7 @@ const Login = (props)=> {
         if (type == 'reg') {
             props.handleAction(type, '');
         } else {
+            setLoading(true);
             getTableRef(`/users/${phone}`).once("value").then((res)=> {
                 let _data = res.val();
                 if (UI.isValid(_data)) {
@@ -35,7 +39,11 @@ const Login = (props)=> {
                     props.handleAction(type, '');
                 } else {
                     showInfoModal("Incorrect UserID or Password");
+                    setLoading(false);
                 }
+            }).catch((err)=> {
+                console.log(err);
+                showInfoModal("Please check your internet");
             })
         }
     }
@@ -58,9 +66,10 @@ const Login = (props)=> {
                             ]}
                         />
                     </View>
+                    <Loader loading={isLoading} />
                     <View style={[UI.setPadding(5,8,5,8, '%')]}>
                         <Text style={[commonStyle.vPadMd, styles.label, commonStyle.textOffSky]}>
-                            Please Login To Continue:
+                            {Lang("login.ins")}
                         </Text>
                         <View style={[commonStyle.textBoxBorderColor, commonStyle.row]}>
                             <View style={[commonStyle.center, UI.setScreen(50,40), UI.setBorderRight(1, "#ccc")]}>
@@ -74,7 +83,7 @@ const Login = (props)=> {
                             </View>
                             <TextInput
                                 style={styles.TextInput}
-                                placeholder={"Phone"}
+                                placeholder={Lang("home.phone")}
                                 placeholderTextColor="#003f5c"
                                 onChangeText={(email) => setPhone(email)}
                             />
@@ -91,13 +100,27 @@ const Login = (props)=> {
                             </View>
                             <TextInput
                                 style={styles.TextInput}
-                                placeholder={"OTP"}
+                                placeholder={Lang("login.otp")}
                                 placeholderTextColor="#003f5c"
                                 keyboardType="number-pad"
                                 secureTextEntry={true}
                                 onChangeText={(password) => setOtp(password)}
                             />
                         </View>
+                        <TouchableOpacity 
+                            onPress={()=> alert("Underprocess. Please Wait")} 
+                            style={[commonStyle.ptMd]}
+                        >
+                            <Text 
+                                style={[
+                                    commonStyle.themeNormalText, 
+                                    commonStyle.textOffSky,
+                                    commonStyle.textRight
+                                ]}
+                            >
+                                {Lang("login.getOtp")}
+                            </Text>
+                        </TouchableOpacity>
                         <View style={commonStyle.vCenter}>
                             <TouchableOpacity 
                                 onPress={handleBtnAction.bind(this, 'login')} 
@@ -119,29 +142,19 @@ const Login = (props)=> {
                                         commonStyle.textWhite
                                     ]}
                                 >
-                                    Login
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={[styles.btnContainer, commonStyle.mt]}>
-                            <TouchableOpacity 
-                                onPress={handleBtnAction.bind(this, 'reg')} 
-                                style={[UI.setWidth(50, '%')]}
-                            >
-                                <Text style={[styles.label, commonStyle.textOffSky,commonStyle.textLeft]}>
-                                    Sign-up
-                                </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity 
-                                onPress={()=> alert("Wait")} 
-                                style={[UI.setWidth(50, '%')]}
-                            >
-                                <Text style={[styles.label, commonStyle.textOffSky,commonStyle.textRight]}>
-                                    Forgot Password
+                                    {Lang("login.title")}
                                 </Text>
                             </TouchableOpacity>
                         </View>
                     </View>
+                    <TouchableOpacity 
+                        onPress={handleBtnAction.bind(this, 'reg')} 
+                        style={[UI.setWidth(100, '%'), commonStyle.center]}
+                    >
+                        <Text style={[styles.label]}>
+                            {Lang("login.new")} <Text style={[commonStyle.textOffSky]}>{Lang("login.reg")}</Text>
+                        </Text>
+                    </TouchableOpacity>
                 </ScrollView>
             }
         </MyContext.Consumer>

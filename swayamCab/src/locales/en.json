@@ -1,0 +1,53 @@
+{
+    "home": {
+        "appName": "Swayam",
+        "user": "Pradeep",
+        "welUsr": "Welcome %{user}",
+        "submit": "Submit",
+        "next": "Next",
+        "fullName": "Full Name",
+        "name": "Name",
+        "phone": "Phone",
+        "message": "Message",
+        "dob": "Date Of Birth",
+        "date": "DD/MM/YYYY",
+        "close": "Close",
+        "address": "Address",
+        "setLang": "Selct Language",
+        "hi": "Hindi",
+        "en": "English",
+        "infoModalData": "Please check your internet.",
+        "infoModalSubText": "Internet is required for this action."
+    },
+    "slider": {
+      "info1": "Welcome to Svayam Cab",
+      "subText1": "Svayam Cab is portal which help you to find your destination",
+      "info2": "Choose whhere you want to go",
+      "subText2": "Svayam Cab is portal which help you to find your destination",
+      "info3": "Select driver according to you",
+      "subText3": "Svayam Cab is portal which help you to find your destination"
+    },
+    "login": {
+      "title": "Login",
+      "ins": "Please Login To Continue:",
+      "otp": "OTP",
+      "getOtp": "Get OTP",
+      "new": "New to Swayam ?",
+      "reg": "Sign-Up"
+    },
+    "reg": {
+      "title": "Sign-up",
+      "name": "Name",
+      "phone": "Phone",
+    },
+    "contact": {
+      "title": "Contact Us",
+      "title2": "Contact"
+    },
+    "location": {
+      "title": "Location",
+      "pageTitle": "Select Location",
+      "address": "Enter Your Address",
+      "locate": "Your Closest Location"
+    }
+}

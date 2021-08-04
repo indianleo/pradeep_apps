@@ -119,26 +119,6 @@ const Enrollment = (props)=> {
                         ]}
                     >...</Text>
                 </View>
-                <View style={[commonStyle.ptLg, commonStyle.pb,]}>
-                    <Text 
-                        style={[
-                            commonStyle.themeSkyText, 
-                        ]}
-                    >
-                        OTP
-                    </Text>
-                </View>
-                <View>
-                    <TextInput
-                        onChangeText={handleInput.bind(this, 'otp')}
-                        secureTextEntry={true}
-                        style={[
-                            commonStyle.themeTextBox,
-                            commonStyle.bgWhite,
-                            UI.setHeight(50),
-                        ]}
-                    />
-                </View>
                 <View style={[commonStyle.center, commonStyle.ptLg, commonStyle.row]}>
                     <TouchableOpacity 
                         style={[

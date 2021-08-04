@@ -1,0 +1,54 @@
+{
+    "home": {
+        "appName": "स्वयं",
+        "user": "प्रदीप",
+        "welUsr": "%{user} का स्वागत है",
+        "submit": "Submit",
+        "next": "प्रस्तुत करना",
+        "fullName": "पूरा नाम",
+        "name": "नाम",
+        "phone": "फ़ोन",
+        "message": "संदेश",
+        "dob": "जन्म की तारीख",
+        "date": "DD/MM/YYYY",
+        "close": "बंद करे",
+        "address": "पता",
+        "setLang": "भाषा का चयन करें",
+        "hi": "Hindi",
+        "en": "English",
+        "infoModalData": "कृपया अपना इंटरनेट जांचें",
+        "infoModalSubText": "इस क्रिया के लिए इंटरनेट की आवश्यकता है।"
+    },
+    "slider": {
+      "info1": "स्वागत के साथ सेल्फ कैब",
+      "subText1": "स्वयं कैब पोर्टल है जो आपको अपना गंतव्य खोजने में मदद करता है",
+      "info2": "चुनें कि आप कहाँ जाना चाहते हैं",
+      "subText2": "स्वयं कैब पोर्टल है जो आपको अपना गंतव्य खोजने में मदद करता है",
+      "info3": "अपने अनुसार ड्राइवर का चयन करें",
+      "subText3": "स्वयं कैब पोर्टल है जो आपको अपना गंतव्य खोजने में मदद करता है"
+    },
+    "login": {
+      "title": "लॉग इन करें",
+      "ins": "जारी रखने के लिए कृपया लॉग इन करें:",
+      "otp": "ओटीपी",
+      "getOtp": "ओटीपी प्राप्त करें",
+      "new": "स्वयंवर के लिए नया?",
+      "reg": "साइन अप करें"
+    },
+    "reg": {
+      "title": "Registration",
+      "name": "Name",
+      "email": "Email",
+      "pass": "Create Password",
+    },
+    "contact": {
+      "title": "Contact Us",
+      "title2": "Contact"
+    },
+    "location": {
+      "title": "Location",
+      "pageTitle": "Select Location",
+      "address": "Enter Your Address",
+      "locate": "Your Closest Location"
+    }
+}

@@ -58,11 +58,16 @@ const ImageSlider = (props)=> {
                                 key={index} 
                                 style={[ 
                                     UI.setWidth(), 
-                                    commonStyle.center,
-                                    commonStyle.wrap
+                                    commonStyle.wrap,
+                                    commonStyle.alignAround
                                 ]}
                             >
-                                <View style={[UI.setWidth(), commonStyle.plMd]}>
+                                <View 
+                                    style={[
+                                        UI.setWidth(), 
+                                        commonStyle.plMd,
+                                    ]}
+                                >
                                     <Text 
                                         style={[
                                             commonStyle.themeHeadingText,

@@ -1,5 +1,5 @@
 import React from  'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextComponent } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import MyContext from '../context/MyContext';
 import commonStyle from '../css/commonStyle';
@@ -15,6 +15,7 @@ const Driver = (props)=> {
     const [userData, setUserData] = React.useState({});
     const [bookingData, setBooking] = React.useState({});
     const [route, updateRoute] = React.useState([]);
+    const [showFetch, setFetch] = React.useState(true);
 
     React.useEffect(()=> {
         const tableRef = getTableRef(`/users/${contextOption.userId}`).on('value', snapshot => {
@@ -25,7 +26,7 @@ const Driver = (props)=> {
             } else {
                 getTableRef(`/booking/${tempData.currentBooking}`).once('value').then((res)=> {
                     setBooking({...res.val()});
-                    if (tempData.currentStatus == "onGoing") {
+                    if (tempData.currentStatus == "onGoing" && showFetch) {
                         setLayout("status");
                     } else {
                         setLayout(tempData.currentStatus);
@@ -63,7 +64,7 @@ const Driver = (props)=> {
         updateLocationRegion(newRegion);
     }
 
-    const onConfirmRequest = ()=> {
+    const onConfirmRequest = (fromBack)=> {
         let tempMarker = locationMarkers;
         let _route = route;
         tempMarker.push(bookingData.from);
@@ -72,6 +73,7 @@ const Driver = (props)=> {
         _route.push(bookingData.to.co);
         updateRoute([..._route]);
         updateMarkers([...tempMarker]);
+        setFetch(false);
 
         //driver
         updatDb(`/users/${contextOption.userId}`, {currentStatus: "onGoing"});
@@ -99,7 +101,8 @@ const Driver = (props)=> {
 
         //booking
         updatDb(`/booking/${bookingData.id}`, {status: "Completed"});
-
+        updateRoute([]);
+        updateMarkers([]);
         setLayout("completed");
     }
 
