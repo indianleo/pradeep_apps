@@ -35,7 +35,7 @@ const Login = (props)=> {
             getTableRef(`/users/${phone}`).once("value").then((res)=> {
                 let _data = res.val();
                 if (UI.isValid(_data)) {
-                    contextOptions.handleLogin({userName: "Pradeep Yadav", userId: phone, ..._data});
+                    contextOptions.handleLogin({userId: phone, ..._data});
                     props.handleAction(type, '');
                 } else {
                     showInfoModal("Incorrect UserID or Password");
@@ -83,7 +83,9 @@ const Login = (props)=> {
                             </View>
                             <TextInput
                                 style={styles.TextInput}
+                                keyboardType="number-pad"
                                 placeholder={Lang("home.phone")}
+                                defaultValue={"7800794002"}
                                 placeholderTextColor="#003f5c"
                                 onChangeText={(email) => setPhone(email)}
                             />

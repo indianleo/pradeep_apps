@@ -78,9 +78,12 @@ const Driver = (props)=> {
 
         //driver
         updatDb(`/users/${contextOption.userId}`, {currentStatus: "onGoing"});
+        pushDb(`/users/${contextOption.userId}/history`, {bookingId: userData.currentBooking});
 
         //Rider
         updatDb(`users/${bookingData.rider}`, {currentStatus: "onGoing"});
+        //booking
+        updatDb(`/booking/${bookingData.id}`, {status: "onGoing"});
         setLayout("onGoing")
     }
 

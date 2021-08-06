@@ -499,7 +499,7 @@ const Rider = (props)=> {
         <MyContext.Consumer>
             {context=>
                 <View style={[UI.setScreen()]}>
-                    <View style={[UI.setWidth(), UI.setHeight(UI.height()/1.7)]}>
+                    <View style={[UI.setWidth(), UI.setHeight(UI.height()/1.4)]}>
                         <MapView
                             provider={UI.ios ? null : PROVIDER_GOOGLE}
                             initialRegion={locationRegion}
@@ -539,15 +539,30 @@ const Rider = (props)=> {
                             {getMapRoute()}
                         </MapView>
                     </View>
-                    <ScrollView 
+                    <View 
                         style={[
                             UI.setWidth(),
+                            commonStyle.absolute, 
+                            UI.setBottom(7.9, '%'),
+                            UI.setLeft(3),
+                            UI.setBorder(1, '#ccc'),
                             commonStyle.bgWhite,
-                            commonStyle.pt,
+                            commonStyle.center,
+                            UI.setRadiusOn(20, 'topStart'),
+                            UI.setRadiusOn(20, 'topEnd'),
+                            UI.setPadding(20,0,10,0)
                         ]}
                     >
-                        {selectLayout()}
-                    </ScrollView>
+                        <ScrollView>
+                            <View 
+                                style={[ 
+                                    
+                                ]}
+                            >
+                                {selectLayout()}
+                            </View>
+                        </ScrollView>
+                    </View>
                 </View>
             }
         </MyContext.Consumer>

@@ -189,6 +189,10 @@ export default StyleSheet.create({
 		fontWeight: "600",
 		fontSize: 18
 	},
+	themeBorder: {
+		borderColor: '#b3cce6',
+		borderWidth: 1,
+	},
 	btnSky: {
 		borderRadius: 3,
 		backgroundColor: '#336699',

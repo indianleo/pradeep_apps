@@ -156,7 +156,7 @@ const App: () => Node = () => {
             key={"stackNav"}
             screenOptions = {(_navData) => ({
               headerBackground: props => <HeaderBackground />,
-              headerTitle: props => <HeaderTitle {...props} {..._navData} />,
+              headerTitle: null,
               headerRight: props => <HeaderRight {...props} {..._navData} handleLoginAction={handleLoginAction} />,
               headerLeft: props => <HeaderLeft {...props} {..._navData} hideBack={true} openDrawer={openDrawer} closeDrawer={closeDrawer} drawerState={drawerState} />,
             })}

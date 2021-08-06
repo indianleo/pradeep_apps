@@ -1,14 +1,16 @@
 import React from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import commonStyle from '../css/commonStyle';
 const HeaderBackground = (props) => {
     return(
         <View>
-           <LinearGradient
-                start={{x: 1, y: 0}}
-                end={{x: 0, y: 0}}
-                colors={[ '#204060', '#6ab2cb', '#204060' ]}
-                style={style.headerBg}
+           <Image
+              source={require("../images/bg2.jpeg")}
+              style={[
+                  commonStyle.imgStretch,
+                  UI.setScreen(100,100, '%')
+                ]}
            />
         </View>
     )

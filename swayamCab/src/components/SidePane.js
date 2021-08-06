@@ -64,7 +64,7 @@ const SidePane = (props) => {
                 {
                     id: 1,
                     title: "Basic Info",
-                    pageName: "",
+                    pageName: "Profile",
                     iconName: "user",
                     iconSet: "fontAwesome"
                 },
@@ -85,14 +85,14 @@ const SidePane = (props) => {
                 {
                     id: 4,
                     title: "Completed Ride",
-                    pageName: "",
+                    pageName: "Finished",
                     iconName: "tachometer",
                     iconSet: "fontAwesome"
                 },
                 {
                     id: 5,
                     title: "Canceled Ride",
-                    pageName: "",
+                    pageName: "Canceled",
                     iconName: "cancel-schedule-send",
                     iconSet: "materialIcons"
                 }
