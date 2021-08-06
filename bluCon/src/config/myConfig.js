@@ -1,5 +1,5 @@
 import {PermissionsAndroid} from 'react-native';
-import database from '@react-native-firebase/database';
+// import database from '@react-native-firebase/database';
 export const gAPiKey = "AIzaSyCdmmRRO2G6kpwL5C601xFRouLd0g9MQLE";
 
 export function addDb (dbPath, writeData) {

@@ -1,7 +1,6 @@
 import React from  'react';
 import { Modal, View, TouchableOpacity, Text } from 'react-native';
-import commonStyle from '../css/commonStyle';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import commonStyle from '../css/style';
 const InfoModal = React.forwardRef((props, ref) => {
     const [modalVisible, updateModal] = React.useState(false);
     const [infoData, updateInfoStr] = React.useState()
@@ -42,7 +41,7 @@ const InfoModal = React.forwardRef((props, ref) => {
                             commonStyle.textLightBold
                         ]}
                     >
-                        {infoData || Lang("home.infoModalData")}
+                        {infoData || "Please check your internet"}
                     </Text>
                     <Text 
                         style={[
@@ -53,7 +52,7 @@ const InfoModal = React.forwardRef((props, ref) => {
                             commonStyle.textLightBold
                         ]}
                     >
-                        {Lang("home.infoModalSubText")}
+                        Intern needed
                     </Text>
                 </View>
             )
@@ -64,7 +63,7 @@ const InfoModal = React.forwardRef((props, ref) => {
         <Modal
             animationType={props.viewStyle || "slide"}
             transparent={true}
-            visible={props.isVisble  || modalVisible}
+            visible={props.isVisible  || modalVisible}
             statusBarTranslucent={true}
             onRequestClose={() => {
                 updateModal(false);
@@ -89,10 +88,7 @@ const InfoModal = React.forwardRef((props, ref) => {
                             props.onClose?.();
                         }}
                     >
-                        <Icon
-                            name={"chevron-down"}
-                            size={35}
-                        />
+                        <Text>Close</Text>
                     </TouchableOpacity>
                     {getLayout()}
                 </View>

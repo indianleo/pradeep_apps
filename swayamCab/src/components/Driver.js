@@ -26,6 +26,7 @@ const Driver = (props)=> {
             } else {
                 getTableRef(`/booking/${tempData.currentBooking}`).once('value').then((res)=> {
                     setBooking({...res.val()});
+                    console.log(showFetch);
                     if (tempData.currentStatus == "onGoing" && showFetch) {
                         setLayout("status");
                     } else {
