@@ -1,13 +1,23 @@
 import React from  'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, Image } from 'react-native';
+import { 
+    View, 
+    Text, 
+    ScrollView, 
+    StyleSheet, 
+    TouchableOpacity, 
+    TextInput, 
+    Image,
+    KeyboardAvoidingView
+} from 'react-native';
 import MapView, {Marker, Polyline, PROVIDER_GOOGLE} from 'react-native-maps';
 import MyContext from '../context/MyContext';
 import commonStyle from '../css/commonStyle';
 import Geolocation from "react-native-geolocation-service";
-import { checkBlank, dbOff, gAPiKey, getTableRef, pushDb, requestLocation, updatDb } from '../config/myConfig';
+import { checkBlank, dbOff, gAPiKey, getTableRef, pushDb, updatDb } from '../config/myConfig';
 import { getDistance } from 'geolib';
 import MapViewDirections from 'react-native-maps-directions';
 import Icons from '../libs/Icons';
+import MyButton from '../libs/MyButton';
 // getDistance return in meter
 
 const Rider = (props)=> {
@@ -22,6 +32,8 @@ const Rider = (props)=> {
     const [userData, setUserData] = React.useState({});
     const [driverData, setDriverData] =  React.useState({});
     const [currentDriver, setCurrentDriver] =  React.useState({});
+    const [currentBooking, setCurrentBooking] = React.useState("");
+    const [rejectList, setReject] = React.useState({});
     const contextOption = React.useContext(MyContext);
 
     React.useEffect(()=> {
@@ -34,10 +46,9 @@ const Rider = (props)=> {
                 loadCurrentRide(_td);
             }
         });
-        const driverRef = getTableRef("drivers").on("value", (res)=> {
+        const driverRef = getTableRef("drivers").orderByChild('isOnline').equalTo(1).on("value", (res)=> {
             setDriverMarker(res.val());
         })
-        if (!UI.ios) requestLocation();
         Geolocation.getCurrentPosition((position) => {
                 let tempMarker = [];
                 let userCo = [{
@@ -70,11 +81,11 @@ const Rider = (props)=> {
             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
         );
 
-        return ()=> onUnmount;
+        return ()=> onUnmount(driverRef, userRef);
     
     }, []);  
     
-    const onUnmount = () => {
+    const onUnmount = (driverRef, userRef) => {
         userRef && dbOff(`/users/${contextOption.userId}`, userRef);
         driverRef && dbOff(`/drivers/${currentDriver}`, driverRef);
     }
@@ -104,6 +115,7 @@ const Rider = (props)=> {
     }
 
     const caluclteDetails = (desti) => {
+        console.log(desti);
         let dis = getDistance(locationMarkers[0].co, desti)/1000;
         setDistance(dis);
         if (dis < 4) {
@@ -139,17 +151,24 @@ const Rider = (props)=> {
     }
 
     const setDriverMarker = (_driverLocation) => {
-        let tempMarker = driverMarker;
+        let tempMarker = [];
         for (let key in _driverLocation) {
             if (_driverLocation[key].isOnline == 1) {
-                tempMarker.push({
-                    title: _driverLocation[key].name,
-                    co: {latitude: _driverLocation[key].latitude, longitude: _driverLocation[key].longitude},
-                    description: key,
-                    driverId: key,
-                    role:  "driver",
-                })
+                if (!rejectList[key]) {
+                    tempMarker.push({
+                        title: _driverLocation[key].name,
+                        co: {latitude: _driverLocation[key].latitude, longitude: _driverLocation[key].longitude},
+                        description: key,
+                        driverId: key,
+                        role:  "driver",
+                        ..._driverLocation[key]
+                    })
+                }
             }
+        }
+        if (tempMarker.length > 0) {
+            setCurrentDriver(tempMarker[0].driverId);
+            setDriverData(tempMarker[0]);
         }
         updateDriverMarker([...tempMarker]);
     }
@@ -166,22 +185,23 @@ const Rider = (props)=> {
     }
 
     const setLocationFor = (event) => {
-        if (event) {
+        if (typeof  event != "string") {
             console.log(event.nativeEvent.coordinate);
-            updatDb(`/drivers/7800794003`, event.nativeEvent.coordinate).then(()=> {
+            updatDb(`/drivers/${currentDriver}`, event.nativeEvent.coordinate).then(()=> {
                 console.log("location fro driver set");
             })
-        } else if (query.destination) {
+        } else if (query.destination && locationMarkers.length == 1) {
             let tempMarker = locationMarkers;
             UI.geoFrom(query.destination).then((addJson)=> {
                 let loc = addJson.results[0].geometry.location;
-                console.log(loc);
                 tempMarker.push({
                     title: "Destination",
                     co: {latitude: loc.lat, longitude: loc.lng},
                     description: query.destination,
                 })
                 updateMarkers([...tempMarker]);
+                updateRoute([...route, ...[{latitude: loc.lat, longitude: loc.lng}] ]);
+                caluclteDetails({latitude: loc.lat, longitude: loc.lng});
             }).catch((err)=> {
                 console.log(err);
             });
@@ -204,7 +224,7 @@ const Rider = (props)=> {
         return null;
     }
 
-    const createRequest = () => {
+    const createRequest = (action) => {
         let checkObj = {
             "from": locationMarkers[0],
             "to": locationMarkers[1],
@@ -218,27 +238,41 @@ const Rider = (props)=> {
             return false;
         }
 
-        let _dd = new Date();
-        updatDb(`/users/${contextOption.userId}`, {
-            ...route[0],
-        });
-        pushDb("/booking", 
-            {
-                id: 1, 
-                driver: currentDriver, 
-                rider: contextOption.userId,
-                fare: fare,
-                distance: distance,
-                onDate: _dd.toDateString(),
-                from: locationMarkers[0], 
-                to: locationMarkers[1], 
-                status: "pending"
-            }
-        ).then((key)=> {
-            pushDb(`/users/${contextOption.userId}/history`, {bookingId: key});
-            updatDb(`/users/${contextOption.userId}`, {currentBooking: key, currentStatus: "pending", driver: currentDriver});
-            updatDb(`users/${currentDriver}`, {currentBooking: key, currentStatus: "pending"});
-        });
+        if (action == "selectNew") {
+            updatDb(`/booking/${currentBooking}`, 
+                {
+                    driver: currentDriver,  
+                }
+            ).then(()=> {
+                //rider
+                updatDb(`/users/${contextOption.userId}`, {currentStatus: "pending", driver: currentDriver});
+                // driver
+                updatDb(`users/${currentDriver}`, {currentBooking: key, currentStatus: "pending"});
+            });
+        } else {
+            let _dd = new Date();
+            updatDb(`/users/${contextOption.userId}`, {
+                ...route[0],
+            });
+            pushDb("/booking", 
+                {
+                    id: 1, 
+                    driver: currentDriver, 
+                    rider: contextOption.userId,
+                    fare: fare,
+                    distance: distance,
+                    onDate: _dd.toDateString(),
+                    from: locationMarkers[0], 
+                    to: locationMarkers[1], 
+                    status: "pending"
+                }
+            ).then((key)=> {
+                setCurrentBooking(key);
+                pushDb(`/users/${contextOption.userId}/history`, {bookingId: key});
+                updatDb(`/users/${contextOption.userId}`, {currentBooking: key, currentStatus: "pending", driver: currentDriver});
+                updatDb(`users/${currentDriver}`, {currentBooking: key, currentStatus: "pending"});
+            });
+        }
         setLayout("currentRide");
     }
 
@@ -246,72 +280,71 @@ const Rider = (props)=> {
         setLayout("selectArea");
     }
 
-    const getDriverDetails = () => {
-        driverRef && dbOff(`/drivers/${currentDriver}`, driverRef);
-        driverRef = getTableRef(`/drivers/${currentDriver}`).on('value', (res)=> {
-            let tempData = res.val();
-            setDriverData({...res.val()});
-            let tempMarker = driverMarker;
-            tempMarker[currentDriver] = {
-                title: tempData.name,
-                co: {latitude: tempData.latitude, longitude: tempData.longitude},
-                description: key,
-                driverId: key,
-                role:  "driver",
-            };
-            updateDriverMarker([...tempMarker]);
-        })
+    const cancelRide = () => {
+        //Rider
+        updatDb(`users/${contextOption.userId}`, {currentStatus: "free", driver: "selectNew", currentBooking: "free"});
+        
+        // Driver
+        updatDb(`/users/${currentDriver}`, {currentStatus: "free", currentBooking: "free"});
+
+        //booking
+        updatDb(`/booking/${currentBooking}`, {status: "Canceled"});
+
+        resetSelect();
+    }
+
+    const resetSelect = () => {
+        console.log("Reset", locationMarkers.length);
+        if (locationMarkers.length > 1) {
+            let temp = locationMarkers;
+            let rou = route;
+            temp.pop();
+            rou.pop()
+            updateMarkers(temp);
+            updateRoute(rou);
+            handleAddress('destination', "");
+            setCurrentBooking("");
+        } 
+        (currentLayout != "selectArea") && setLayout("selectArea");
     }
 
     const selectLayout = (type)=> {
+        const textStyle = [commonStyle.themeNormalText, commonStyle.textBold,commonStyle.textOffSky];
         switch(type || currentLayout) {
             case 'detailRide': 
                     return (
-                        <View 
-                            style={[
-                                UI.setPadding(20,20,20,20),
-                            ]}
-                        >
+                        <View>
                             <View style={[commonStyle.pbLg]}>
-                                <Text style={[commonStyle.themeNormalText, commonStyle.textBold,commonStyle.textOffSky]}>
+                                <Text style={textStyle}>
                                     {"Details: "}
                                     <Text style={[commonStyle.textDark]}>Hello pickup</Text>
                                 </Text>
-                                <Text style={[commonStyle.themeNormalText, commonStyle.textBold, commonStyle.textOffSky]}> 
+                                <Text style={textStyle}> 
                                     {"Distance: "} <Text style={[commonStyle.textDark]}>{distance} K.M</Text>
                                 </Text>
-                                <Text style={[commonStyle.themeNormalText, commonStyle.textBold,commonStyle.textOffSky]}>
+                                <Text style={textStyle}>
                                     {"Fare: "}<Text style={[commonStyle.textDark]}>{fare} Rs.</Text>
                                 </Text>
                             </View>
-                            <TouchableOpacity
-                                style={[
-                                    commonStyle.bgOffSky,
-                                    UI.setHeight(50),
-                                    UI.setWidth(50, '%'),
-                                    commonStyle.center,
-                                    commonStyle.br,
-                                    commonStyle.shadow
-                                ]}
-                                onPress={createRequest}
-                            >
-                                <Text 
-                                    style={[
-                                        commonStyle.textStyle, 
-                                        commonStyle.fs5, 
-                                        commonStyle.textWhite
-                                    ]}
-                                >
-                                    Send Request
-                                </Text>
-                            </TouchableOpacity>
+                            <View style={[commonStyle.row, commonStyle.center]}>
+                                <MyButton
+                                    theme={"sky"}
+                                    title={"Send Request"}
+                                    style={[UI.setHeight(50)]}
+                                    onPress={createRequest}
+                                />
+                                <MyButton
+                                    theme={"sky"}
+                                    title={"Cancel"}
+                                    style={[UI.setHeight(50), commonStyle.mlmd]}
+                                    onPress={resetSelect}
+                                />
+                            </View>
                         </View>
                     )
             case 'selectArea':
                 return (
-                    <View 
-                        style={[UI.setWidth(), UI.setHpadding(10)]}
-                    >
+                    <View>
                         <View 
                             style={[
                                 commonStyle.textBoxBorderColor, 
@@ -327,19 +360,16 @@ const Rider = (props)=> {
                                 onChangeText={handleAddress.bind(this, 'pickup')}
                                 value={query.pickup}
                             />
-                            <TouchableOpacity 
-                                style={[
-                                    commonStyle.pMd, 
-                                    UI.setBorderLeft(1, '#ccc'),
-                                ]}
-                            >
-                                <Icons
-                                    iconSet="materialIcons"
-                                    name="my-location"
-                                    size={25}
-                                    style={[commonStyle.textOffSky]}
-                                />
-                            </TouchableOpacity>
+                            <MyButton
+                                type={"icon"}
+                                style={[commonStyle.pMd, UI.setBorderLeft(1, '#ccc')]}
+                                iconSet="materialIcons"
+                                iconName="my-location"
+                                iconSize={25}
+                                iconStyle={[commonStyle.textOffSky]}
+                                arg={"pickup"}
+                                onPress={setLocationFor}
+                            />
                         </View>
                         <View
                             style={[
@@ -356,39 +386,31 @@ const Rider = (props)=> {
                                 onChangeText={handleAddress.bind(this, "destination")}
                                 value={query.destination}
                             />
-                            <TouchableOpacity 
+                            <MyButton
+                                type={"icon"}
                                 style={[commonStyle.pMd, UI.setBorderLeft(1, '#ccc')]}
                                 onPress={setLocationFor}
-                            >
-                                <Icons
-                                    iconSet="materialIcons"
-                                    name="my-location"
-                                    size={25}
-                                    style={[commonStyle.textOffSky]}
-                                />
-                            </TouchableOpacity>
+                                arg={"destination"}
+                                iconSet="materialIcons"
+                                iconName="my-location"
+                                iconSize={25}
+                                iconStyle={[commonStyle.textOffSky]}
+                            />
                         </View>
-                        <TouchableOpacity
-                            style={[
-                                commonStyle.bgOffSky,
-                                UI.setHeight(50),
-                                UI.setWidth(50, '%'),
-                                commonStyle.center,
-                                commonStyle.br,
-                                commonStyle.shadow
-                            ]}
-                            onPress={()=> setLayout("detailRide")}
-                        >
-                            <Text 
-                                style={[
-                                    commonStyle.textStyle, 
-                                    commonStyle.fs5, 
-                                    commonStyle.textWhite
-                                ]}
-                            >
-                                Confirm
-                            </Text>
-                        </TouchableOpacity>
+                        <View style={[commonStyle.row, commonStyle.center]}>
+                            <MyButton
+                                theme={"sky"}
+                                title={"Confirm"}
+                                style={[UI.setHeight(50)]}
+                                onPress={()=> setLayout("detailRide")}
+                            />
+                            <MyButton
+                                theme={"sky"}
+                                title={"Reset"}
+                                style={[UI.setHeight(50), commonStyle.mlmd]}
+                                onPress={resetSelect}
+                            />
+                        </View>
                     </View>
                 )
             case 'status': 
@@ -422,48 +444,29 @@ const Rider = (props)=> {
                 );
             case "currentRide":
                 return (
-                    <View 
-                        style={[
-                            UI.setPadding(20,20,20,20),
-                        ]}
-                    >
+                    <View>
                         <View style={[commonStyle.pbLg]}>
-                            <Text style={[commonStyle.themeNormalText, commonStyle.textBold,commonStyle.textOffSky]}>
+                            <Text style={textStyle}>
                                 {"Driver Name: "}
                                 <Text style={[commonStyle.textDark]}>{driverData.name}</Text>
                             </Text>
-                            <Text style={[commonStyle.themeNormalText, commonStyle.textBold,commonStyle.textOffSky]}>
+                            <Text style={textStyle}>
                                 {"Driver Phone: "}
                                 <Text style={[commonStyle.textDark]}>{currentDriver}</Text>
                             </Text>
-                            <Text style={[commonStyle.themeNormalText, commonStyle.textBold, commonStyle.textOffSky]}> 
+                            <Text style={textStyle}> 
                                 {"Distance: "} <Text style={[commonStyle.textDark]}>{distance} K.M</Text>
                             </Text>
-                            <Text style={[commonStyle.themeNormalText, commonStyle.textBold,commonStyle.textOffSky]}>
+                            <Text style={textStyle}>
                                 {"Fare: "}<Text style={[commonStyle.textDark]}>{fare} Rs.</Text>
                             </Text>
                         </View>
-                        <TouchableOpacity
-                            style={[
-                                commonStyle.bgOffSky,
-                                UI.setHeight(50),
-                                UI.setWidth(50, '%'),
-                                commonStyle.center,
-                                commonStyle.br,
-                                commonStyle.shadow
-                            ]}
-                            onPress={createRequest}
-                        >
-                            <Text 
-                                style={[
-                                    commonStyle.textStyle, 
-                                    commonStyle.fs5, 
-                                    commonStyle.textWhite
-                                ]}
-                            >
-                                Cancel
-                            </Text>
-                        </TouchableOpacity>
+                        <MyButton
+                            theme={"sky"}
+                            title={"Cancel"}
+                            style={[UI.setHeight(50)]}
+                            onPress={cancelRide}
+                        />
                     </View>
                 )
             default:
@@ -474,22 +477,12 @@ const Rider = (props)=> {
                         >
                             Lets start ride by doing few steps. Just select your destination and driver to take a ride.
                         </Text>
-                        <TouchableOpacity
-                            style={[
-                                commonStyle.bgOffSky,
-                                UI.setHeight(50),
-                                UI.setWidth(50, '%'),
-                                commonStyle.center,
-                                commonStyle.br,
-                                commonStyle.shadow,
-                                commonStyle.mbmd
-                            ]}
+                        <MyButton
+                            theme={"sky"}
+                            title={"Book Your Ride"}
+                            style={[UI.setHeight(50)]}
                             onPress={onBook}
-                        >
-                            <Text style={[commonStyle.textStyle, commonStyle.fs5, commonStyle.textWhite]}>
-                                Book Your Ride
-                            </Text>
-                        </TouchableOpacity>
+                        />
                     </View>
                 );
         }
@@ -498,7 +491,7 @@ const Rider = (props)=> {
     return (
         <MyContext.Consumer>
             {context=>
-                <View style={[UI.setScreen()]}>
+                <KeyboardAvoidingView style={[UI.setScreen()]} behavior={UI.ios ? "padding" : "height"}>
                     <View style={[UI.setWidth(), UI.setHeight(UI.height()/1.4)]}>
                         <MapView
                             provider={UI.ios ? null : PROVIDER_GOOGLE}
@@ -556,14 +549,15 @@ const Rider = (props)=> {
                         <ScrollView>
                             <View 
                                 style={[ 
-                                    
+                                    UI.setWidth(),
+                                    UI.setPadding(20,20,20,20)
                                 ]}
                             >
                                 {selectLayout()}
                             </View>
                         </ScrollView>
                     </View>
-                </View>
+                </KeyboardAvoidingView>
             }
         </MyContext.Consumer>
     )

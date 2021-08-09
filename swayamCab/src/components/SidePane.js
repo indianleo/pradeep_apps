@@ -89,13 +89,13 @@ const SidePane = (props) => {
                     iconName: "tachometer",
                     iconSet: "fontAwesome"
                 },
-                {
-                    id: 5,
-                    title: "Canceled Ride",
-                    pageName: "Canceled",
-                    iconName: "cancel-schedule-send",
-                    iconSet: "materialIcons"
-                }
+                // {
+                //     id: 5,
+                //     title: "Canceled Ride",
+                //     pageName: "Canceled",
+                //     iconName: "cancel-schedule-send",
+                //     iconSet: "materialIcons"
+                // }
             ]
         }
     }
@@ -185,7 +185,7 @@ const SidePane = (props) => {
                 data={getMenuList()}
                 keyExtractor={item => item.id}
                 renderItem={renderListItem}
-                style={[UI.setMarginTop(10)]}
+                style={[UI.setMarginTop(10), UI.setHeight()]}
                 showsVerticalScrollIndicator={false}
             />
         </View>

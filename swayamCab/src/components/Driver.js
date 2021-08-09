@@ -4,7 +4,7 @@ import MapView, {Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import MyContext from '../context/MyContext';
 import commonStyle from '../css/commonStyle';
 import Geolocation from "react-native-geolocation-service";
-import { dbOff, gAPiKey, getTableRef, pushDb, requestLocation, updatDb } from '../config/myConfig';
+import { dbOff, gAPiKey, getTableRef, pushDb, updatDb } from '../config/myConfig';
 import MapViewDirections from 'react-native-maps-directions';
 
 const Driver = (props)=> {
@@ -35,7 +35,6 @@ const Driver = (props)=> {
                 });
             }
         });
-        if (!UI.ios) requestLocation();
         Geolocation.getCurrentPosition((position) => {
             let userCo = [{
                 latitude: position.coords.latitude,
@@ -90,7 +89,7 @@ const Driver = (props)=> {
     const onCancelReq = () => {
         setLayout("free");
         //Rider
-        updatDb(`users/${bookingData.rider}`, {currentStatus: "free", driver: "selectNew"});
+        updatDb(`users/${bookingData.rider}`, {driver: "selectNew"});
         
         // Driver
         updatDb(`/users/${contextOption.userId}`, {currentStatus: "free", currentBooking: "free"});

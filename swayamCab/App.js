@@ -41,6 +41,7 @@ import About from './src/components/About';
 import Canceled from './src/components/Canceled';
 import Feedback from './src/components/Feedback';
 import ShareLocation from './src/components/ShareLocation';
+import { requestLocation } from './src/config/myConfig';
 
 const Stack = createStackNavigator();
 global.UI = themeAction();
@@ -56,7 +57,8 @@ const App: () => Node = () => {
 
     React.useEffect(()=> {
       UI.initGeoCoading();
-      SplashScreen.hide()
+      SplashScreen.hide();
+      if (!UI.ios) requestLocation();
     }, []);
 
     global.Lang = (text, _data)=> {
