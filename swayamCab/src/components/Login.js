@@ -154,7 +154,10 @@ const Login = (props)=> {
                         style={[UI.setWidth(100, '%'), commonStyle.center]}
                     >
                         <Text style={[styles.label]}>
-                            {Lang("login.new")} <Text style={[commonStyle.textOffSky]}>{Lang("login.reg")}</Text>
+                            {Lang("login.new")} 
+                            <Text style={[commonStyle.textOffSky]}>
+                                {Lang("login.reg")}
+                            </Text>
                         </Text>
                     </TouchableOpacity>
                 </ScrollView>

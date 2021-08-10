@@ -41,7 +41,7 @@ const Rider = (props)=> {
             let _td = snapshot.val();
             setUserData({..._td});
             if (_td.driver == "selectNew" && _td.currentBooking != "free") {
-                setLayout("detailRide")
+                setLayout("onCancelFromDriver")
             } else if (_td.currentBooking != "free") {
                 loadCurrentRide(_td);
             }
@@ -238,41 +238,32 @@ const Rider = (props)=> {
             return false;
         }
 
-        if (action == "selectNew") {
-            updatDb(`/booking/${currentBooking}`, 
-                {
-                    driver: currentDriver,  
-                }
-            ).then(()=> {
-                //rider
-                updatDb(`/users/${contextOption.userId}`, {currentStatus: "pending", driver: currentDriver});
-                // driver
-                updatDb(`users/${currentDriver}`, {currentBooking: key, currentStatus: "pending"});
-            });
-        } else {
-            let _dd = new Date();
-            updatDb(`/users/${contextOption.userId}`, {
-                ...route[0],
-            });
-            pushDb("/booking", 
-                {
-                    id: 1, 
-                    driver: currentDriver, 
-                    rider: contextOption.userId,
-                    fare: fare,
-                    distance: distance,
-                    onDate: _dd.toDateString(),
-                    from: locationMarkers[0], 
-                    to: locationMarkers[1], 
-                    status: "pending"
-                }
-            ).then((key)=> {
-                setCurrentBooking(key);
-                pushDb(`/users/${contextOption.userId}/history`, {bookingId: key});
-                updatDb(`/users/${contextOption.userId}`, {currentBooking: key, currentStatus: "pending", driver: currentDriver});
-                updatDb(`users/${currentDriver}`, {currentBooking: key, currentStatus: "pending"});
-            });
-        }
+        let _dd = new Date();
+        updatDb(`/users/${contextOption.userId}`, {
+            ...route[0],
+        });
+        pushDb("/booking", 
+            {
+                id: 1, 
+                driver: currentDriver, 
+                rider: contextOption.userId,
+                fare: fare,
+                distance: distance,
+                onDate: _dd.toDateString(),
+                from: locationMarkers[0], 
+                to: locationMarkers[1], 
+                status: "pending"
+            }
+        ).then((key)=> {
+            setCurrentBooking(key);
+            //rider
+            pushDb(`/users/${contextOption.userId}/history`, {bookingId: key});
+            updatDb(`/users/${contextOption.userId}`, {currentBooking: key, currentStatus: "pending", driver: currentDriver});
+            //Driver
+            pushDb(`/users/${currentDriver}/history`, {bookingId: key});
+            updatDb(`users/${currentDriver}`, {currentBooking: key, currentStatus: "pending"});
+        });
+        setReject({ ...rejectList, ...{[currentDriver]: "used"}});
         setLayout("currentRide");
     }
 
@@ -288,7 +279,7 @@ const Rider = (props)=> {
         updatDb(`/users/${currentDriver}`, {currentStatus: "free", currentBooking: "free"});
 
         //booking
-        updatDb(`/booking/${currentBooking}`, {status: "Canceled"});
+        updatDb(`/booking/${currentBooking}`, {status: "CanceledByRider"});
 
         resetSelect();
     }
@@ -311,6 +302,30 @@ const Rider = (props)=> {
     const selectLayout = (type)=> {
         const textStyle = [commonStyle.themeNormalText, commonStyle.textBold,commonStyle.textOffSky];
         switch(type || currentLayout) {
+            case 'onCancelFromDriver': 
+                return (
+                    <View>
+                        <View style={[commonStyle.pbLg]}>
+                            <Text style={textStyle}>
+                                Driver will unable to reach on time so please request again to another driver.
+                            </Text>
+                        </View>
+                        <View style={[commonStyle.row, commonStyle.center]}>
+                            <MyButton
+                                theme={"sky"}
+                                title={"Send New Request"}
+                                style={[UI.setHeight(50)]}
+                                onPress={createRequest}
+                            />
+                            <MyButton
+                                theme={"sky"}
+                                title={"Cancel"}
+                                style={[UI.setHeight(50), commonStyle.mlmd]}
+                                onPress={resetSelect}
+                            />
+                        </View>
+                    </View>
+                )
             case 'detailRide': 
                     return (
                         <View>

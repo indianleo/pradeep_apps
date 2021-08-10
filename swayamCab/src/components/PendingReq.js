@@ -1,22 +1,21 @@
 import React from 'react';
 import { View, Text, VirtualizedList} from 'react-native';
-import { getItem, getItemCount, getTableRef } from '../config/myConfig';
+import { getItem, getItemCount, getTableRef, updatDb } from '../config/myConfig';
 import MyContext from '../context/MyContext';
 import commonStyle from '../css/commonStyle';
 import Loader from '../libs/Loader';
+import MyButton from '../libs/MyButton';
 
-const Canceled = () => {
+const PendingReq = () => {
     const [list, setList] = React.useState([]);
     const [isLoading, setLoading] = React.useState(true);
     const contextOption = React.useContext(MyContext);
-    let checkFlag = "CanceledByRider";
 
     React.useEffect(()=> {
         getTableRef(`/users/${contextOption.userId}`).once('value').then((res)=> {
             let tempData = res.val();
-            if (tempData.role == "driver") checkFlag = "CanceledByDriver";
             if (UI.isValid(tempData.history)) {
-                getTableRef(`/booking`).once('value').then((bookingRes)=> {
+                getTableRef("/booking").orderByChild('driver').equalTo(contextOption.userId).once('value').then((bookingRes)=> {
                     getBookings(bookingRes.val(), tempData);
                 }).catch((err)=> {
                     console.log(err);
@@ -34,12 +33,16 @@ const Canceled = () => {
         let ids = Object.values(userData.history);
         ids.map((history)=> {
             let found = data[history.bookingId]
-            if ( found && found.status == checkFlag) {
+            if ( found && found.status == "Pending") {
                 arr.push(found);
             }
         })
         setList(arr);
         setLoading(false);
+    }
+
+    const cancelReq = (item) => {
+        updatDb(`/booking/${item.id}`, {status: "CanceledByDriver"});
     }
 
     const renderItem = ({item}) => {
@@ -102,6 +105,13 @@ const Canceled = () => {
                 <View style={[commonStyle.pt, UI.setBorderTop(1, '#b3cce6')]}>
                     <Text style={[commonStyle.textCenter, commonStyle.textOffSky]}>{item.onDate}</Text>
                 </View>
+                <View>
+                    <MyButton
+                        theme={true}
+                        title={"Cancel"}
+                        onPress={()=> cancelReq(item)}
+                    />
+                </View>
             </View>
         )
     }
@@ -134,4 +144,4 @@ const Canceled = () => {
     )
 }
 
-export default Canceled;
+export default PendingReq;

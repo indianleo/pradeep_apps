@@ -26,12 +26,14 @@ const Driver = (props)=> {
             } else {
                 getTableRef(`/booking/${tempData.currentBooking}`).once('value').then((res)=> {
                     setBooking({...res.val()});
-                    console.log(showFetch);
-                    if (tempData.currentStatus == "onGoing" && showFetch) {
+                    console.log(route.length)
+                    if (tempData.currentStatus == "onGoing" && route.length == 0) {
                         setLayout("status");
                     } else {
                         setLayout(tempData.currentStatus);
                     }
+                }).catch((err)=> {
+                    console.log(err);
                 });
             }
         });
@@ -65,6 +67,8 @@ const Driver = (props)=> {
     }
 
     const onConfirmRequest = (fromBack)=> {
+        setFetch(false);
+        setLayout("onGoing")
         let tempMarker = locationMarkers;
         let _route = route;
         tempMarker.push(bookingData.from);
@@ -73,7 +77,6 @@ const Driver = (props)=> {
         _route.push(bookingData.to.co);
         updateRoute([..._route]);
         updateMarkers([...tempMarker]);
-        setFetch(false);
 
         //driver
         updatDb(`/users/${contextOption.userId}`, {currentStatus: "onGoing"});
@@ -83,21 +86,23 @@ const Driver = (props)=> {
         updatDb(`users/${bookingData.rider}`, {currentStatus: "onGoing"});
         //booking
         updatDb(`/booking/${bookingData.id}`, {status: "onGoing"});
-        setLayout("onGoing")
     }
 
     const onCancelReq = () => {
         setLayout("free");
         //Rider
-        updatDb(`users/${bookingData.rider}`, {driver: "selectNew"});
+        updatDb(`/users/${bookingData.rider}`, {driver: "selectNew"});
         
         // Driver
         updatDb(`/users/${contextOption.userId}`, {currentStatus: "free", currentBooking: "free"});
+
+         //booking
+         updatDb(`/booking/${currentBooking}`, {status: "CanceledByDriver"});
     }
 
     const onComplete = () => {
         //Rider
-        updatDb(`users/${bookingData.rider}`, {currentStatus: "free", driver: "selectNew", currentBooking: "free"});
+        updatDb(`/users/${bookingData.rider}`, {currentStatus: "free", driver: "selectNew", currentBooking: "free"});
         
         // Driver
         updatDb(`/users/${contextOption.userId}`, {currentStatus: "free", currentBooking: "free"});

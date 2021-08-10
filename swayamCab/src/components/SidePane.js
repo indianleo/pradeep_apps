@@ -1,11 +1,17 @@
 import React from 'react';
-import { View , Text, FlatList, TouchableOpacity, Image} from 'react-native';
+import { View , Text, FlatList, TouchableOpacity, Image, TextInput} from 'react-native';
 import MyContext from '../context/MyContext';
 import commonStyle from '../css/commonStyle';
 import Icons from '../libs/Icons';
+import InfoModal from '../libs/InfoModal';
+import MyButton from '../libs/MyButton';
+import Geolocation from "react-native-geolocation-service";
+import { updatDb } from '../config/myConfig';
 
 const SidePane = (props) => {
     const contextOption = React.useContext(MyContext);
+    const [modalVisible, showModal] = React.useState(false);
+    const [modalLayout, setModal] = React.useState(null);
     const getMenuList = () => {
         if (contextOption.isRider) {
             return [
@@ -47,7 +53,7 @@ const SidePane = (props) => {
                 {
                     id: 6,
                     title: "Share My Location",
-                    pageName: "ShareLocation",
+                    actionType: "ShareLocation",
                     iconName: "location",
                     iconSet: "entypo"
                 },
@@ -71,14 +77,14 @@ const SidePane = (props) => {
                 {
                     id: 2,
                     title: "Online/Offline",
-                    pageName: "",
+                    actionType: "LiveStatus",
                     iconName: "online-prediction",
                     iconSet: "materialIcons"
                 },
                 {
                     id: 3,
                     title: "Pending Request",
-                    pageName: "",
+                    pageName: "PendingReq",
                     iconName: "pending-actions",
                     iconSet: "materialIcons"
                 },
@@ -89,21 +95,25 @@ const SidePane = (props) => {
                     iconName: "tachometer",
                     iconSet: "fontAwesome"
                 },
-                // {
-                //     id: 5,
-                //     title: "Canceled Ride",
-                //     pageName: "Canceled",
-                //     iconName: "cancel-schedule-send",
-                //     iconSet: "materialIcons"
-                // }
+                {
+                    id: 5,
+                    title: "Canceled Ride",
+                    pageName: "Canceled",
+                    iconName: "cancel-schedule-send",
+                    iconSet: "materialIcons"
+                }
             ]
         }
     }
 
     const handlePageAction = (item) => {
-        //alert(item.pageName);
-        props.navRef.navigate(item.pageName);
-        props.closeDrawer()
+        if (item.actionType) {
+            setModal(item.actionType);
+            showModal(true);
+        } else {
+            props.navRef.navigate(item.pageName);
+        }
+        props.closeDrawer();
     }
 
     const logOut = () => {
@@ -112,6 +122,72 @@ const SidePane = (props) => {
             routes: [{name: 'Home'}]
         });
         props.handleLoginAction("logout");
+    }
+
+    const manageStatus = (status) => {
+        updatDb(`/users/${contextOption.userId}`, {isOnline: status}).then(()=> {
+            showModal(false);
+        });
+    }
+
+    const updateLocation = () => {
+        showModal(false);
+        Geolocation.getCurrentPosition((position) => {
+            updatDb(`/users/${contextOption.userId}`, {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+            }).then(()=> {
+                showInfoModal("Location Updated");
+            });
+            
+        },
+        (error) => {
+            // See error code charts below.
+            console.log(error.code, error.message);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+        );
+    }
+
+    const getLayout = () => {
+        switch(modalLayout) {
+            case 'ShareLocation':
+                return (
+                    <View>
+                        <MyButton
+                            title="Update Your Current Location"
+                            theme={true}
+                            style={[UI.setHeight(40)]}
+                            onPress={updateLocation}
+                        />
+                    </View>
+                );
+            case 'LiveStatus': 
+                return (
+                    <View style={[commonStyle.center]}>
+                        <Text style={[commonStyle.themeHeadingText]}>
+                            Select your Availbility
+                        </Text>
+                        <View style={[commonStyle.row, commonStyle.pMd]}>
+                            <MyButton
+                                theme={true}
+                                title="Online"
+                                style={[UI.setHeight(40)]}
+                                onPress={manageStatus}
+                                arg={1}
+                            />
+                            <MyButton
+                                theme={true}
+                                title="Offline"
+                                style={[UI.setHeight(40), commonStyle.mlmd]}
+                                onPress={manageStatus}
+                                arg={2}
+                            />
+                        </View>
+                    </View>
+                );
+            default: return null;
+        }
     }
 
     const renderHeader = () => {
@@ -188,6 +264,9 @@ const SidePane = (props) => {
                 style={[UI.setMarginTop(10), UI.setHeight()]}
                 showsVerticalScrollIndicator={false}
             />
+            <InfoModal external={true} isVisible={modalVisible} onClose={()=> showModal(false)}>
+                {getLayout()}
+            </InfoModal>
         </View>
     )
 }

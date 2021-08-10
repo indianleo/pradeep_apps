@@ -12,7 +12,8 @@
 	BackAndroid,
 	DeviceEventEmitter,
 	LayoutAnimation,
-    StatusBar
+    StatusBar,
+	Alert
 } from 'react-native';
 
 // import PushNotification from 'react-native-push-notification';
@@ -216,6 +217,28 @@ export function themeAction() {
 		},
 		geoFrom: function(cord) {
 			return Geocoder.from(cord);
+		},
+		ask: function(data) {
+			Alert.alert(
+				data.title,
+				data.msg,
+				[
+					{
+						text: "OK",
+						onPress: data.onOk,
+						style: "ok",
+					},
+					{
+						text: "Cancel",
+						onPress: data.onCancel,
+						style: "cancel",
+					},
+				],
+				{
+				  cancelable: true,
+				  onDismiss: data.onDismiss || data.onCancel,
+				}
+			);
 		},
 		updateDim : function (_width,_height){
 			height = _height;

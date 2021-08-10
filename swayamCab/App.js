@@ -25,7 +25,7 @@ import {MyProvider} from './src/context/MyContext';
 import {themeAction} from  './src/config/theme';
 import HeaderLeft from './src/nav/HeaderLeft';
 import HeaderRight from './src/nav/HeaderRight';
-import HeaderTitle from './src/nav/HeaderTitle';
+//import HeaderTitle from './src/nav/HeaderTitle';
 import HeaderBackground from './src/nav/HeaderBackground';
 import ImageSlider from './src/components/ImageSlider';
 import InfoModal from './src/libs/InfoModal';
@@ -42,6 +42,7 @@ import Canceled from './src/components/Canceled';
 import Feedback from './src/components/Feedback';
 import ShareLocation from './src/components/ShareLocation';
 import { requestLocation } from './src/config/myConfig';
+import PendingReq from './src/components/PendingReq';
 
 const Stack = createStackNavigator();
 global.UI = themeAction();
@@ -56,9 +57,9 @@ const App: () => Node = () => {
     const [drawerState, setDrawer] = React.useState(false);
 
     React.useEffect(()=> {
-      UI.initGeoCoading();
-      SplashScreen.hide();
-      if (!UI.ios) requestLocation();
+        UI.initGeoCoading();
+        SplashScreen.hide();
+        if (!UI.ios) requestLocation();
     }, []);
 
     global.Lang = (text, _data)=> {
@@ -183,6 +184,11 @@ const App: () => Node = () => {
               component={Profile}
               options={{title: "Profile"}}
             />
+            <Stack.Screen
+              name="PendingReq"
+              component={PendingReq}
+              options={{title: "Pending Request"}}
+            />
              <Stack.Screen
               name="Ongoing"
               component={Ongoing}
@@ -248,7 +254,7 @@ const App: () => Node = () => {
             }}
             onClose={()=> setDrawer(false)}
           >
-            { showIntro ? loadDefault() : ( _user ? loadStack() : loginPage()) }
+            { showIntro ? loadDefault() : (_user ? loadStack() : loginPage()) }
             <InfoModal ref={infoModalRef} key="intorModal" />
           </Drawer>
         </NavigationContainer>

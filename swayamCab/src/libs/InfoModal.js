@@ -64,7 +64,7 @@ const InfoModal = React.forwardRef((props, ref) => {
         <Modal
             animationType={props.viewStyle || "slide"}
             transparent={true}
-            visible={props.isVisble  || modalVisible}
+            visible={props.isVisible  || modalVisible}
             statusBarTranslucent={true}
             onRequestClose={() => {
                 updateModal(false);
