@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, VirtualizedList} from 'react-native';
-import { getItem, getItemCount, getTableRef, updatDb } from '../config/myConfig';
+import { getItem, getItemCount, getTableRef, pushDb, updatDb } from '../config/myConfig';
 import MyContext from '../context/MyContext';
 import commonStyle from '../css/commonStyle';
 import Loader from '../libs/Loader';
@@ -8,12 +8,14 @@ import MyButton from '../libs/MyButton';
 
 const PendingReq = () => {
     const [list, setList] = React.useState([]);
+    const [userData, setUserData] = React.useState({});
     const [isLoading, setLoading] = React.useState(true);
     const contextOption = React.useContext(MyContext);
 
     React.useEffect(()=> {
         getTableRef(`/users/${contextOption.userId}`).once('value').then((res)=> {
             let tempData = res.val();
+            setUserData({...tempData});
             if (UI.isValid(tempData.history)) {
                 getTableRef("/booking").orderByChild('driver').equalTo(contextOption.userId).once('value').then((bookingRes)=> {
                     getBookings(bookingRes.val(), tempData);
@@ -33,7 +35,7 @@ const PendingReq = () => {
         let ids = Object.values(userData.history);
         ids.map((history)=> {
             let found = data[history.bookingId]
-            if ( found && found.status == "Pending") {
+            if ( found && found.status == "pending") {
                 arr.push(found);
             }
         })
@@ -41,8 +43,27 @@ const PendingReq = () => {
         setLoading(false);
     }
 
-    const cancelReq = (item) => {
-        updatDb(`/booking/${item.id}`, {status: "CanceledByDriver"});
+    const acceptReq = (currentBooking) => {
+        //driver
+        updatDb(`/users/${currentBooking.driver}`, {currentStatus: "onGoing"});
+        pushDb(`/users/${currentBooking.driver}/history`, {bookingId: currentBooking.id});
+
+        //Rider
+        updatDb(`users/${currentBooking.rider}`, {currentStatus: "onGoing"});
+
+        //booking
+        updatDb(`/booking/${currentBooking.id}`, {status: "onGoing"});
+    }
+
+    const cancelReq = (currentBooking) => {
+        //Rider
+        updatDb(`/users/${currentBooking.rider}`, {driver: "selectNew"});
+        
+        // Driver
+        updatDb(`/users/${contextOption.userId}`, {currentStatus: "free", currentBooking: "free"});
+
+         //booking
+         updatDb(`/booking/${currentBooking.id}`, {status: "CanceledByDriver"});
     }
 
     const renderItem = ({item}) => {
@@ -105,11 +126,18 @@ const PendingReq = () => {
                 <View style={[commonStyle.pt, UI.setBorderTop(1, '#b3cce6')]}>
                     <Text style={[commonStyle.textCenter, commonStyle.textOffSky]}>{item.onDate}</Text>
                 </View>
-                <View>
+                <View style={[commonStyle.pLg, commonStyle.row, commonStyle.center]}>
+                    <MyButton
+                        theme={true}
+                        title={"Accept"}
+                        onPress={()=> acceptReq(item)}
+                        style={[UI.setHeight(40)]}
+                    />
                     <MyButton
                         theme={true}
                         title={"Cancel"}
                         onPress={()=> cancelReq(item)}
+                        style={[UI.setHeight(40), commonStyle.mlmd, commonStyle.bgDarkRed]}
                     />
                 </View>
             </View>
@@ -120,7 +148,7 @@ const PendingReq = () => {
         return (
             <View style={[commonStyle.center, commonStyle.pMd]}>
                 <Text style={[commonStyle.themeHeadingText]}>
-                    {list.length > 0 ? "Canceled Bookings" : "Such Ride not Found"}
+                    {list.length > 0 ? "Pending Bookings" : "Such Ride not Found"}
                 </Text>
             </View>
         )

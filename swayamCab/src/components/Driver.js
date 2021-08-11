@@ -6,6 +6,7 @@ import commonStyle from '../css/commonStyle';
 import Geolocation from "react-native-geolocation-service";
 import { dbOff, gAPiKey, getTableRef, pushDb, updatDb } from '../config/myConfig';
 import MapViewDirections from 'react-native-maps-directions';
+import MyButton from '../libs/MyButton';
 
 const Driver = (props)=> {
     const contextOption = React.useContext(MyContext);
@@ -26,7 +27,7 @@ const Driver = (props)=> {
             } else {
                 getTableRef(`/booking/${tempData.currentBooking}`).once('value').then((res)=> {
                     setBooking({...res.val()});
-                    console.log(route.length)
+                    console.log({len: route.length})
                     if (tempData.currentStatus == "onGoing" && route.length == 0) {
                         setLayout("status");
                     } else {
@@ -67,8 +68,6 @@ const Driver = (props)=> {
     }
 
     const onConfirmRequest = (fromBack)=> {
-        setFetch(false);
-        setLayout("onGoing")
         let tempMarker = locationMarkers;
         let _route = route;
         tempMarker.push(bookingData.from);
@@ -84,8 +83,11 @@ const Driver = (props)=> {
 
         //Rider
         updatDb(`users/${bookingData.rider}`, {currentStatus: "onGoing"});
+
         //booking
         updatDb(`/booking/${bookingData.id}`, {status: "onGoing"});
+        setFetch(false);
+        setLayout("onGoing");
     }
 
     const onCancelReq = () => {
@@ -199,42 +201,23 @@ const Driver = (props)=> {
                                 </Text>
                             </View>
                             <View style={[commonStyle.row, commonStyle.center]}>
-                                <TouchableOpacity
-                                    style={[
-                                        commonStyle.btnSky,
-                                        UI.setHeight(40),
-                                    ]}
+                                <MyButton
+                                    theme={true}
+                                    title="Accept"
+                                    style={[UI.setHeight(40)]}
                                     onPress={onConfirmRequest}
-                                >
-                                    <Text 
-                                        style={[
-                                            commonStyle.textStyle, 
-                                            commonStyle.fs5, 
-                                            commonStyle.textWhite
-                                        ]}
-                                    >
-                                        Accept
-                                    </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[
-                                        commonStyle.btnSky,
-                                        commonStyle.bgDarkRed,
-                                        UI.setHeight(40),
-                                        commonStyle.mlmd
-                                    ]}
+                                />
+                                <MyButton
+                                    theme={true}
+                                    title="Wait"
+                                    style={[UI.setHeight(40),commonStyle.bgOrange, commonStyle.mlmd]}
+                                />
+                                <MyButton
+                                    theme={true}
+                                    title="Cancel"
                                     onPress={onCancelReq}
-                                >
-                                    <Text 
-                                        style={[
-                                            commonStyle.textStyle, 
-                                            commonStyle.fs5, 
-                                            commonStyle.textWhite
-                                        ]}
-                                    >
-                                        Cancel
-                                    </Text>
-                                </TouchableOpacity>
+                                    style={[UI.setHeight(40),commonStyle.bgDarkRed, commonStyle.mlmd]}
+                                />
                             </View>
                         </View>
                     )

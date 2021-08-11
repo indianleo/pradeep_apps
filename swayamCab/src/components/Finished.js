@@ -9,6 +9,7 @@ const Finished = () => {
     const [list, setList] = React.useState([]);
     const [isLoading, setLoading] = React.useState(true);
     const contextOption = React.useContext(MyContext);
+    const record = {};
 
     React.useEffect(()=> {
         getTableRef(`/users/${contextOption.userId}`).once('value').then((res)=> {
@@ -27,7 +28,8 @@ const Finished = () => {
         let ids = Object.values(userData.history || {});
         ids.map((history)=> {
             let found = data[history.bookingId]
-            if ( found && found.status == "Completed") {
+            if ( found && found.status == "Completed" && !record[found.id]) {
+                record[found.id] = "added";
                 arr.push(found);
             }
         })

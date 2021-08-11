@@ -40,8 +40,9 @@ const Rider = (props)=> {
         const userRef = getTableRef(`/users/${contextOption.userId}`).on('value', snapshot => {
             let _td = snapshot.val();
             setUserData({..._td});
+            
             if (_td.driver == "selectNew" && _td.currentBooking != "free") {
-                setLayout("onCancelFromDriver")
+                setLayout("onCancelFromDriver");
             } else if (_td.currentBooking != "free") {
                 loadCurrentRide(_td);
             }
@@ -97,7 +98,8 @@ const Rider = (props)=> {
     const loadCurrentRide = (_ud) => {
         getTableRef(`/booking/${_ud.currentBooking}`).once('value').then((res)=> {
             let bookingData = res.val();
-            if (_ud.currentStatus == "onGoing") {
+            console.log(_ud.currentStatus);
+            if (_ud.currentStatus == "onGoing" || _ud.currentStatus == "pending") {
                 setDistance(bookingData.distance);
                 setFare(bookingData.fare);
                 let tempMarker = locationMarkers;
@@ -108,8 +110,8 @@ const Rider = (props)=> {
                 _route.push(bookingData.to.co);
                 updateRoute([..._route]);
                 updateMarkers([...tempMarker]);
-
-                setLayout("status");
+                
+                setLayout("currentRide");
             } 
         });
     }
@@ -239,9 +241,6 @@ const Rider = (props)=> {
         }
 
         let _dd = new Date();
-        updatDb(`/users/${contextOption.userId}`, {
-            ...route[0],
-        });
         pushDb("/booking", 
             {
                 id: 1, 
@@ -256,9 +255,12 @@ const Rider = (props)=> {
             }
         ).then((key)=> {
             setCurrentBooking(key);
+
             //rider
+            updatDb(`/users/${contextOption.userId}`, {...route[0]});
             pushDb(`/users/${contextOption.userId}/history`, {bookingId: key});
             updatDb(`/users/${contextOption.userId}`, {currentBooking: key, currentStatus: "pending", driver: currentDriver});
+            
             //Driver
             pushDb(`/users/${currentDriver}/history`, {bookingId: key});
             updatDb(`users/${currentDriver}`, {currentBooking: key, currentStatus: "pending"});
@@ -272,14 +274,14 @@ const Rider = (props)=> {
     }
 
     const cancelRide = () => {
+        //booking
+        updatDb(`/booking/${currentBooking}`, {status: "CanceledByRider"});
+
         //Rider
         updatDb(`users/${contextOption.userId}`, {currentStatus: "free", driver: "selectNew", currentBooking: "free"});
         
         // Driver
         updatDb(`/users/${currentDriver}`, {currentStatus: "free", currentBooking: "free"});
-
-        //booking
-        updatDb(`/booking/${currentBooking}`, {status: "CanceledByRider"});
 
         resetSelect();
     }
@@ -297,6 +299,14 @@ const Rider = (props)=> {
             setCurrentBooking("");
         } 
         (currentLayout != "selectArea") && setLayout("selectArea");
+    }
+
+    const getStatus = () => {
+        switch (userData.currentStatus) {
+            case 'pending': return "Driver did not accepted your request yet.";
+            case 'onWait': return "Please wait driver requested to Wait for few minutes";
+            case 'onGoing': return "You are in a ride and you will reach in sometimes";
+        }
     }
 
     const selectLayout = (type)=> {
@@ -474,6 +484,12 @@ const Rider = (props)=> {
                             </Text>
                             <Text style={textStyle}>
                                 {"Fare: "}<Text style={[commonStyle.textDark]}>{fare} Rs.</Text>
+                            </Text>
+                            <Text style={textStyle}>
+                                {"Status: "}
+                                <Text style={[commonStyle.textDark]}>
+                                    {getStatus()}
+                                </Text>
                             </Text>
                         </View>
                         <MyButton
