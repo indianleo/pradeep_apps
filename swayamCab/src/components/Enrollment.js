@@ -53,7 +53,7 @@ const Enrollment = (props)=> {
                                 commonStyle.textStyle
                             ]}
                         >
-                            Sign-up
+                            {Lang("enroll.signUp")}
                         </Text>
                     </View>
                     <Image
@@ -68,7 +68,7 @@ const Enrollment = (props)=> {
                             commonStyle.themeSkyText
                         ]}
                     >
-                        Name
+                        {Lang("enroll.cancel")}
                     </Text>
                 </View>
                 <View>
@@ -88,7 +88,7 @@ const Enrollment = (props)=> {
                             commonStyle.themeSkyText
                         ]}
                     >
-                        Phone
+                        {Lang("enroll.phone")}
                     </Text>
                 </View>
                 <View>
@@ -107,7 +107,7 @@ const Enrollment = (props)=> {
                             commonStyle.themeSkyText,
                         ]}
                     >
-                        Attachment
+                        {Lang("enroll.attach")}
                     </Text>
                 </View>
                 <View>
@@ -132,7 +132,7 @@ const Enrollment = (props)=> {
                                 commonStyle.themeBtnText
                             ]}
                         >
-                            Submit
+                            {Lang("enroll.submit")}
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
@@ -149,7 +149,7 @@ const Enrollment = (props)=> {
                                 commonStyle.themeBtnText
                             ]}
                         >
-                            Back
+                            {Lang("enroll.back")}
                         </Text>
                     </TouchableOpacity>
                 </View>

@@ -104,7 +104,7 @@ const Finished = () => {
         return (
             <View style={[commonStyle.center, commonStyle.pMd]}>
                 <Text style={[commonStyle.themeHeadingText]}>
-                    {list.length > 0 ? "Finished Bookings" : "Such Ride not Found"}
+                    {list.length > 0 ? Lang("finish.book") : Lang("finish.notFound")}
                 </Text>
             </View>
         )

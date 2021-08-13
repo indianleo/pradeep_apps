@@ -19,7 +19,7 @@ const Feedback = (props) => {
         <View style={[UI.setPadding(5,5,5,5, '%')]}>
             <View>
                 <Text style={[commonStyle.themeHeadingText, commonStyle.pbMd]}>
-                    Enter Your Feedback:
+                    {Lang("feed.enterMsg")}:
                 </Text>
                 <TextInput
                     multiline={true}
@@ -30,7 +30,7 @@ const Feedback = (props) => {
             <View style={[commonStyle.center, commonStyle.ptLg]}>
                 <MyButton
                     theme={true}
-                    title="Submit"
+                    title={Lang("feed.cancel")}
                     style={[UI.setHeight(40)]}
                     onPress={sendFeedback}
                 />

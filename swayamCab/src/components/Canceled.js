@@ -110,7 +110,7 @@ const Canceled = () => {
         return (
             <View style={[commonStyle.center, commonStyle.pMd]}>
                 <Text style={[commonStyle.themeHeadingText]}>
-                    {list.length > 0 ? "Canceled Bookings" : "Such Ride not Found"}
+                    {list.length > 0 ? Lang("cancel.cancelBook") : Lang("cancel.notFound")}
                 </Text>
             </View>
         )

@@ -4,12 +4,11 @@ import {
     Text, 
     ScrollView, 
     StyleSheet, 
-    TouchableOpacity, 
-    TextInput, 
+    TouchableOpacity,  
     Image,
     KeyboardAvoidingView
 } from 'react-native';
-import MapView, {Marker, Polyline, PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import MyContext from '../context/MyContext';
 import commonStyle from '../css/commonStyle';
 import Geolocation from "react-native-geolocation-service";
@@ -18,6 +17,8 @@ import { getDistance } from 'geolib';
 import MapViewDirections from 'react-native-maps-directions';
 import Icons from '../libs/Icons';
 import MyButton from '../libs/MyButton';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { withDecay } from 'react-native-reanimated';
 // getDistance return in meter
 
 const Rider = (props)=> {
@@ -35,6 +36,9 @@ const Rider = (props)=> {
     const [currentBooking, setCurrentBooking] = React.useState("");
     const [rejectList, setReject] = React.useState({});
     const contextOption = React.useContext(MyContext);
+    let destRef = React.useRef();
+    let pickRef = React.useRef();
+    const mapRef = React.useRef();
 
     React.useEffect(()=> {
         const userRef = getTableRef(`/users/${contextOption.userId}`).on('value', snapshot => {
@@ -117,19 +121,23 @@ const Rider = (props)=> {
     }
 
     const caluclteDetails = (desti) => {
-        console.log(desti);
-        let dis = getDistance(locationMarkers[0].co, desti)/1000;
-        setDistance(dis);
-        if (dis < 4) {
-            setFare(250)
+        if (locationMarkers[0]) {
+            let dis = getDistance(locationMarkers[0].co, desti)/1000;
+            setDistance(dis);
+            if (dis < 4) {
+                setFare(250)
+            } else {
+                let extraDis = dis - 4;
+                let totalFare = extraDis * 30 + 250;
+                setFare(totalFare);
+            } 
         } else {
-            let extraDis = dis - 4;
-            let totalFare = extraDis * 30 + 250;
-            setFare(totalFare);
-        }   
+            showInfoModal("Pickup location is not selected yet.");
+        }
     }
 
     const onMapTouch = (event)=> {
+        console.log("mapTouch");
         if (currentLayout == "selectArea") {
             event.persist();
             let tempMarker = locationMarkers;
@@ -179,35 +187,121 @@ const Rider = (props)=> {
         setCurrentDriver(_marker.driverId);
     }
 
-    const handleAddress = (type, value)=> {
+    const handleAddress = (type, value, fromSearch)=> {
         console.log({type, value});
         let temp = query;
         temp[type] = value;
         setQuery({...temp});
+        if (!fromSearch) {
+            if (type == "pickup" && pickRef?.current) pickRef.current.setAddressText(value);
+            if (type == "destination" && destRef?.current) destRef.current.setAddressText(value);
+        }
+    }
+
+    const onGoogleSearch = (type, details) => {
+        let tempMarker = locationMarkers;
+        let tempRoute = route;
+        let loc = details.geometry.location;
+        if (type == "destination") {
+            if (locationMarkers.length == 0) {
+                showInfoModal("Please confirm Pickup location first");
+                return;
+            }
+            let destiObj = {
+                    title: "Destination",
+                    co: {latitude: loc.lat, longitude: loc.lng},
+                    description: details.formatted_address,
+                };
+            if (locationMarkers.length == 1) {
+                tempMarker.push(destiObj);
+            } else {
+                tempMarker[1] = destiObj;
+            }
+            updateMarkers([...tempMarker]);
+            if (route.length == 1) {
+                tempRoute.push({latitude: loc.lat, longitude: loc.lng});
+            } else {
+                tempRoute[1] = {latitude: loc.lat, longitude: loc.lng};
+            }
+            updateRoute([...tempRoute]);
+            caluclteDetails({latitude: loc.lat, longitude: loc.lng});
+        } else if (type == "pickup") {
+            let pickObj = {
+                title: "Ride from here",
+                co: {latitude: loc.lat, longitude: loc.lng},
+                description: details.formatted_address,
+            };
+            mapRef.current.animateToRegion({
+                latitude: loc.lat,
+                longitude: loc.lng,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+            });
+            setTimeout(()=> {
+                if (locationMarkers.length == 0) {
+                    tempMarker.push(pickObj);
+                } else {
+                    tempMarker[0] = pickObj;
+                }
+                
+                tempRoute[0] = {latitude: loc.lat, longitude: loc.lng};
+                updateMarkers([...tempMarker]);
+                updateRoute([...tempRoute]);
+            }, 300);
+        }
     }
 
     const setLocationFor = (event) => {
+        console.log({query});
         if (typeof  event != "string") {
             console.log(event.nativeEvent.coordinate);
             updatDb(`/drivers/${currentDriver}`, event.nativeEvent.coordinate).then(()=> {
                 console.log("location fro driver set");
             })
-        } else if (query.destination && locationMarkers.length == 1) {
+        } else if (event == "destination" && query.destination) {
+            if (locationMarkers.length == 1) {
+                let tempMarker = locationMarkers;
+                UI.geoFrom(query.destination).then((addJson)=> {
+                    let loc = addJson.results[0].geometry.location;
+                    tempMarker.push({
+                        title: "Destination",
+                        co: {latitude: loc.lat, longitude: loc.lng},
+                        description: query.destination,
+                    })
+                    updateMarkers([...tempMarker]);
+                    updateRoute([...route, ...[{latitude: loc.lat, longitude: loc.lng}] ]);
+                    caluclteDetails({latitude: loc.lat, longitude: loc.lng});
+                }).catch((err)=> {
+                    console.log(err);
+                });
+            } else {
+                showInfoModal("Please select Pick location first");
+            }
+        } else if (event == "pickup" && query.pickup) {
             let tempMarker = locationMarkers;
-            UI.geoFrom(query.destination).then((addJson)=> {
+            let tempRoute = route;
+            UI.geoFrom(query.pickup).then((addJson)=> {
                 let loc = addJson.results[0].geometry.location;
-                tempMarker.push({
-                    title: "Destination",
-                    co: {latitude: loc.lat, longitude: loc.lng},
-                    description: query.destination,
-                })
-                updateMarkers([...tempMarker]);
-                updateRoute([...route, ...[{latitude: loc.lat, longitude: loc.lng}] ]);
-                caluclteDetails({latitude: loc.lat, longitude: loc.lng});
+                mapRef.current.animateToRegion({
+                    latitude: loc.lat,
+                    longitude: loc.lng,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                });
+                setTimeout(()=> {
+                    tempMarker[0] = {
+                        title: "Ride from here",
+                        co: {latitude: loc.lat, longitude: loc.lng},
+                        description: query.destination,
+                    };
+                    tempRoute[0] = {latitude: loc.lat, longitude: loc.lng};
+                    updateMarkers([...tempMarker]);
+                    updateRoute([...tempRoute]);
+                }, 500);
             }).catch((err)=> {
                 console.log(err);
             });
-            console.log(query.destination);
+
         }
     }
 
@@ -301,11 +395,19 @@ const Rider = (props)=> {
         (currentLayout != "selectArea") && setLayout("selectArea");
     }
 
+    const fetchLive = () => {
+        mapRef.current.animateToRegion({
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+            ...locationMarkers[0].co,
+        });
+    }
+
     const getStatus = () => {
         switch (userData.currentStatus) {
-            case 'pending': return "Driver did not accepted your request yet.";
-            case 'onWait': return "Please wait driver requested to Wait for few minutes";
-            case 'onGoing': return "You are in a ride and you will reach in sometimes";
+            case 'pending': return Lang("rider.pendingSt");
+            case 'onWait': return Lang("rider.waitt");
+            case 'onGoing': return Lang("rider.goingSt");
         }
     }
 
@@ -317,19 +419,19 @@ const Rider = (props)=> {
                     <View>
                         <View style={[commonStyle.pbLg]}>
                             <Text style={textStyle}>
-                                Driver will unable to reach on time so please request again to another driver.
+                                {Lang("rider.cancelByDriver")}
                             </Text>
                         </View>
                         <View style={[commonStyle.row, commonStyle.center]}>
                             <MyButton
                                 theme={"sky"}
-                                title={"Send New Request"}
+                                title={Lang("rider.sendNew")}
                                 style={[UI.setHeight(50)]}
                                 onPress={createRequest}
                             />
                             <MyButton
                                 theme={"sky"}
-                                title={"Cancel"}
+                                title={Lang("rider.cancel")}
                                 style={[UI.setHeight(50), commonStyle.mlmd]}
                                 onPress={resetSelect}
                             />
@@ -341,26 +443,28 @@ const Rider = (props)=> {
                         <View>
                             <View style={[commonStyle.pbLg]}>
                                 <Text style={textStyle}>
-                                    {"Details: "}
-                                    <Text style={[commonStyle.textDark]}>Hello pickup</Text>
+                                    {Lang("rider.desti") + ": "}
+                                    <Text style={[commonStyle.textDark]}>{query.destination}</Text>
                                 </Text>
                                 <Text style={textStyle}> 
-                                    {"Distance: "} <Text style={[commonStyle.textDark]}>{distance} K.M</Text>
+                                    {Lang("rider.distance") + ": "} 
+                                    <Text style={[commonStyle.textDark]}>{distance} K.M</Text>
                                 </Text>
                                 <Text style={textStyle}>
-                                    {"Fare: "}<Text style={[commonStyle.textDark]}>{fare} Rs.</Text>
+                                    {Lang("rider.fare") + ": "}
+                                    <Text style={[commonStyle.textDark]}>{fare} Rs.</Text>
                                 </Text>
                             </View>
                             <View style={[commonStyle.row, commonStyle.center]}>
                                 <MyButton
                                     theme={"sky"}
-                                    title={"Send Request"}
+                                    title={Lang("rider.sendReq")}
                                     style={[UI.setHeight(50)]}
                                     onPress={createRequest}
                                 />
                                 <MyButton
                                     theme={"sky"}
-                                    title={"Cancel"}
+                                    title={Lang("rider.cancel")}
                                     style={[UI.setHeight(50), commonStyle.mlmd]}
                                     onPress={resetSelect}
                                 />
@@ -368,71 +472,101 @@ const Rider = (props)=> {
                         </View>
                     )
             case 'selectArea':
+                console.log(query);
                 return (
                     <View>
-                        <View 
-                            style={[
-                                commonStyle.textBoxBorderColor, 
-                                commonStyle.mbmd,
-                                commonStyle.row,
-                                commonStyle.vCenter
-                            ]}
-                        >
-                            <TextInput
-                                style={[commonStyle.inputBox]}
-                                placeholder={"Pickup Location"}
-                                placeholderTextColor="#003f5c"
-                                onChangeText={handleAddress.bind(this, 'pickup')}
-                                value={query.pickup}
-                            />
-                            <MyButton
-                                type={"icon"}
-                                style={[commonStyle.pMd, UI.setBorderLeft(1, '#ccc')]}
-                                iconSet="materialIcons"
-                                iconName="my-location"
-                                iconSize={25}
-                                iconStyle={[commonStyle.textOffSky]}
-                                arg={"pickup"}
-                                onPress={setLocationFor}
-                            />
-                        </View>
-                        <View
-                            style={[
-                                commonStyle.textBoxBorderColor, 
-                                commonStyle.mbmd,
-                                commonStyle.row,
-                                commonStyle.vCenter
-                            ]}
-                        >
-                            <TextInput
-                                style={commonStyle.inputBox}
-                                placeholder={"Destination"}
-                                placeholderTextColor="#003f5c"
-                                onChangeText={handleAddress.bind(this, "destination")}
-                                value={query.destination}
-                            />
-                            <MyButton
-                                type={"icon"}
-                                style={[commonStyle.pMd, UI.setBorderLeft(1, '#ccc')]}
-                                onPress={setLocationFor}
-                                arg={"destination"}
-                                iconSet="materialIcons"
-                                iconName="my-location"
-                                iconSize={25}
-                                iconStyle={[commonStyle.textOffSky]}
-                            />
-                        </View>
-                        <View style={[commonStyle.row, commonStyle.center]}>
+                        <Text style={[commonStyle.themeSkyTextSm, commonStyle.pb]}>
+                            {Lang("rider.selPick")}:
+                        </Text>
+                        <GooglePlacesAutocomplete
+                            ref={pickRef}
+                            placeholder='Pickup'
+                            enableHighAccuracyLocation={true}
+                            minLength={3}
+                            fetchDetails={true}
+                            listUnderlayColor="lightgrey"
+                            textInputProps={{
+                                onChange: (event) => {
+                                    handleAddress("pickup", event.nativeEvent.text, true);
+                                },
+                                value: query.pickup,
+                            }}
+                            onPress={(data, details = null) => {
+                                // 'details' is provided when fetchDetails = true
+                                handleAddress("pickup", details.formatted_address, true);
+                                onGoogleSearch("pickup", details);
+                            }}
+                            enablePoweredByContainer={false}
+                            query={{
+                                key: gAPiKey,
+                                language: 'en',
+                            }}
+                            renderRightButton={()=> 
+                                <MyButton
+                                    type={"icon"}
+                                    style={[commonStyle.pMd, UI.setBorderLeft(1, '#ccc')]}
+                                    iconSet="materialIcons"
+                                    iconName="my-location"
+                                    iconSize={25}
+                                    iconStyle={[UI.setColor("green")]}
+                                    arg={"pickup"}
+                                    onPress={setLocationFor}
+                                />
+                            }
+                            styles={searchStyle}
+                        />
+                        
+                        <Text style={[commonStyle.themeSkyTextSm, commonStyle.pb, commonStyle.ptMd]}>
+                            {Lang("rider.selDesti")}:
+                        </Text>
+                        <GooglePlacesAutocomplete
+                            ref={destRef}
+                            placeholder='Destination'
+                            enableHighAccuracyLocation={false}
+                            minLength={3}
+                            fetchDetails={true}
+                            listUnderlayColor="lightgrey"
+                            textInputProps={{
+                                onChange: (event) => {
+                                    handleAddress("destination", event.nativeEvent.text, true);
+                                },
+                                value: query.destination,
+                            }}
+                            onPress={(data, details = null) => {
+                                // 'details' is provided when fetchDetails = true
+                                handleAddress("destination", details.formatted_address, true);
+                                onGoogleSearch("destination", details);
+                            }}
+                            query={{
+                                key: gAPiKey,
+                                language: 'en',
+                            }}
+                            renderRightButton={()=> 
+                                    <MyButton
+                                    type={"icon"}
+                                    style={[commonStyle.pMd, UI.setBorderLeft(1, '#ccc')]}
+                                    onPress={setLocationFor}
+                                    arg={"destination"}
+                                    iconSet="materialIcons"
+                                    iconName="my-location"
+                                    iconSize={25}
+                                    iconStyle={[UI.setColor("red")]}
+                                />
+                            }
+                            styles={searchStyle}
+                            
+                        />
+                        <View style={[commonStyle.row, commonStyle.center, commonStyle.ptMd]}>
                             <MyButton
                                 theme={"sky"}
-                                title={"Confirm"}
-                                style={[UI.setHeight(50)]}
+                                title={Lang("rider.confirm")}
+                                style={[UI.setHeight(40)]}
                                 onPress={()=> setLayout("detailRide")}
                             />
                             <MyButton
                                 theme={"sky"}
-                                title={"Reset"}
-                                style={[UI.setHeight(50), commonStyle.mlmd]}
+                                title={Lang("rider.reset")}
+                                style={[UI.setHeight(40), commonStyle.mlmd]}
                                 onPress={resetSelect}
                             />
                         </View>
@@ -492,12 +626,20 @@ const Rider = (props)=> {
                                 </Text>
                             </Text>
                         </View>
-                        <MyButton
-                            theme={"sky"}
-                            title={"Cancel"}
-                            style={[UI.setHeight(50)]}
-                            onPress={cancelRide}
-                        />
+                        <View style={[commonStyle.row, commonStyle.center, commonStyle.pMd]}>
+                            <MyButton
+                                theme={"sky"}
+                                title={Lang("rider.fetch")}
+                                style={[UI.setHeight(50)]}
+                                onPress={fetchLive}
+                            />
+                            <MyButton
+                                theme={"sky"}
+                                title={Lang("rider.cancel")}
+                                style={[UI.setHeight(50), commonStyle.bgDarkRed, commonStyle.ml]}
+                                onPress={cancelRide}
+                            />
+                        </View>
                     </View>
                 )
             default:
@@ -506,11 +648,11 @@ const Rider = (props)=> {
                         <Text 
                             style={[commonStyle.themeText, commonStyle.textDark, commonStyle.pbLg]}
                         >
-                            Lets start ride by doing few steps. Just select your destination and driver to take a ride.
+                            {Lang("rider.bookRide")}
                         </Text>
                         <MyButton
                             theme={"sky"}
-                            title={"Book Your Ride"}
+                            title={Lang("rider.btnBook")}
                             style={[UI.setHeight(50)]}
                             onPress={onBook}
                         />
@@ -525,6 +667,7 @@ const Rider = (props)=> {
                 <KeyboardAvoidingView style={[UI.setScreen()]} behavior={UI.ios ? "padding" : "height"}>
                     <View style={[UI.setWidth(), UI.setHeight(UI.height()/1.4)]}>
                         <MapView
+                            ref={mapRef}
                             provider={UI.ios ? null : PROVIDER_GOOGLE}
                             initialRegion={locationRegion}
                             onRegionChange={onRegionChange}
@@ -535,7 +678,7 @@ const Rider = (props)=> {
                             loadingIndicatorColor="#666666"
                             loadingBackgroundColor="#eeeeee"
                             showsUserLocation={true}
-                            followsUserLocation={true}
+                            //followsUserLocation={true}
                         >
                             {locationMarkers.map((_marker, index) => (
                                 <Marker
@@ -567,26 +710,24 @@ const Rider = (props)=> {
                         style={[
                             UI.setWidth(),
                             commonStyle.absolute, 
+                            commonStyle.bgWhite,
+                            commonStyle.center,
                             UI.setBottom(7.9, '%'),
                             UI.setLeft(3),
                             UI.setBorder(1, '#ccc'),
-                            commonStyle.bgWhite,
-                            commonStyle.center,
                             UI.setRadiusOn(20, 'topStart'),
                             UI.setRadiusOn(20, 'topEnd'),
                             UI.setPadding(20,0,10,0)
                         ]}
                     >
-                        <ScrollView>
-                            <View 
-                                style={[ 
-                                    UI.setWidth(),
-                                    UI.setPadding(20,20,20,20)
-                                ]}
-                            >
-                                {selectLayout()}
-                            </View>
-                        </ScrollView>
+                        <View 
+                            style={[ 
+                                UI.setWidth(),
+                                UI.setPadding(20,20,20,20),
+                            ]}
+                        >
+                            {selectLayout()}
+                        </View>
                     </View>
                 </KeyboardAvoidingView>
             }
@@ -599,5 +740,16 @@ const css = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
       },
 })
+const searchStyle = StyleSheet.create({
+    textInputContainer: {
+        borderColor: '#b3cce6',
+        borderWidth: 1
+    },
+    textInput: {
+        height: 38,
+        color: '#5d5d5d',
+        fontSize: 16,
+    },
+});
 
 export default Rider;

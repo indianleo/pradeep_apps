@@ -17,7 +17,9 @@
         "hi": "Hindi",
         "en": "English",
         "infoModalData": "Please check your internet.",
-        "infoModalSubText": "Internet is required for this action."
+        "infoModalSubText": "Internet is required for this action.",
+        "holdOn": "Hold On!",
+        "exitWarn": "Are you sure you want to exit the App"
     },
     "slider": {
       "info1": "Welcome to Svayam Cab",
@@ -38,7 +40,7 @@
     "reg": {
       "title": "Sign-up",
       "name": "Name",
-      "phone": "Phone",
+      "phone": "Phone"
     },
     "contact": {
       "title": "Contact Us",
@@ -49,5 +51,79 @@
       "pageTitle": "Select Location",
       "address": "Enter Your Address",
       "locate": "Your Closest Location"
+    },
+    "rider": {
+      "pendingSt": "Driver did not accepted your request yet.",
+      "waitSt": "Please wait driver requested to Wait for few minutes",
+      "goingSt": "You are in a ride and you will reach in sometimes",
+      "sendNew": "Send New Request",
+      "cancel": "Cancel",
+      "cancelByDriver": "Driver will unable to reach on time so please request again to another driver.",
+      "desti": "Destination",
+      "distance": "Distance",
+      "fare": "Fare",
+      "sendReq": "Send Request",
+      "selPick": "Select Pickup Location",
+      "selDesti": "Select Destination",
+      "confirm": "Confirm",
+      "reset": "Reset",
+      "bookRide": "Lets start ride by doing few steps. Just select your destination and driver to take a ride.",
+      "btnBook": "Book Your Ride",
+      "fetch": "Fetch Live"
+    },
+    "driver": {
+      "fetch": "Fetch Ongoing Ride",
+      "phone": "Phone",
+      "distance": "Distance",
+      "fare": "Fare",
+      "accept": "Accept",
+      "wait": "Wait",
+      "cancel": "Cancel",
+      "complete": "Complete"
+    },
+    "about": {
+      "name": "Name",
+      "version": "Version"
+    },
+    "cancel": {
+      "cancelBook": "Canceled Bookings",
+      "notFound": "Such Ride not Found"
+    },
+    "enroll": {
+      "signUp": "Sign-up",
+      "cancel": "Cancel",
+      "phone": "Phone",
+      "attach": "Attachment",
+      "submit": "Submit",
+      "back": "Back"
+    },
+    "feed": {
+      "enterMsg": "Enter Your Feedback",
+      "cancel": "Cancel"
+    },
+    "finish": {
+      "book": "Finished Bookings",
+      "notFound": "Such Ride not Found"
+    },
+    "going": {
+      "book": "OnGoing Bookings",
+      "notFound": "Such Ride not Found"
+    },
+    "pendingReq": {
+      "rider": "Rider",
+      "driver": "Driver",
+      "distance": "Distance",
+      "fare": "Fare",
+      "pickup": "Pickup",
+      "destination": "Destination",
+      "notFound": "Not found",
+      "accept" : "Accept",
+      "cancel": "Cancel",
+      "pending": "Pending Bookings",
+      "noSuchRider": "Such Ride not Found"
+    },
+    "profile": {
+      "name": "Name",
+      "phone": "Phone"
     }
 }

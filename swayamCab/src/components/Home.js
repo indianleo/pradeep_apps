@@ -22,8 +22,8 @@ const Home = (props)=> {
           const onBackPress = () => {
               if (navRoute.name === 'Home') {
                     UI.ask({
-                        title: "Hold On!",
-                        msg: "Are you sure you want to exit the App",
+                        title: Lang("home.holdOn"),
+                        msg: Lang("home.exitWarn"),
                         onOk: ()=> BackHandler.exitApp(),
                         onCancel: ()=> null, 
                     });

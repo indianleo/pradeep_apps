@@ -3,8 +3,8 @@
         "appName": "स्वयं",
         "user": "प्रदीप",
         "welUsr": "%{user} का स्वागत है",
-        "submit": "Submit",
-        "next": "प्रस्तुत करना",
+        "submit": "प्रस्तुत करना",
+        "next": "अगला",
         "fullName": "पूरा नाम",
         "name": "नाम",
         "phone": "फ़ोन",
@@ -17,7 +17,9 @@
         "hi": "Hindi",
         "en": "English",
         "infoModalData": "कृपया अपना इंटरनेट जांचें",
-        "infoModalSubText": "इस क्रिया के लिए इंटरनेट की आवश्यकता है।"
+        "infoModalSubText": "इस क्रिया के लिए इंटरनेट की आवश्यकता है।",
+        "holdOn": "रूको!",
+        "exitWarn": "क्या आप वाकई ऐप से बाहर निकलना चाहते हैं"
     },
     "slider": {
       "info1": "स्वागत के साथ सेल्फ कैब",
@@ -36,19 +38,90 @@
       "reg": "साइन अप करें"
     },
     "reg": {
-      "title": "Registration",
-      "name": "Name",
-      "email": "Email",
-      "pass": "Create Password",
+      "title": "साइन अप करें",
+      "name": "नाम",
+      "phone": "फ़ोन"
     },
     "contact": {
-      "title": "Contact Us",
-      "title2": "Contact"
+      "title": "संपर्क करें",
     },
     "location": {
-      "title": "Location",
-      "pageTitle": "Select Location",
-      "address": "Enter Your Address",
-      "locate": "Your Closest Location"
+      "title": "स्थान",
+      "pageTitle": "स्थान चुनें",
+      "address": "अपना पता दर्ज करें",
+      "locate": "आपका निकटतम स्थान"
+    },
+    "rider": {
+      "pendingSt": "ड्राइवर ने अभी तक आपका अनुरोध स्वीकार नहीं किया।",
+      "waitSt": "कृपया प्रतीक्षा करें ड्राइवर ने कुछ मिनट प्रतीक्षा करने का अनुरोध किया",
+      "goingSt": "आप एक सवारी में हैं और आप कुछ ही मिनटों में पहुंच जाएंगे",
+      "sendNew": "नया अनुरोध भेजें",
+      "cancel": "रद्द करना",
+      "cancelByDriver": "ड्राइवर समय पर नहीं पहुंच पाएगा इसलिए कृपया दूसरे ड्राइवर से फिर से अनुरोध करें।",
+      "desti": "गंतव्य",
+      "distance": "दूरी",
+      "fare": "किराया",
+      "sendReq": "अनुरोध भेजा",
+      "selPick": "अपना स्थान चुनें",
+      "selDesti": "गंतव्य चुनें",
+      "confirm": "पुष्टि करें",
+      "reset": "रीसेट",
+      "bookRide": "आइए कुछ कदम उठाकर सवारी शुरू करें। सवारी करने के लिए बस अपने गंतव्य और ड्राइवर का चयन करें।",
+      "btnBook": "अपनी सवारी बुक करें"
+    },
+    "driver": {
+      "fetch": "चल रही सवारी प्राप्त करें",
+      "phone": "फ़ोन",
+      "distance": "दूरी",
+      "fare": "किराया",
+      "accept": "स्वीकार करें",
+      "wait": "रुको",
+      "cancel": "रद्द करना",
+      "complete": "पूर्ण"
+    },
+    "about": {
+      "name": "नाम",
+      "version": "संस्करण"
+    },
+    "cancel": {
+      "cancelBook": "रद्द बुकिंग",
+      "notFound": "ऐसी सवारी नहीं मिली"
+    },
+    "enroll": {
+      "signUp": "साइन अप करें",
+      "cancel": "रद्द करना",
+      "phone": "फ़ोन",
+      "attach": "अनुरक्ति",
+      "submit": "प्रस्तुत करना",
+      "back": "वापस"
+    },
+    "feed": {
+      "enterMsg": "अपनी प्रतिक्रिया दर्ज करें",
+      "cancel": "रद्द करना"
+    },
+    "finish": {
+      "book": "समाप्त बुकिंग",
+      "notFound": "ऐसी सवारी नहीं मिली"
+    },
+    "going": {
+      "book": "चल रही बुकिंग",
+      "notFound": "ऐसी सवारी नहीं मिली"
+    },
+    "pendingReq": {
+      "rider": "सवार",
+      "driver": "चालक",
+      "distance": "दूरी",
+      "fare": "किराया",
+      "pickup": "आपकी स्थिति",
+      "destination": "गंतव्य",
+      "notFound": "नहीं मिला",
+      "accept" : "स्वीकार करें",
+      "cancel": "रद्द करना",
+      "pending": "लंबित बुकिंग",
+      "noSuchRider": "ऐसी सवारी नहीं मिली"
+    },
+    "profile": {
+      "name": "नाम",
+      "phone": "फ़ोन"
     }
 }

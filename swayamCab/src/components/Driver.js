@@ -13,10 +13,12 @@ const Driver = (props)=> {
     const [currentLayout, setLayout] = React.useState("");
     const [locationRegion, updateLocationRegion] = React.useState(null);
     const [locationMarkers, updateMarkers] = React.useState([]);
+    const [yourLocation, setYourLocation] = React.useState([]);
     const [userData, setUserData] = React.useState({});
     const [bookingData, setBooking] = React.useState({});
     const [route, updateRoute] = React.useState([]);
     const [showFetch, setFetch] = React.useState(true);
+    const mapRef = React.useRef();
 
     React.useEffect(()=> {
         const tableRef = getTableRef(`/users/${contextOption.userId}`).on('value', snapshot => {
@@ -24,6 +26,8 @@ const Driver = (props)=> {
             setUserData({...tempData});
             if (tempData.currentBooking == "free") {
                 setLayout("noBooking");
+                clearRoutes();
+
             } else {
                 getTableRef(`/booking/${tempData.currentBooking}`).once('value').then((res)=> {
                     setBooking({...res.val()});
@@ -39,16 +43,13 @@ const Driver = (props)=> {
             }
         });
         Geolocation.getCurrentPosition((position) => {
-            let userCo = [{
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-            }];
             updateLocationRegion({
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude,
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
             });
+            setYourLocation([...[{latitude: position.coords.latitude, longitude: position.coords.longitude}] ]);
         },
         (error) => {
           // See error code charts below.
@@ -63,31 +64,39 @@ const Driver = (props)=> {
     }, []);                                     
 
     const onRegionChange = (newRegion)=> {
-        console.log(newRegion);
+        console.log("region change");
         updateLocationRegion(newRegion);
     }
 
     const onConfirmRequest = (fromBack)=> {
         let tempMarker = locationMarkers;
         let _route = route;
+        let tempDriverLoc = yourLocation;
+        mapRef.current.animateToRegion({
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+            ...bookingData.from.co,
+        });
         tempMarker.push(bookingData.from);
         tempMarker.push(bookingData.to);
         _route.push(bookingData.from.co);
         _route.push(bookingData.to.co);
+        tempDriverLoc.push(bookingData.from.co);
         updateRoute([..._route]);
         updateMarkers([...tempMarker]);
+        setTimeout(()=> {
+            //driver
+            updatDb(`/users/${contextOption.userId}`, {currentStatus: "onGoing"});
+            pushDb(`/users/${contextOption.userId}/history`, {bookingId: userData.currentBooking});
 
-        //driver
-        updatDb(`/users/${contextOption.userId}`, {currentStatus: "onGoing"});
-        pushDb(`/users/${contextOption.userId}/history`, {bookingId: userData.currentBooking});
+            //Rider
+            updatDb(`users/${bookingData.rider}`, {currentStatus: "onGoing"});
 
-        //Rider
-        updatDb(`users/${bookingData.rider}`, {currentStatus: "onGoing"});
-
-        //booking
-        updatDb(`/booking/${bookingData.id}`, {status: "onGoing"});
-        setFetch(false);
-        setLayout("onGoing");
+            //booking
+            updatDb(`/booking/${bookingData.id}`, {status: "onGoing"});
+            setLayout("onGoing");
+            setYourLocation([...tempDriverLoc]);
+        }, 500)
     }
 
     const onCancelReq = () => {
@@ -111,15 +120,31 @@ const Driver = (props)=> {
 
         //booking
         updatDb(`/booking/${bookingData.id}`, {status: "Completed"});
-        updateRoute([]);
-        updateMarkers([]);
+        clearRoutes();
         setLayout("completed");
     }
 
+    const clearRoutes = (fromRider) => {
+        if (yourLocation.length == 2) {
+            yourLocation.pop();
+            setYourLocation([...yourLocation]);
+        }
+        updateRoute([]);
+        updateMarkers([]);
+    }
+
+    const setDriverLocation = (event) => {
+        updatDb(`/drivers/${contextOption.userId}`, event.nativeEvent.coordinate).then(()=> {
+            console.log("location set for driver");
+        })
+    }
+
     const getMapRoute = () => {
+        const ll = [];
         if (route.length == 2) {
-            return(
+            ll.push(
                 <MapViewDirections
+                    key={"riderWay"}
                     origin={route[0]}
                     destination={route[1]}
                     apikey={gAPiKey}
@@ -128,7 +153,21 @@ const Driver = (props)=> {
                 />
             )
         } 
-        return null;
+        console.log(yourLocation.length);
+        if (yourLocation.length == 2) {
+            ll.push(
+                <MapViewDirections
+                    key={"driverWay"}
+                    origin={yourLocation[0]}
+                    destination={yourLocation[1]}
+                    apikey={gAPiKey}
+                    mode="DRIVING"
+                    strokeWidth={1}
+                    strokeColor="red"
+                />
+            )
+        }
+        return ll;
     }
 
     const selectLayout = ()=> {
@@ -172,7 +211,7 @@ const Driver = (props)=> {
                                 commonStyle.textBold
                             ]}
                         >
-                            Fetch Ongoing Ride
+                            {Lang("driver.fetch")}
                         </Text>
                     </TouchableOpacity>
                 );
@@ -190,31 +229,31 @@ const Driver = (props)=> {
                         >
                             <View style={[commonStyle.pbLg]}>
                                 <Text style={[commonStyle.themeNormalText, commonStyle.textBold,commonStyle.textOffSky]}>
-                                    {"Details: "}
+                                    {Lang("driver.phone") + ": "}
                                     <Text style={[commonStyle.textDark]}>{bookingData.rider}</Text>
                                 </Text>
                                 <Text style={[commonStyle.themeNormalText, commonStyle.textBold, commonStyle.textOffSky]}> 
-                                    {"Distance: "} <Text style={[commonStyle.textDark]}>{bookingData.distance} K.M</Text>
+                                    {Lang("driver.distance") + ": "}<Text style={[commonStyle.textDark]}>{bookingData.distance} K.M</Text>
                                 </Text>
                                 <Text style={[commonStyle.themeNormalText, commonStyle.textBold,commonStyle.textOffSky]}>
-                                    {"Fare: "}<Text style={[commonStyle.textDark]}>{bookingData.fare} Rs.</Text>
+                                    {Lang("driver.fare") + ": "}<Text style={[commonStyle.textDark]}>{bookingData.fare} Rs.</Text>
                                 </Text>
                             </View>
                             <View style={[commonStyle.row, commonStyle.center]}>
                                 <MyButton
                                     theme={true}
-                                    title="Accept"
+                                    title={Lang("driver.accept")}
                                     style={[UI.setHeight(40)]}
                                     onPress={onConfirmRequest}
                                 />
                                 <MyButton
                                     theme={true}
-                                    title="Wait"
+                                    title={Lang("driver.wait")}
                                     style={[UI.setHeight(40),commonStyle.bgOrange, commonStyle.mlmd]}
                                 />
                                 <MyButton
                                     theme={true}
-                                    title="Cancel"
+                                    title={Lang("driver.cancel")}
                                     onPress={onCancelReq}
                                     style={[UI.setHeight(40),commonStyle.bgDarkRed, commonStyle.mlmd]}
                                 />
@@ -243,7 +282,7 @@ const Driver = (props)=> {
                                 commonStyle.textBold
                             ]}
                         >
-                            Complete
+                            {Lang("driver.complete")}
                         </Text>
                     </TouchableOpacity>
                 );
@@ -258,10 +297,11 @@ const Driver = (props)=> {
                 <ScrollView style={[UI.setScreen()]}>
                     <View style={[UI.setWidth(), UI.setHeight(UI.height())]}>
                         <MapView
-                            provider={PROVIDER_GOOGLE}
+                            ref={mapRef}
+                            provider={UI.ios ? null : PROVIDER_GOOGLE}
                             initialRegion={locationRegion}
                             onRegionChange={onRegionChange}
-                            //onLongPress={onMapTouch}
+                            onLongPress={setDriverLocation}
                             style={css.map}
                             loadingEnabled = {true}
                             loadingIndicatorColor="#666666"

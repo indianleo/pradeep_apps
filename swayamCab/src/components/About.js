@@ -17,12 +17,12 @@ const About = (props) => {
             <View style={[UI.setPadding(5,5,5,5, '%')]}>
                 <View>
                     <Text style={[commonStyle.themeOrangeText]}>
-                        Name: <Text style={[commonStyle.textDark]}>Swayam Cab</Text>
+                        {Lang("about.name")}: <Text style={[commonStyle.textDark]}>Swayam Cab</Text>
                     </Text>
                 </View>
                 <View>
                     <Text style={[commonStyle.themeOrangeText]}>
-                        Version: <Text  style={[commonStyle.textDark]}>0.1.0</Text>
+                        {Lang("about.version")}: <Text  style={[commonStyle.textDark]}>0.1.0</Text>
                     </Text>
                 </View>
             </View>

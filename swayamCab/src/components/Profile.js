@@ -20,7 +20,7 @@ const Profile = () => {
                     <View style={[style.pLg]}>
                         <View style={[UI.setPadding(5,5,5,5, '%'), style.bgWhite]}>
                             <Text style={[style.themeOrangeText]}>
-                                Name: 
+                                {Lang("profile.name")}: 
                             </Text>
                             <Text style={[style.themeNormalText, style.textDark]}>
                                 {context.user.name}
@@ -28,7 +28,7 @@ const Profile = () => {
                         </View>
                         <View style={[UI.setPadding(5,5,5,5, '%'), style.bgWhite, style.mt]}>
                             <Text style={[style.themeOrangeText]}>
-                                Phone: 
+                                {Lang("profile.phone")}: 
                             </Text>
                             <Text style={[style.themeNormalText, style.textDark]}>
                                 {context.userId}

@@ -102,7 +102,7 @@ const Ongoing = () => {
         return (
             <View style={[commonStyle.center, commonStyle.pMd]}>
                 <Text style={[commonStyle.themeHeadingText]}>
-                    {list.length > 0 ? "Ongoing Bookings" : "Such Ride not Found"}
+                    {list.length > 0 ? Lang("going.book") : Lang("going.notFound")}
                 </Text>
             </View>
         )

@@ -72,7 +72,7 @@ const PendingReq = () => {
                 <View style={[commonStyle.row]}>
                     <View style={[commonStyle.pbMd, commonStyle.flex1]}>
                         <Text style={[commonStyle.themeOrangeText]}>
-                            Rider
+                            {Lang("pendingReq.rider")}:
                         </Text>
                         <Text style={[commonStyle.textDark]}>
                             {item.rider}
@@ -80,7 +80,7 @@ const PendingReq = () => {
                     </View>
                     <View style={[commonStyle.pbMd, commonStyle.flex1]}>
                         <Text style={[commonStyle.themeOrangeText]}>
-                            Driver: 
+                            {Lang("pendingReq.driver")}: 
                         </Text>
                         <Text style={[commonStyle.textDark]}>
                             {item.driver || "N/A"}
@@ -90,7 +90,7 @@ const PendingReq = () => {
                 <View style={[commonStyle.row]}>
                     <View style={[commonStyle.pbMd, commonStyle.flex1]}>
                         <Text style={[commonStyle.themeOrangeText]}>
-                            Distance
+                            {Lang("pendingReq.distance")}:
                         </Text>
                         <Text style={[commonStyle.textDark]}>
                             {item.distance}
@@ -98,7 +98,7 @@ const PendingReq = () => {
                     </View>
                     <View style={[commonStyle.pbMd, commonStyle.flex1]}>
                         <Text style={[commonStyle.themeOrangeText]}>
-                            Fare
+                            {Lang("pendingReq.fare")}:
                         </Text>
                         <Text style={[commonStyle.textDark]}>
                             {item.fare}
@@ -108,7 +108,7 @@ const PendingReq = () => {
                 <View style={[commonStyle.row, commonStyle.pb]}>
                     <View style={[commonStyle.pbMd, commonStyle.flex1]}>
                         <Text style={[commonStyle.themeOrangeText]}>
-                            Pickup
+                            {Lang("pendingReq.pickup")}:
                         </Text>
                         <Text style={[commonStyle.textDark]}>
                             {item?.from?.description}
@@ -116,10 +116,10 @@ const PendingReq = () => {
                     </View>
                     <View style={[commonStyle.pbMd, commonStyle.flex1]}>
                         <Text style={[commonStyle.themeOrangeText]}>
-                            Destination
+                            {Lang("pendingReq.destination")}:
                         </Text>
                         <Text style={[commonStyle.textDark]}>
-                            {item?.to?.description || "Not found"}
+                            {item?.to?.description || Lang("pendingReq.notFound")}
                         </Text>
                     </View>
                 </View>
@@ -129,13 +129,13 @@ const PendingReq = () => {
                 <View style={[commonStyle.pLg, commonStyle.row, commonStyle.center]}>
                     <MyButton
                         theme={true}
-                        title={"Accept"}
+                        title={Lang("pendingReq.accept")}
                         onPress={()=> acceptReq(item)}
                         style={[UI.setHeight(40)]}
                     />
                     <MyButton
                         theme={true}
-                        title={"Cancel"}
+                        title={Lang("pendingReq.cancel")}
                         onPress={()=> cancelReq(item)}
                         style={[UI.setHeight(40), commonStyle.mlmd, commonStyle.bgDarkRed]}
                     />
@@ -148,7 +148,7 @@ const PendingReq = () => {
         return (
             <View style={[commonStyle.center, commonStyle.pMd]}>
                 <Text style={[commonStyle.themeHeadingText]}>
-                    {list.length > 0 ? "Pending Bookings" : "Such Ride not Found"}
+                    {list.length > 0 ? Lang("pendingReq.pending") : Lang("pendingReq.noSuchRider")}
                 </Text>
             </View>
         )
