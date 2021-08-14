@@ -17,11 +17,8 @@ import Loader from '../libs/Loader';
 const Login = (props)=> {
     const contextOptions = React.useContext(MyContext);
     const [phone, updatePhone] = React.useState("");
+    const [otp, setOtp] = React.useState("");
     const [isLoading, setLoading] = React.useState(false);
-
-    const setOtp = (pass)=> {
-        console.log({pass})
-    }
 
     const setPhone = (phoneNo)=> {
         updatePhone(phoneNo);
@@ -34,7 +31,7 @@ const Login = (props)=> {
             setLoading(true);
             getTableRef(`/users/${phone}`).once("value").then((res)=> {
                 let _data = res.val();
-                if (UI.isValid(_data)) {
+                if (UI.isValid(_data) && _data.pass == otp) {
                     contextOptions.handleLogin({userId: phone, ..._data});
                     props.handleAction(type, '');
                 } else {
@@ -102,9 +99,9 @@ const Login = (props)=> {
                             </View>
                             <TextInput
                                 style={styles.TextInput}
-                                placeholder={Lang("login.otp")}
+                                placeholder={Lang("login.pass")}
                                 placeholderTextColor="#003f5c"
-                                keyboardType="number-pad"
+                                //keyboardType="number-pad"
                                 secureTextEntry={true}
                                 onChangeText={(password) => setOtp(password)}
                             />

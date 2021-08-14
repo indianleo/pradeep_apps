@@ -1,9 +1,25 @@
 import React from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { dbOff, getTableRef } from '../config/myConfig';
+import MyContext from '../context/MyContext';
 import commonStyle from '../css/commonStyle';
+import MyButton from '../libs/MyButton';
 const HeaderRight = (props) => {
     const [modalVisible, updateModal] = React.useState(false);
+    const [pendingReq, setPending] = React.useState(0);
+    const contextOption = React.useContext(MyContext);
+    let tableRef = null;
+
+    React.useEffect(()=> {
+        if (!contextOption.isRider) {
+            tableRef = getTableRef(`/users/${contextOption.userId}`).on('value', res=> {
+                let dd = res.val();
+                setPending(dd.pendingBooking || 0);
+            });
+        }
+        return ()=> tableRef && dbOff(`/users/${contextOption.userId}`, tableRef);
+    },[])
     const handleAction= ()=> {
         //updateModal(!modalVisible);
         props.navigation.reset({
@@ -40,7 +56,24 @@ const HeaderRight = (props) => {
 
     return(
         <View style={[style.row]}>
-            
+            {pendingReq > 0 
+                ? <MyButton
+                    title={pendingReq}
+                    style={[
+                        commonStyle.bgWhite,
+                        commonStyle.center,
+                        UI.setRadius(25),
+                        UI.setScreen(30,30),
+                        commonStyle.mr,
+                        UI.setBorder(1,'#ccc')
+                    ]}
+                    textStyle={[
+                        commonStyle.textOffSky
+                    ]}
+                />
+                : null
+            }
+                
             {loadModal()}
         </View>
     )

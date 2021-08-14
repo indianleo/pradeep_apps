@@ -104,6 +104,25 @@ const Enrollment = (props)=> {
                 <View style={[commonStyle.ptLg, commonStyle.pb,]}>
                     <Text 
                         style={[
+                            commonStyle.themeSkyText
+                        ]}
+                    >
+                        {Lang("enroll.pass")}
+                    </Text>
+                </View>
+                <View>
+                    <TextInput
+                        onChangeText={handleInput.bind(this, 'pass')}
+                        style={[
+                            commonStyle.themeTextBox,
+                            commonStyle.bgWhite,
+                            UI.setHeight(50),
+                        ]}
+                    />
+                </View>
+                <View style={[commonStyle.ptLg, commonStyle.pb,]}>
+                    <Text 
+                        style={[
                             commonStyle.themeSkyText,
                         ]}
                     >

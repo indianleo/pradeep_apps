@@ -17,7 +17,6 @@ const Driver = (props)=> {
     const [userData, setUserData] = React.useState({});
     const [bookingData, setBooking] = React.useState({});
     const [route, updateRoute] = React.useState([]);
-    const [showFetch, setFetch] = React.useState(true);
     const mapRef = React.useRef();
 
     React.useEffect(()=> {
@@ -31,8 +30,7 @@ const Driver = (props)=> {
             } else {
                 getTableRef(`/booking/${tempData.currentBooking}`).once('value').then((res)=> {
                     setBooking({...res.val()});
-                    console.log({len: route.length})
-                    if (tempData.currentStatus == "onGoing" && route.length == 0) {
+                    if (tempData.currentStatus == "onGoing" && checkActiveRide()) {
                         setLayout("status");
                     } else {
                         setLayout(tempData.currentStatus);
@@ -43,20 +41,20 @@ const Driver = (props)=> {
             }
         });
         Geolocation.getCurrentPosition((position) => {
-            updateLocationRegion({
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-            });
-            setYourLocation([...[{latitude: position.coords.latitude, longitude: position.coords.longitude}] ]);
-        },
-        (error) => {
-          // See error code charts below.
-          console.log(error.code, error.message);
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-    );
+                updateLocationRegion({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                });
+                setYourLocation([...[{latitude: position.coords.latitude, longitude: position.coords.longitude}] ]);
+            },
+            (error) => {
+            // See error code charts below.
+            console.log(error.code, error.message);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+        );
 
         return ()=> {
             dbOff(`/users/${contextOption.userId}`, tableRef);
@@ -66,6 +64,17 @@ const Driver = (props)=> {
     const onRegionChange = (newRegion)=> {
         console.log("region change");
         updateLocationRegion(newRegion);
+        setLayout("onGoing");
+    }
+
+    const checkActiveRide = () => {
+        console.log({len: route.length})
+        return (route.length == 0);
+    }
+
+    const onWait = () => {
+        //Rider
+        updatDb(`users/${bookingData.rider}`, {currentStatus: "onWait"});
     }
 
     const onConfirmRequest = (fromBack)=> {
@@ -84,6 +93,7 @@ const Driver = (props)=> {
         tempDriverLoc.push(bookingData.from.co);
         updateRoute([..._route]);
         updateMarkers([...tempMarker]);
+        setYourLocation([...tempDriverLoc]);
         setTimeout(()=> {
             //driver
             updatDb(`/users/${contextOption.userId}`, {currentStatus: "onGoing"});
@@ -95,8 +105,7 @@ const Driver = (props)=> {
             //booking
             updatDb(`/booking/${bookingData.id}`, {status: "onGoing"});
             setLayout("onGoing");
-            setYourLocation([...tempDriverLoc]);
-        }, 500)
+        }, 2000)
     }
 
     const onCancelReq = () => {
@@ -108,7 +117,7 @@ const Driver = (props)=> {
         updatDb(`/users/${contextOption.userId}`, {currentStatus: "free", currentBooking: "free"});
 
          //booking
-         updatDb(`/booking/${currentBooking}`, {status: "CanceledByDriver"});
+         updatDb(`/booking/${userData.currentBooking}`, {status: "CanceledByDriver"});
     }
 
     const onComplete = () => {
@@ -250,6 +259,7 @@ const Driver = (props)=> {
                                     theme={true}
                                     title={Lang("driver.wait")}
                                     style={[UI.setHeight(40),commonStyle.bgOrange, commonStyle.mlmd]}
+                                    onPress={onWait}
                                 />
                                 <MyButton
                                     theme={true}

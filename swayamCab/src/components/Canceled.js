@@ -16,7 +16,7 @@ const Canceled = () => {
             let tempData = res.val();
             if (tempData.role == "driver") checkFlag = "CanceledByDriver";
             if (UI.isValid(tempData.history)) {
-                getTableRef(`/booking`).once('value').then((bookingRes)=> {
+                getTableRef(`/booking`).orderByChild(tempData.role).equalTo(contextOption.userId).once('value').then((bookingRes)=> {
                     getBookings(bookingRes.val(), tempData);
                 }).catch((err)=> {
                     console.log(err);

@@ -1,8 +1,7 @@
 import React from  'react';
 import { 
     View, 
-    Text, 
-    ScrollView, 
+    Text,
     StyleSheet, 
     TouchableOpacity,  
     Image,
@@ -15,10 +14,8 @@ import Geolocation from "react-native-geolocation-service";
 import { checkBlank, dbOff, gAPiKey, getTableRef, pushDb, updatDb } from '../config/myConfig';
 import { getDistance } from 'geolib';
 import MapViewDirections from 'react-native-maps-directions';
-import Icons from '../libs/Icons';
 import MyButton from '../libs/MyButton';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { withDecay } from 'react-native-reanimated';
 // getDistance return in meter
 
 const Rider = (props)=> {
@@ -49,6 +46,19 @@ const Rider = (props)=> {
                 setLayout("onCancelFromDriver");
             } else if (_td.currentBooking != "free") {
                 loadCurrentRide(_td);
+            } else {
+                if (_td.currentBooking == "free" && _td.currentStatus == "free") {
+                    if (locationMarkers.length == 2) {
+                        locationMarkers.pop();
+                        updateMarkers(locationMarkers);
+                    }
+                    if (route.length == 2) {
+                        route.pop()
+                        updateRoute(route);
+                    }
+                    
+                }
+                setLayout(_td.currentStatus);
             }
         });
         const driverRef = getTableRef("drivers").orderByChild('isOnline').equalTo(1).on("value", (res)=> {
@@ -92,29 +102,40 @@ const Rider = (props)=> {
     
     const onUnmount = (driverRef, userRef) => {
         userRef && dbOff(`/users/${contextOption.userId}`, userRef);
-        driverRef && dbOff(`/drivers/${currentDriver}`, driverRef);
+        (driverRef) && dbOff(`/drivers/${currentDriver}`, driverRef);
     }
 
     const onRegionChange = (newRegion)=> {
         updateLocationRegion(newRegion);
     }
 
+    const fetchLive = () => {
+        loadCurrentRide(userData);
+        setTimeout(()=> {
+            mapRef.current.animateToRegion({
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+                ...locationMarkers[0].co,
+            });
+        }, 500);
+    }
+
     const loadCurrentRide = (_ud) => {
+        console.log(locationMarkers.length, route.length);
         getTableRef(`/booking/${_ud.currentBooking}`).once('value').then((res)=> {
             let bookingData = res.val();
-            console.log(_ud.currentStatus);
-            if (_ud.currentStatus == "onGoing" || _ud.currentStatus == "pending") {
+            if (_ud.currentStatus == "onGoing" || _ud.currentStatus == "pending" || _ud.currentStatus == "onWait") {
                 setDistance(bookingData.distance);
                 setFare(bookingData.fare);
-                let tempMarker = locationMarkers;
-                let _route = route;
+                let tempMarker = [];
+                let _route = [];
                 tempMarker.push(bookingData.from);
                 tempMarker.push(bookingData.to);
                 _route.push(bookingData.from.co);
                 _route.push(bookingData.to.co);
                 updateRoute([..._route]);
                 updateMarkers([...tempMarker]);
-                
+                setCurrentBooking(_ud.currentBooking);
                 setLayout("currentRide");
             } 
         });
@@ -357,7 +378,15 @@ const Rider = (props)=> {
             
             //Driver
             pushDb(`/users/${currentDriver}/history`, {bookingId: key});
-            updatDb(`users/${currentDriver}`, {currentBooking: key, currentStatus: "pending"});
+            getTableRef(`/users/${currentDriver}`).once('value').then((res)=> {
+                let checkDriver = res.val();
+                if (checkDriver.currentBooking == "free") {
+                    updatDb(`/users/${currentDriver}`, {currentBooking: key, currentStatus: "pending"});
+                } else {
+                    let currPending = +(checkDriver.pendingBooking);
+                    updatDb(`/users/${currentDriver}`, {pendingBooking: currPending + 1});
+                }
+            })
         });
         setReject({ ...rejectList, ...{[currentDriver]: "used"}});
         setLayout("currentRide");
@@ -368,6 +397,11 @@ const Rider = (props)=> {
     }
 
     const cancelRide = () => {
+        console.log(currentBooking);
+        if (!currentBooking) {
+            alert("No found");
+            return;
+        }
         //booking
         updatDb(`/booking/${currentBooking}`, {status: "CanceledByRider"});
 
@@ -393,14 +427,6 @@ const Rider = (props)=> {
             setCurrentBooking("");
         } 
         (currentLayout != "selectArea") && setLayout("selectArea");
-    }
-
-    const fetchLive = () => {
-        mapRef.current.animateToRegion({
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-            ...locationMarkers[0].co,
-        });
     }
 
     const getStatus = () => {
@@ -664,7 +690,7 @@ const Rider = (props)=> {
     return (
         <MyContext.Consumer>
             {context=>
-                <KeyboardAvoidingView style={[UI.setScreen()]} behavior={UI.ios ? "padding" : "height"}>
+                <KeyboardAvoidingView style={[UI.setScreen()]} behavior={"height"}>
                     <View style={[UI.setWidth(), UI.setHeight(UI.height()/1.4)]}>
                         <MapView
                             ref={mapRef}
@@ -686,6 +712,7 @@ const Rider = (props)=> {
                                     coordinate={_marker.co}
                                     title={_marker.title}
                                     description={_marker.description}
+                                    onPress={()=> console.log(_marker)}
                                 />
                             ))} 
                             {driverMarker.map((_marker, index) => (

@@ -29,8 +29,12 @@ export function getTableRef(dbPath) {
 }
 
 export function dbOff(dbPath, funcRef) {
-  if (database &&  dbPath && funcRef) {
-    database().ref(dbPath).off('value', funcRef);
+  if (database && funcRef) {
+    try {
+      database().ref(dbPath).off('value', funcRef);
+    } catch(err) {
+      console.log({"dbOff": err});
+    }
   }
 }
 

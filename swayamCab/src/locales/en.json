@@ -33,6 +33,7 @@
       "title": "Login",
       "ins": "Please Login To Continue:",
       "otp": "OTP",
+      "pass": "Password",
       "getOtp": "Get OTP",
       "new": "New to Swayam ?",
       "reg": "Sign-Up"
@@ -40,7 +41,8 @@
     "reg": {
       "title": "Sign-up",
       "name": "Name",
-      "phone": "Phone"
+      "phone": "Phone",
+      "pass": "Password"
     },
     "contact": {
       "title": "Contact Us",
