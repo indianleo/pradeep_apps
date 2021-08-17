@@ -1,5 +1,6 @@
 import {PermissionsAndroid} from 'react-native';
 import database from '@react-native-firebase/database';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export const gAPiKey = "AIzaSyCdmmRRO2G6kpwL5C601xFRouLd0g9MQLE";
 
 export function addDb (dbPath, writeData) {
@@ -67,6 +68,30 @@ export const getItem = (data, index) => {
 
 export const getItemCount = (listData) => {
   return listData.length;
+}
+
+export async function storeData (_key, value) {
+  try {
+    const jsonValue = (typeof value == 'object') ? JSON.stringify(value) : value;
+    await AsyncStorage.setItem(_key, jsonValue);
+  } catch (e) {
+    // saving error
+    console.log(e);
+  }
+}
+
+export async function getStoreData (_key) {
+  try {
+      const _jsonValue = await AsyncStorage.getItem(_key);
+      try {
+          return JSON.parse(_jsonValue)
+      } catch(err) {
+          return _jsonValue;
+      }
+  } catch (e) {
+      // saving error
+      console.log(e);
+  }
 }
 
 export function checkBlank(_data, keys) {

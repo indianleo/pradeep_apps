@@ -1,6 +1,6 @@
 {
     "home": {
-        "appName": "Swayam",
+        "appName": "Svayam",
         "user": "Pradeep",
         "welUsr": "Welcome %{user}",
         "submit": "Submit",
@@ -35,7 +35,7 @@
       "otp": "OTP",
       "pass": "Password",
       "getOtp": "Get OTP",
-      "new": "New to Swayam ?",
+      "new": "New to Svayam ?",
       "reg": "Sign-Up"
     },
     "reg": {
@@ -57,7 +57,7 @@
     "rider": {
       "pendingSt": "Driver did not accepted your request yet.",
       "waitSt": "Please wait driver requested to Wait for few minutes",
-      "goingSt": "You are in a ride and you will reach in sometimes",
+      "goingSt": "Your request accepted by driver. Driver moving towards you.",
       "sendNew": "Send New Request",
       "cancel": "Cancel",
       "cancelByDriver": "Driver will unable to reach on time so please request again to another driver.",
@@ -71,7 +71,8 @@
       "reset": "Reset",
       "bookRide": "Lets start ride by doing few steps. Just select your destination and driver to take a ride.",
       "btnBook": "Book Your Ride",
-      "fetch": "Fetch Live"
+      "fetch": "Fetch Live",
+      "completed": "You have completed your ride."
     },
     "driver": {
       "fetch": "Fetch Ongoing Ride",
@@ -95,9 +96,11 @@
       "signUp": "Sign-up",
       "cancel": "Cancel",
       "phone": "Phone",
+      "name": "Name",
       "attach": "Attachment",
       "submit": "Submit",
-      "back": "Back"
+      "back": "Back",
+      "pass": "Password"
     },
     "feed": {
       "enterMsg": "Enter Your Feedback",
@@ -122,6 +125,7 @@
       "accept" : "Accept",
       "cancel": "Cancel",
       "pending": "Pending Bookings",
+      "wait": "Wait",
       "noSuchRider": "Such Ride not Found"
     },
     "profile": {

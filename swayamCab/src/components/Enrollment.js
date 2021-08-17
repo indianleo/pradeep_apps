@@ -68,7 +68,7 @@ const Enrollment = (props)=> {
                             commonStyle.themeSkyText
                         ]}
                     >
-                        {Lang("enroll.cancel")}
+                        {Lang("enroll.name")}
                     </Text>
                 </View>
                 <View>

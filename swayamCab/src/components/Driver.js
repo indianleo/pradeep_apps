@@ -122,7 +122,7 @@ const Driver = (props)=> {
 
     const onComplete = () => {
         //Rider
-        updatDb(`/users/${bookingData.rider}`, {currentStatus: "free", driver: "selectNew", currentBooking: "free"});
+        updatDb(`/users/${bookingData.rider}`, {currentStatus: "completed", driver: "selectNew", currentBooking: "free"});
         
         // Driver
         updatDb(`/users/${contextOption.userId}`, {currentStatus: "free", currentBooking: "free"});

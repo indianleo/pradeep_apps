@@ -5,6 +5,7 @@ import commonStyle from '../css/commonStyle';
 
 const ImageSlider = (props)=> {
     const [activeSlide, updateSlide] = useState();
+    
     const changeImage = ({nativeEvent})=> {
         const slide = Math.ceil(nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width);
         if (props.hideOnSlide && slide == props.hideOnSlide) {

@@ -13,6 +13,7 @@ import MyContext from '../context/MyContext';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { getTableRef } from '../config/myConfig';
 import Loader from '../libs/Loader';
+import { notifyByTime } from '../config/theme';
 
 const Login = (props)=> {
     const contextOptions = React.useContext(MyContext);
@@ -22,6 +23,11 @@ const Login = (props)=> {
 
     const setPhone = (phoneNo)=> {
         updatePhone(phoneNo);
+    }
+
+    const getOtp = () => {
+        console.log("getOtp");
+        //notifyByTime("Test");
     }
     
     const handleBtnAction = (type)=> {
@@ -107,7 +113,7 @@ const Login = (props)=> {
                             />
                         </View>
                         <TouchableOpacity 
-                            onPress={()=> alert("Underprocess. Please Wait")} 
+                            onPress={getOtp} 
                             style={[commonStyle.ptMd]}
                         >
                             <Text 

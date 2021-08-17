@@ -55,6 +55,11 @@ const PendingReq = () => {
         updatDb(`/booking/${currentBooking.id}`, {status: "onGoing"});
     }
 
+    const onWait = (currentBooking) => {
+        //Rider
+        updatDb(`users/${currentBooking.rider}`, {currentStatus: "onWait"});
+    }
+
     const cancelReq = (currentBooking) => {
         //Rider
         updatDb(`/users/${currentBooking.rider}`, {driver: "selectNew"});
@@ -132,6 +137,12 @@ const PendingReq = () => {
                         title={Lang("pendingReq.accept")}
                         onPress={()=> acceptReq(item)}
                         style={[UI.setHeight(40)]}
+                    />
+                    <MyButton
+                        theme={true}
+                        title={Lang("pendingReq.wait")}
+                        onPress={()=> onWait(item)}
+                        style={[UI.setHeight(40), commonStyle.bgOrange, commonStyle.mlmd]}
                     />
                     <MyButton
                         theme={true}

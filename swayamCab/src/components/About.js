@@ -17,7 +17,7 @@ const About = (props) => {
             <View style={[UI.setPadding(5,5,5,5, '%')]}>
                 <View>
                     <Text style={[commonStyle.themeOrangeText]}>
-                        {Lang("about.name")}: <Text style={[commonStyle.textDark]}>Swayam Cab</Text>
+                        {Lang("about.name")}: <Text style={[commonStyle.textDark]}>Svayam Cab</Text>
                     </Text>
                 </View>
                 <View>

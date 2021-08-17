@@ -22,7 +22,7 @@ import ChangeLang from './src/components/ChangeLang';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import {MyProvider} from './src/context/MyContext';
-import {themeAction} from  './src/config/theme';
+import {notifyConfig, themeAction} from  './src/config/theme';
 import HeaderLeft from './src/nav/HeaderLeft';
 import HeaderRight from './src/nav/HeaderRight';
 //import HeaderTitle from './src/nav/HeaderTitle';
@@ -41,7 +41,7 @@ import About from './src/components/About';
 import Canceled from './src/components/Canceled';
 import Feedback from './src/components/Feedback';
 import ShareLocation from './src/components/ShareLocation';
-import { requestLocation } from './src/config/myConfig';
+import { getStoreData, requestLocation, storeData } from './src/config/myConfig';
 import PendingReq from './src/components/PendingReq';
 
 const Stack = createStackNavigator();
@@ -52,12 +52,20 @@ const App: () => Node = () => {
     let navigationRef = React.useRef();
     const [showIntro, updateIntro] = React.useState(true);
     const [showLang, updateShowLang] = React.useState(false);
-    const [_user, setUser] = React.useState("");
+    const [_user, setUser] = React.useState(null);
     const [_needEnroll, setEnroll] = React.useState(false);
     const [drawerState, setDrawer] = React.useState(false);
 
     React.useEffect(()=> {
         UI.initGeoCoading();
+        //notifyConfig()
+        getStoreData("showIntro").then((res)=> {
+          if (res && res.oldUser) {
+            updateIntro(false);
+          }
+        }).catch((err)=> {
+          console.log({showIntro: err});
+        })
         SplashScreen.hide();
         if (!UI.ios) requestLocation();
     }, []);
@@ -79,6 +87,7 @@ const App: () => Node = () => {
     }
 
     const onSkipIntro = ()=> {
+      storeData("showIntro", {"oldUser": true});
       updateIntro(false);
     }
 
@@ -125,7 +134,6 @@ const App: () => Node = () => {
             <ImageSlider
               onSkip={onSkipIntro}
               hideOnSlide={3}
-              //logo={require('./src/images/icon.png')}
               logoHeight={100}
               logoWidth={200}
               uri={false}

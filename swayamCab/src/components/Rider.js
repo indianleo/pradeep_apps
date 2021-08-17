@@ -82,7 +82,7 @@ const Rider = (props)=> {
                     tempMarker.push({
                         title: "Pickup Location",
                         co: userCo[0],
-                        description: addJson.results[0].formatted_address
+                        description: addJson.results[0].formatted_address,
                     });
                     updateMarkers([...tempMarker]);
                 }).catch((err)=> {
@@ -397,7 +397,6 @@ const Rider = (props)=> {
     }
 
     const cancelRide = () => {
-        console.log(currentBooking);
         if (!currentBooking) {
             alert("No found");
             return;
@@ -417,12 +416,9 @@ const Rider = (props)=> {
     const resetSelect = () => {
         console.log("Reset", locationMarkers.length);
         if (locationMarkers.length > 1) {
-            let temp = locationMarkers;
-            let rou = route;
-            temp.pop();
-            rou.pop()
-            updateMarkers(temp);
-            updateRoute(rou);
+            updateMarkers([]);
+            updateRoute([]);
+            setCurrentDriver("");
             handleAddress('destination', "");
             setCurrentBooking("");
         } 
@@ -434,6 +430,7 @@ const Rider = (props)=> {
             case 'pending': return Lang("rider.pendingSt");
             case 'onWait': return Lang("rider.waitt");
             case 'onGoing': return Lang("rider.goingSt");
+            case 'completed': return Lang("rider.completed");
         }
     }
 
@@ -627,6 +624,38 @@ const Rider = (props)=> {
                         </Text>
                     </TouchableOpacity>
                 );
+            case 'completed':
+                return (
+                    <View>
+                        <View style={[commonStyle.pbLg]}>
+                            <Text style={textStyle}>
+                                {"Driver Name: "}
+                                <Text style={[commonStyle.textDark]}>{driverData.name}</Text>
+                            </Text>
+                            <Text style={textStyle}>
+                                {"Driver Phone: "}
+                                <Text style={[commonStyle.textDark]}>{currentDriver}</Text>
+                            </Text>
+                            <Text style={textStyle}> 
+                                {"Distance: "} <Text style={[commonStyle.textDark]}>{distance} K.M</Text>
+                            </Text>
+                            <Text style={textStyle}>
+                                {"Fare: "}<Text style={[commonStyle.textDark]}>{fare} Rs.</Text>
+                            </Text>
+                            <Text style={[commonStyle.themeSkyText]}>
+                                {getStatus()}
+                            </Text>
+                        </View>
+                        <View style={[commonStyle.center, commonStyle.pMd]}>
+                            <MyButton
+                                theme={"sky"}
+                                title={Lang("rider.cancel")}
+                                style={[UI.setHeight(50), commonStyle.bgDarkRed, commonStyle.ml]}
+                                onPress={resetSelect}
+                            />
+                        </View>
+                    </View>
+                )
             case "currentRide":
                 return (
                     <View>
@@ -645,11 +674,8 @@ const Rider = (props)=> {
                             <Text style={textStyle}>
                                 {"Fare: "}<Text style={[commonStyle.textDark]}>{fare} Rs.</Text>
                             </Text>
-                            <Text style={textStyle}>
-                                {"Status: "}
-                                <Text style={[commonStyle.textDark]}>
-                                    {getStatus()}
-                                </Text>
+                            <Text style={[commonStyle.themeSkyText, commonStyle.ptMd]}>
+                                {getStatus()}
                             </Text>
                         </View>
                         <View style={[commonStyle.row, commonStyle.center, commonStyle.pMd]}>
@@ -713,6 +739,7 @@ const Rider = (props)=> {
                                     title={_marker.title}
                                     description={_marker.description}
                                     onPress={()=> console.log(_marker)}
+                                    pinColor= {index == 0 ? "#23cf51" : "red"}
                                 />
                             ))} 
                             {driverMarker.map((_marker, index) => (
