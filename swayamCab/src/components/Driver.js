@@ -20,46 +20,95 @@ const Driver = (props)=> {
     const mapRef = React.useRef();
 
     React.useEffect(()=> {
+        const watchId = initLocationWatch();
         const tableRef = getTableRef(`/users/${contextOption.userId}`).on('value', snapshot => {
             let tempData = snapshot.val();
             setUserData({...tempData});
+            console.log(tempData.currentBooking);
             if (tempData.currentBooking == "free") {
                 setLayout("noBooking");
                 clearRoutes();
-
             } else {
                 getTableRef(`/booking/${tempData.currentBooking}`).once('value').then((res)=> {
-                    setBooking({...res.val()});
+                    let bookings = res.val();
+                    setBooking({...bookings});
                     if (tempData.currentStatus == "onGoing" && checkActiveRide()) {
-                        setLayout("status");
-                    } else {
-                        setLayout(tempData.currentStatus);
+                        initLocationWatch(bookings);
                     }
+                    setLayout(tempData.currentStatus);
                 }).catch((err)=> {
                     console.log(err);
                 });
             }
         });
-        Geolocation.getCurrentPosition((position) => {
+
+        return ()=> {
+            dbOff(`/users/${contextOption.userId}`, tableRef);
+            watchId && Geolocation.clearWatch(watchId);
+        }
+    }, []); 
+    
+    const checkActiveRide = (booking) => {
+        console.log({activeRoute: route.length})
+        return (route.length == 0);
+    }
+    
+    const initLocationWatch = (booking) => {
+        if (booking) {
+            return Geolocation.getCurrentPosition((position) => {
+                    let tempDriverLoc = [];
+                    updateLocationRegion({
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        latitudeDelta: 0.0922,
+                        longitudeDelta: 0.0421,
+                    });
+                    //Driver current Location
+                    tempDriverLoc.push({latitude: position.coords.latitude, longitude: position.coords.longitude});
+                    // User's pickup  location
+                    tempDriverLoc.push(booking.from.co);
+                    
+                    setYourLocation([...tempDriverLoc ]);
+                    onConfirmRequest(booking);
+                },
+                (error) => {
+                    // See error code charts below.
+                    console.log(error.code, error.message);
+                },
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+            );
+        }
+        
+        return Geolocation.watchPosition((position)=> {
+                let tempYourLoc = yourLocation;
                 updateLocationRegion({
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
                     latitudeDelta: 0.0922,
                     longitudeDelta: 0.0421,
                 });
-                setYourLocation([...[{latitude: position.coords.latitude, longitude: position.coords.longitude}] ]);
-            },
+                if (yourLocation.length > 0) {
+                    tempYourLoc[0] = {latitude: position.coords.latitude, longitude: position.coords.longitude};
+                } else {
+                    tempYourLoc.push({latitude: position.coords.latitude, longitude: position.coords.longitude})
+                }
+                setYourLocation([ ...tempYourLoc ]); 
+                updatDb(`/users/${contextOption.userId}`, {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                })
+                updatDb(`/drivers/${contextOption.userId}`, {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                });
+            }, 
             (error) => {
-            // See error code charts below.
-            console.log(error.code, error.message);
+                // See error code charts below.
+                console.log(error.code, error.message);
             },
             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
         );
-
-        return ()=> {
-            dbOff(`/users/${contextOption.userId}`, tableRef);
-        }
-    }, []);                                     
+    }
 
     const onRegionChange = (newRegion)=> {
         console.log("region change");
@@ -67,49 +116,44 @@ const Driver = (props)=> {
         setLayout("onGoing");
     }
 
-    const checkActiveRide = () => {
-        console.log({len: route.length})
-        return (route.length == 0);
-    }
-
     const onWait = () => {
+        let dd = new Date();
         //Rider
-        updatDb(`users/${bookingData.rider}`, {currentStatus: "onWait"});
+        updatDb(`users/${bookingData.rider}`, {currentStatus: "onWait", waitingTime: dd.toDateString() });
+
+        //booking
+        updatDb(`/booking/${bookingData.id}`, {status: "onWait", waitingTime: dd.toDateString() });
     }
 
-    const onConfirmRequest = (fromBack)=> {
+    const onConfirmRequest = (booking)=> {
         let tempMarker = locationMarkers;
         let _route = route;
-        let tempDriverLoc = yourLocation;
         mapRef.current.animateToRegion({
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
-            ...bookingData.from.co,
+            ...booking.from.co,
         });
-        tempMarker.push(bookingData.from);
-        tempMarker.push(bookingData.to);
-        _route.push(bookingData.from.co);
-        _route.push(bookingData.to.co);
-        tempDriverLoc.push(bookingData.from.co);
+        tempMarker.push(booking.from);
+        tempMarker.push(booking.to);
+        _route.push(booking.from.co);
+        _route.push(booking.to.co);
+
+        //--Update states
         updateRoute([..._route]);
         updateMarkers([...tempMarker]);
-        setYourLocation([...tempDriverLoc]);
-        setTimeout(()=> {
-            //driver
-            updatDb(`/users/${contextOption.userId}`, {currentStatus: "onGoing"});
-            pushDb(`/users/${contextOption.userId}/history`, {bookingId: userData.currentBooking});
 
-            //Rider
-            updatDb(`users/${bookingData.rider}`, {currentStatus: "onGoing"});
+        //driver
+        updatDb(`/users/${contextOption.userId}`, {currentStatus: "onGoing"});
+        pushDb(`/users/${contextOption.userId}/history`, {bookingId: userData.currentBooking});
 
-            //booking
-            updatDb(`/booking/${bookingData.id}`, {status: "onGoing"});
-            setLayout("onGoing");
-        }, 2000)
+        //Rider
+        updatDb(`users/${booking.rider}`, {currentStatus: "onGoing"});
+
+        //booking
+        updatDb(`/booking/${booking.id}`, {status: "onGoing"});
     }
 
     const onCancelReq = () => {
-        setLayout("free");
         //Rider
         updatDb(`/users/${bookingData.rider}`, {driver: "selectNew"});
         
@@ -118,17 +162,24 @@ const Driver = (props)=> {
 
          //booking
          updatDb(`/booking/${userData.currentBooking}`, {status: "CanceledByDriver"});
+
+         setLayout("free");
     }
 
     const onComplete = () => {
+        if (!bookingData && bookingData.rider) {
+            return false;
+        }
+        let lastBooking = bookingData;
+
         //Rider
-        updatDb(`/users/${bookingData.rider}`, {currentStatus: "completed", driver: "selectNew", currentBooking: "free"});
+        updatDb(`/users/${lastBooking.rider}`, {currentStatus: "Completed", driver: "selectNew", currentBooking: "free"});
         
         // Driver
         updatDb(`/users/${contextOption.userId}`, {currentStatus: "free", currentBooking: "free"});
 
         //booking
-        updatDb(`/booking/${bookingData.id}`, {status: "Completed"});
+        updatDb(`/booking/${lastBooking.id}`, {status: "Completed"});
         clearRoutes();
         setLayout("completed");
     }
@@ -162,7 +213,7 @@ const Driver = (props)=> {
                 />
             )
         } 
-        console.log(yourLocation.length);
+        console.log({youLocLen: yourLocation.length });
         if (yourLocation.length == 2) {
             ll.push(
                 <MapViewDirections
@@ -204,25 +255,12 @@ const Driver = (props)=> {
                 );
             case 'status': 
                 return (
-                    <TouchableOpacity
-                        style={[
-                            commonStyle.btnSky,
-                            UI.setHeight(50),
-                            commonStyle.mtmd
-                        ]}
+                    <MyButton
+                        theme={true}
+                        title={Lang("driver.fetch")}
+                        style={[UI.setHeight(50), commonStyle.mtmd]}
                         onPress={onConfirmRequest}
-                    >
-                        <Text 
-                            style={[
-                                commonStyle.textStyle, 
-                                commonStyle.fs5, 
-                                commonStyle.textWhite,
-                                commonStyle.textBold
-                            ]}
-                        >
-                            {Lang("driver.fetch")}
-                        </Text>
-                    </TouchableOpacity>
+                    />
                 );
             case 'pending': 
                     return (
@@ -253,11 +291,13 @@ const Driver = (props)=> {
                                     theme={true}
                                     title={Lang("driver.accept")}
                                     style={[UI.setHeight(40)]}
+                                    arg={bookingData}
                                     onPress={onConfirmRequest}
                                 />
                                 <MyButton
                                     theme={true}
                                     title={Lang("driver.wait")}
+                                    disabled={bookingData.status == "onWait"}
                                     style={[UI.setHeight(40),commonStyle.bgOrange, commonStyle.mlmd]}
                                     onPress={onWait}
                                 />
@@ -272,29 +312,12 @@ const Driver = (props)=> {
                     )
             case 'onGoing': 
                 return (
-                    <TouchableOpacity
-                        style={[
-                            commonStyle.bgOffSky,
-                            UI.setHeight(50),
-                            commonStyle.hPadLg,
-                            commonStyle.center,
-                            commonStyle.br,
-                            commonStyle.shadow,
-                            commonStyle.mbmd
-                        ]}
+                    <MyButton
+                        theme={true}
+                        title={Lang("driver.complete")}
+                        style={[UI.setHeight(50), commonStyle.hPadLg, commonStyle.mbmd]}
                         onPress={onComplete}
-                    >
-                        <Text 
-                            style={[
-                                commonStyle.textStyle, 
-                                commonStyle.fs5, 
-                                commonStyle.textWhite,
-                                commonStyle.textBold
-                            ]}
-                        >
-                            {Lang("driver.complete")}
-                        </Text>
-                    </TouchableOpacity>
+                    />
                 );
             default:
                 return null;
@@ -325,6 +348,7 @@ const Driver = (props)=> {
                                     coordinate={_marker.co}
                                     title={_marker.title}
                                     description={_marker.description}
+                                    pinColor= {index == 0 ? "#23cf51" : "red"}
                                 />
                             ))} 
                             {getMapRoute()}

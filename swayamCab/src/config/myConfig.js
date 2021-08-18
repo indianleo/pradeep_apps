@@ -103,9 +103,9 @@ export function checkBlank(_data, keys) {
 }
 
 const warnMsg = {
-  "from": "Please enable location to get your address",
-  "to": "PLease select destination",
-  "driver": "Please select driver to book.",
-  "userId": "Please login again to refresh your details."
+  "from": "rider.fromWarn",
+  "to": "rider.toWarn",
+  "driver": "rider.driverWarn",
+  "userId": "rider.loginWarn"
 }
   

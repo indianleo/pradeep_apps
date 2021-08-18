@@ -12,54 +12,55 @@ const SidePane = (props) => {
     const contextOption = React.useContext(MyContext);
     const [modalVisible, showModal] = React.useState(false);
     const [modalLayout, setModal] = React.useState(null);
+
     const getMenuList = () => {
         if (contextOption.isRider) {
             return [
                 {
                     id: 1,
-                    title: "Profile",
+                    title: "menu.profile",
                     pageName: "Profile",
                     iconName: "user",
                     iconSet: "fontAwesome"
                 },
                 {
                     id: 2,
-                    title: "Ongoing",
+                    title: "menu.ongoing",
                     pageName: "Ongoing",
                     iconName: "direction",
                     iconSet: "entypo"
                 },
                 {
                     id: 3,
-                    title: "Finished",
+                    title: "menu.finished",
                     pageName: "Finished",
                     iconName: "clock-end",
                     iconSet: "materialComIcons"
                 },
                 {
                     id: 4,
-                    title: "Canceled",
+                    title: "menu.canceled",
                     pageName: "Canceled",
                     iconName: "account-cancel",
                     iconSet: "materialComIcons"
                 },
                 {
                     id: 5,
-                    title: "Feedback",
+                    title: "menu.feed",
                     pageName: "Feedback",
                     iconName: "feedback",
                     iconSet: "materialIcons"
                 },
                 {
                     id: 6,
-                    title: "Share My Location",
+                    title: "menu.shareLoc",
                     actionType: "ShareLocation",
                     iconName: "location",
                     iconSet: "entypo"
                 },
                 {
                     id: 7,
-                    title: "About",
+                    title: "menu.about",
                     pageName: "About",
                     iconName: "car-info",
                     iconSet: "materialComIcons"
@@ -69,39 +70,46 @@ const SidePane = (props) => {
             return [
                 {
                     id: 1,
-                    title: "Basic Info",
+                    title: "menu.basicInfo",
                     pageName: "Profile",
                     iconName: "user",
                     iconSet: "fontAwesome"
                 },
                 {
                     id: 2,
-                    title: "Online/Offline",
+                    title: "menu.vis",
                     actionType: "LiveStatus",
                     iconName: "online-prediction",
                     iconSet: "materialIcons"
                 },
                 {
                     id: 3,
-                    title: "Pending Request",
+                    title: "menu.penReq",
                     pageName: "PendingReq",
                     iconName: "pending-actions",
                     iconSet: "materialIcons"
                 },
                 {
                     id: 4,
-                    title: "Completed Ride",
+                    title: "menu.comRide",
                     pageName: "Finished",
                     iconName: "tachometer",
                     iconSet: "fontAwesome"
                 },
                 {
                     id: 5,
-                    title: "Canceled Ride",
+                    title: "menu.canRide",
                     pageName: "Canceled",
                     iconName: "cancel-schedule-send",
                     iconSet: "materialIcons"
-                }
+                },
+                {
+                    id: 6,
+                    title: "menu.upLoc",
+                    actionType: "ShareLocation",
+                    iconName: "location",
+                    iconSet: "entypo"
+                },
             ]
         }
     }
@@ -128,6 +136,7 @@ const SidePane = (props) => {
         updatDb(`/users/${contextOption.userId}`, {isOnline: status}).then(()=> {
             showModal(false);
         });
+        updatDb(`/drivers/${contextOption.userId}`, {isOnline: status});
     }
 
     const updateLocation = () => {
@@ -137,6 +146,12 @@ const SidePane = (props) => {
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude,
             }).then(()=> {
+                if (!contextOption.isRider) {
+                    updatDb(`/drivers/${contextOption.userId}`, {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                    });
+                }
                 showInfoModal("Location Updated");
             });
             
@@ -248,7 +263,7 @@ const SidePane = (props) => {
                         UI.setWidth(70, '%'),
                     ]}
                 >
-                    {item.title}
+                    {Lang(item.title)}
                 </Text>
             </TouchableOpacity>
         )

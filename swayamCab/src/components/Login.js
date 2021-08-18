@@ -86,7 +86,7 @@ const Login = (props)=> {
                             </View>
                             <TextInput
                                 style={styles.TextInput}
-                                keyboardType="number-pad"
+                                //keyboardType="number-pad"
                                 placeholder={Lang("home.phone")}
                                 defaultValue={"7800794002"}
                                 placeholderTextColor="#003f5c"

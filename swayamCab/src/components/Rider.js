@@ -16,6 +16,8 @@ import { getDistance } from 'geolib';
 import MapViewDirections from 'react-native-maps-directions';
 import MyButton from '../libs/MyButton';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import Icons from '../libs/Icons';
+import Loader from '../libs/Loader';
 // getDistance return in meter
 
 const Rider = (props)=> {
@@ -36,6 +38,7 @@ const Rider = (props)=> {
     let destRef = React.useRef();
     let pickRef = React.useRef();
     const mapRef = React.useRef();
+    const bookingFlags = ["onGoing", "onWait", "pending"];
 
     React.useEffect(()=> {
         const userRef = getTableRef(`/users/${contextOption.userId}`).on('value', snapshot => {
@@ -47,17 +50,6 @@ const Rider = (props)=> {
             } else if (_td.currentBooking != "free") {
                 loadCurrentRide(_td);
             } else {
-                if (_td.currentBooking == "free" && _td.currentStatus == "free") {
-                    if (locationMarkers.length == 2) {
-                        locationMarkers.pop();
-                        updateMarkers(locationMarkers);
-                    }
-                    if (route.length == 2) {
-                        route.pop()
-                        updateRoute(route);
-                    }
-                    
-                }
                 setLayout(_td.currentStatus);
             }
         });
@@ -110,21 +102,22 @@ const Rider = (props)=> {
     }
 
     const fetchLive = () => {
-        loadCurrentRide(userData);
-        setTimeout(()=> {
-            mapRef.current.animateToRegion({
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-                ...locationMarkers[0].co,
-            });
-        }, 500);
+        if (userData.currentBooking) {
+            loadCurrentRide(userData);
+            setTimeout(()=> {
+                mapRef.current.animateToRegion({
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                    ...locationMarkers[0].co,
+                });
+            }, 500);
+        }
     }
 
     const loadCurrentRide = (_ud) => {
-        console.log(locationMarkers.length, route.length);
         getTableRef(`/booking/${_ud.currentBooking}`).once('value').then((res)=> {
             let bookingData = res.val();
-            if (_ud.currentStatus == "onGoing" || _ud.currentStatus == "pending" || _ud.currentStatus == "onWait") {
+            if ( bookingFlags.includes(_ud.currentStatus) ) {
                 setDistance(bookingData.distance);
                 setFare(bookingData.fare);
                 let tempMarker = [];
@@ -149,7 +142,7 @@ const Rider = (props)=> {
                 setFare(250)
             } else {
                 let extraDis = dis - 4;
-                let totalFare = extraDis * 30 + 250;
+                let totalFare = Math.round(extraDis * 30 + 250);
                 setFare(totalFare);
             } 
         } else {
@@ -274,12 +267,7 @@ const Rider = (props)=> {
 
     const setLocationFor = (event) => {
         console.log({query});
-        if (typeof  event != "string") {
-            console.log(event.nativeEvent.coordinate);
-            updatDb(`/drivers/${currentDriver}`, event.nativeEvent.coordinate).then(()=> {
-                console.log("location fro driver set");
-            })
-        } else if (event == "destination" && query.destination) {
+        if (event == "destination" && query.destination) {
             if (locationMarkers.length == 1) {
                 let tempMarker = locationMarkers;
                 UI.geoFrom(query.destination).then((addJson)=> {
@@ -351,7 +339,7 @@ const Rider = (props)=> {
         }
         let warn = checkBlank(checkObj, ["from","to","driver", "userId"]);
         if (warn) {
-            showInfoModal(warn);
+            showInfoModal(Lang(warn));
             return false;
         }
 
@@ -425,13 +413,65 @@ const Rider = (props)=> {
         (currentLayout != "selectArea") && setLayout("selectArea");
     }
 
-    const getStatus = () => {
-        switch (userData.currentStatus) {
-            case 'pending': return Lang("rider.pendingSt");
-            case 'onWait': return Lang("rider.waitt");
-            case 'onGoing': return Lang("rider.goingSt");
-            case 'completed': return Lang("rider.completed");
+    const getStatus = (textStyle) => {
+        let text = "";
+        let details = null;
+        if (userData.currentStatus == "Completed" && userData.currentBooking == "free") {
+            details = (
+                <View style={[commonStyle.pbMd, commonStyle.center]}>
+                    <Icons
+                        iconSet="ionicons"
+                        name="md-checkmark-done-circle-sharp"
+                        size={50}
+                        style={[UI.setColor("green")]}
+                    />
+                </View>
+            )
+        } else {
+            details = (
+                <View style={[commonStyle.pbMd]}>
+                    <Text style={textStyle}>
+                        {"Driver Name: "}
+                        <Text style={[commonStyle.textDark]}>{driverData.name}</Text>
+                    </Text>
+                    <Text style={textStyle}>
+                        {"Driver Phone: "}
+                        <Text style={[commonStyle.textDark]}>{currentDriver}</Text>
+                    </Text>
+                    <Text style={textStyle}> 
+                        {"Distance: "} <Text style={[commonStyle.textDark]}>{distance} K.M</Text>
+                    </Text>
+                    <Text style={textStyle}>
+                        {"Fare: "}<Text style={[commonStyle.textDark]}>{fare} Rs.</Text>
+                    </Text>
+                </View>
+            )
         }
+        switch (userData.currentStatus) {
+            case 'pending': text = Lang("rider.pendingSt");
+            break;
+            case 'onWait': text = Lang("rider.waitSt");
+            break;
+            case 'onGoing': text = Lang("rider.goingSt");
+            break;
+            case 'Completed': text = Lang("rider.completed");
+            break;
+        }
+        return (
+            <View>
+                {
+                    userData.currentStatus == "pending" || userData.currentStatus == "onWait" 
+                        ? <Loader loading={true} style={[commonStyle.vPadLg]}/>
+                        : details
+                            
+                }
+                <View style={[commonStyle.bgLightSky, commonStyle.pMd, commonStyle.br]}>
+                    <Text style={[commonStyle.themeSkyText, commonStyle.vPadMd]}>
+                        {text}
+                    </Text>
+                </View>
+            </View>
+        )
     }
 
     const selectLayout = (type)=> {
@@ -440,7 +480,7 @@ const Rider = (props)=> {
             case 'onCancelFromDriver': 
                 return (
                     <View>
-                        <View style={[commonStyle.pbLg]}>
+                        <View style={[commonStyle.pbLg, commonStyle.bgLightSky]}>
                             <Text style={textStyle}>
                                 {Lang("rider.cancelByDriver")}
                             </Text>
@@ -495,7 +535,6 @@ const Rider = (props)=> {
                         </View>
                     )
             case 'selectArea':
-                console.log(query);
                 return (
                     <View>
                         <Text style={[commonStyle.themeSkyTextSm, commonStyle.pb]}>
@@ -624,33 +663,17 @@ const Rider = (props)=> {
                         </Text>
                     </TouchableOpacity>
                 );
-            case 'completed':
+            case 'Completed':
                 return (
                     <View>
                         <View style={[commonStyle.pbLg]}>
-                            <Text style={textStyle}>
-                                {"Driver Name: "}
-                                <Text style={[commonStyle.textDark]}>{driverData.name}</Text>
-                            </Text>
-                            <Text style={textStyle}>
-                                {"Driver Phone: "}
-                                <Text style={[commonStyle.textDark]}>{currentDriver}</Text>
-                            </Text>
-                            <Text style={textStyle}> 
-                                {"Distance: "} <Text style={[commonStyle.textDark]}>{distance} K.M</Text>
-                            </Text>
-                            <Text style={textStyle}>
-                                {"Fare: "}<Text style={[commonStyle.textDark]}>{fare} Rs.</Text>
-                            </Text>
-                            <Text style={[commonStyle.themeSkyText]}>
-                                {getStatus()}
-                            </Text>
+                            {getStatus(textStyle)}
                         </View>
                         <View style={[commonStyle.center, commonStyle.pMd]}>
                             <MyButton
                                 theme={"sky"}
-                                title={Lang("rider.cancel")}
-                                style={[UI.setHeight(50), commonStyle.bgDarkRed, commonStyle.ml]}
+                                title={Lang("rider.ok")}
+                                style={[UI.setHeight(45),UI.setWidth(80), commonStyle.ml]}
                                 onPress={resetSelect}
                             />
                         </View>
@@ -660,23 +683,7 @@ const Rider = (props)=> {
                 return (
                     <View>
                         <View style={[commonStyle.pbLg]}>
-                            <Text style={textStyle}>
-                                {"Driver Name: "}
-                                <Text style={[commonStyle.textDark]}>{driverData.name}</Text>
-                            </Text>
-                            <Text style={textStyle}>
-                                {"Driver Phone: "}
-                                <Text style={[commonStyle.textDark]}>{currentDriver}</Text>
-                            </Text>
-                            <Text style={textStyle}> 
-                                {"Distance: "} <Text style={[commonStyle.textDark]}>{distance} K.M</Text>
-                            </Text>
-                            <Text style={textStyle}>
-                                {"Fare: "}<Text style={[commonStyle.textDark]}>{fare} Rs.</Text>
-                            </Text>
-                            <Text style={[commonStyle.themeSkyText, commonStyle.ptMd]}>
-                                {getStatus()}
-                            </Text>
+                            {getStatus(textStyle)}
                         </View>
                         <View style={[commonStyle.row, commonStyle.center, commonStyle.pMd]}>
                             <MyButton
@@ -723,8 +730,8 @@ const Rider = (props)=> {
                             provider={UI.ios ? null : PROVIDER_GOOGLE}
                             initialRegion={locationRegion}
                             onRegionChange={onRegionChange}
-                            onPress={onMapTouch}
-                            onLongPress={setLocationFor}
+                            //onPress={onMapTouch}
+                            onLongPress={onMapTouch}
                             style={css.map}
                             loadingEnabled = {true}
                             loadingIndicatorColor="#666666"

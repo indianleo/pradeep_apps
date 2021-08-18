@@ -119,6 +119,7 @@ export default StyleSheet.create({
 	bgDark: {backgroundColor: "#4d4d4d"},
 	bgWhite: {backgroundColor: '#fff'},
 	bgOffSky: {backgroundColor: "#336699"},
+	bgLightSky: {backgroundColor: '#e0f0ff'},
 	bgCyan: { backgroundColor: 'cyan' },
 	bgDarkRed: {backgroundColor: '#990000'},
 	themeBg: { backgroundColor: '#f2f2f2' },

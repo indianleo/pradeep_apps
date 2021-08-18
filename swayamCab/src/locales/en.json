@@ -55,8 +55,8 @@
       "locate": "Your Closest Location"
     },
     "rider": {
-      "pendingSt": "Driver did not accepted your request yet.",
-      "waitSt": "Please wait driver requested to Wait for few minutes",
+      "pendingSt": "Driver did not accepted your request yet. You can wait or cancel to book again.",
+      "waitSt": "Driver requested to Wait for half an hour otherwise you can cancel and book again for another driver.",
       "goingSt": "Your request accepted by driver. Driver moving towards you.",
       "sendNew": "Send New Request",
       "cancel": "Cancel",
@@ -72,7 +72,12 @@
       "bookRide": "Lets start ride by doing few steps. Just select your destination and driver to take a ride.",
       "btnBook": "Book Your Ride",
       "fetch": "Fetch Live",
-      "completed": "You have completed your ride."
+      "completed": "You have completed your last ride.",
+      "fromWarn": "Please enable location to get your address",
+      "toWarn": "Please select destination",
+      "driverWarn": "Please select driver to book.",
+      "loginWarn": "Please login again to refresh your details.",
+      "ok": "OK"
     },
     "driver": {
       "fetch": "Fetch Ongoing Ride",
@@ -131,5 +136,20 @@
     "profile": {
       "name": "Name",
       "phone": "Phone"
+    },
+    "menu": {
+      "profile": "Profile",
+      "ongoing": "Ongoing",
+      "finished": "Finished",
+      "canceled": "Canceled",
+      "feed": "Feedback",
+      "shareLoc": "Share My Location",
+      "about": "About",
+      "basicInfo": "Basic Info",
+      "vis": "Online/Offline",
+      "penReq": "Pending Request",
+      "comRide": "Completed Ride",
+      "canRide": "Canceled Ride",
+      "upLoc": "Update Your Location"
     }
 }

@@ -11,8 +11,10 @@ const PendingReq = () => {
     const [userData, setUserData] = React.useState({});
     const [isLoading, setLoading] = React.useState(true);
     const contextOption = React.useContext(MyContext);
+    const [waitingList, setWaiting] = React.useState([]);
 
     React.useEffect(()=> {
+        setLoading(true);
         getTableRef(`/users/${contextOption.userId}`).once('value').then((res)=> {
             let tempData = res.val();
             setUserData({...tempData});
@@ -28,14 +30,14 @@ const PendingReq = () => {
         }).catch((err)=> {
             console.log(err);
         })
-    }, []);
+    }, [waitingList]);
 
-    const getBookings = (data, userData) => {
+    const getBookings = (data, currentUser) => {
         let arr = [];
-        let ids = Object.values(userData.history);
+        let ids = Object.values(currentUser.history);
         ids.map((history)=> {
             let found = data[history.bookingId]
-            if ( found && found.status == "pending") {
+            if ( found && found.status == "pending" || found.status == "onWait") {
                 arr.push(found);
             }
         })
@@ -56,8 +58,13 @@ const PendingReq = () => {
     }
 
     const onWait = (currentBooking) => {
+        let dd = new Date();
+        setWaiting([...waitingList, ...[currentBooking.rider]]);
         //Rider
-        updatDb(`users/${currentBooking.rider}`, {currentStatus: "onWait"});
+        updatDb(`/users/${currentBooking.rider}`, {currentStatus: "onWait", waitingTime: dd.toDateString() });
+
+        //booking
+        updatDb(`/booking/${currentBooking.id}`, {status: "onWait", waitingTime: dd.toDateString() });
     }
 
     const cancelReq = (currentBooking) => {
@@ -142,6 +149,7 @@ const PendingReq = () => {
                         theme={true}
                         title={Lang("pendingReq.wait")}
                         onPress={()=> onWait(item)}
+                        disabled={item.status == "onWait"}
                         style={[UI.setHeight(40), commonStyle.bgOrange, commonStyle.mlmd]}
                     />
                     <MyButton

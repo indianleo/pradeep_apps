@@ -14,7 +14,7 @@ const Finished = () => {
     React.useEffect(()=> {
         getTableRef(`/users/${contextOption.userId}`).once('value').then((res)=> {
             let tempData = res.val();
-            getTableRef(`/booking`).once('value').then((bookingRes)=> {
+            getTableRef(`/booking`).orderByChild(tempData.role).equalTo(contextOption.userId).once('value').then((bookingRes)=> {
                 getBookings(bookingRes.val(), tempData);
             })
         }).catch((err)=> {
@@ -24,7 +24,6 @@ const Finished = () => {
 
     const getBookings = (data, userData) => {
         let arr = [];
-        console.log(userData.history);
         let ids = Object.values(userData.history || {});
         ids.map((history)=> {
             let found = data[history.bookingId]

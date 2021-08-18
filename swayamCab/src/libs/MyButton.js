@@ -7,6 +7,7 @@ import Icons from './Icons';
 const MyButton = (props) => {
 
     const onTouch = () => {
+        if (props.disabled) return false;
         if (props.arg) {
             props.onPress?.call(this, props.arg);
         } else {
@@ -14,15 +15,23 @@ const MyButton = (props) => {
         }
     }
 
-    if (props.theme) {
-        let btnStyle = [commonStyle.btnSky];
+    const wrapperStyle = () => { console.log(props.disabled)
+        let style = props.theme ? [commonStyle.btnSky] : [];
         if (props.style) {
-            btnStyle = isArray(props.style) ? [...btnStyle, ...props.style] : [...btnStyle, props.style];
+            style = isArray(props.style) ? [...style, ...props.style] : [...style, props.style];
         }
+        if (props.disabled) {
+            style.push(UI.setOpacity(.4));
+        }
+
+        return style;
+    }
+
+    if (props.theme) {
         return (
             <TouchableOpacity
                 onPress={onTouch}
-                style={btnStyle}
+                style={wrapperStyle()}
             >
                 <Text style={[commonStyle.themeBtnText, props.fontSize && {fontSize: props.fontSize} ]}>
                     {props.title}
@@ -54,7 +63,7 @@ const MyButton = (props) => {
     return (
         <TouchableOpacity
             onPress={onTouch}
-            style={props.style}
+            style={wrapperStyle()}
         >
             {getInnerLayout()}
         </TouchableOpacity>
