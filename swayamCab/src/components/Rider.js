@@ -146,7 +146,7 @@ const Rider = (props)=> {
                 setFare(totalFare);
             } 
         } else {
-            showInfoModal("Pickup location is not selected yet.");
+            showInfoModal(Lang("rider.pickupLocWarn"));
         }
     }
 
@@ -218,7 +218,7 @@ const Rider = (props)=> {
         let loc = details.geometry.location;
         if (type == "destination") {
             if (locationMarkers.length == 0) {
-                showInfoModal("Please confirm Pickup location first");
+                showInfoModal(Lang("rider.confirmPickup"));
                 return;
             }
             let destiObj = {
@@ -284,7 +284,7 @@ const Rider = (props)=> {
                     console.log(err);
                 });
             } else {
-                showInfoModal("Please select Pick location first");
+                showInfoModal(Lang("rider.confirmPickup"));
             }
         } else if (event == "pickup" && query.pickup) {
             let tempMarker = locationMarkers;
@@ -443,6 +443,9 @@ const Rider = (props)=> {
                     </Text>
                     <Text style={textStyle}>
                         {"Fare: "}<Text style={[commonStyle.textDark]}>{fare} Rs.</Text>
+                    </Text>
+                    <Text style={textStyle}>
+                        {"Booking ID: "}<Text style={[commonStyle.textDark]}>{userData.currentBooking}</Text>
                     </Text>
                 </View>
             )

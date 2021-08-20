@@ -39,10 +39,18 @@ const Finished = () => {
     const renderItem = ({item}) => {
         return (
             <View style={[commonStyle.bgWhite, commonStyle.mb, commonStyle.pMd, commonStyle.br, ]}>
-                <View style={[commonStyle.row]}>
+                <View style={[commonStyle.pbMd, UI.setBorderBottom(1, '#ccc')]}>
+                    <Text style={[commonStyle.themeOrangeText]}>
+                        {Lang("pendingReq.bookId")}: 
+                        <Text style={[commonStyle.themeNormalText, commonStyle.textDark]}>
+                            {" "+item.id}
+                        </Text>
+                    </Text>
+                </View>
+                <View style={[commonStyle.row, commonStyle.ptMd]}>
                     <View style={[commonStyle.pbMd, commonStyle.flex1]}>
                         <Text style={[commonStyle.themeOrangeText]}>
-                            Rider
+                            {Lang("pendingReq.rider")}
                         </Text>
                         <Text style={[commonStyle.textDark]}>
                             {item.rider}
@@ -50,7 +58,7 @@ const Finished = () => {
                     </View>
                     <View style={[commonStyle.pbMd, commonStyle.flex1]}>
                         <Text style={[commonStyle.themeOrangeText]}>
-                            Driver: 
+                            {Lang("pendingReq.driver")}: 
                         </Text>
                         <Text style={[commonStyle.textDark]}>
                             {item.driver || "N/A"}
@@ -60,7 +68,7 @@ const Finished = () => {
                 <View style={[commonStyle.row]}>
                     <View style={[commonStyle.pbMd, commonStyle.flex1]}>
                         <Text style={[commonStyle.themeOrangeText]}>
-                            Distance
+                            {Lang("pendingReq.distance")}:
                         </Text>
                         <Text style={[commonStyle.textDark]}>
                             {item.distance}
@@ -68,7 +76,7 @@ const Finished = () => {
                     </View>
                     <View style={[commonStyle.pbMd, commonStyle.flex1]}>
                         <Text style={[commonStyle.themeOrangeText]}>
-                            Fare
+                            {Lang("pendingReq.pickup")}:
                         </Text>
                         <Text style={[commonStyle.textDark]}>
                             {item.fare}
@@ -78,7 +86,7 @@ const Finished = () => {
                 <View style={[commonStyle.row, commonStyle.pb]}>
                     <View style={[commonStyle.pbMd, commonStyle.flex1]}>
                         <Text style={[commonStyle.themeOrangeText]}>
-                            Pickup
+                            {Lang("pendingReq.pickup")}:
                         </Text>
                         <Text style={[commonStyle.textDark]}>
                             {item?.from?.description}
@@ -86,10 +94,10 @@ const Finished = () => {
                     </View>
                     <View style={[commonStyle.pbMd, commonStyle.flex1]}>
                         <Text style={[commonStyle.themeOrangeText]}>
-                            Destination
+                            {Lang("pendingReq.destination")}:
                         </Text>
                         <Text style={[commonStyle.textDark]}>
-                            {item?.to?.description || "Not found"}
+                            {item?.to?.description || Lang("pendingReq.notFound")}
                         </Text>
                     </View>
                 </View>

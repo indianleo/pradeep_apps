@@ -106,6 +106,10 @@ const warnMsg = {
   "from": "rider.fromWarn",
   "to": "rider.toWarn",
   "driver": "rider.driverWarn",
-  "userId": "rider.loginWarn"
+  "userId": "rider.loginWarn",
+  "name": "rider.nameReq",
+  "pass": "rider.passReq",
+  "email": "rider.emailReq",
+  "phone": "rider.phoneReq"
 }
   

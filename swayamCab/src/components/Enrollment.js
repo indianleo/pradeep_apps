@@ -1,8 +1,9 @@
 import React from 'react';
 import {View, Text, TextInput, ScrollView, Image, TouchableOpacity} from 'react-native';
-import { addDb } from '../config/myConfig';
+import { addDb, checkBlank, getTableRef } from '../config/myConfig';
 import MyContext from '../context/MyContext';
 import commonStyle from '../css/commonStyle';
+import Icons from '../libs/Icons';
 
 const Enrollment = (props)=> {
     const [formObj, setForm] = React.useState({});
@@ -12,14 +13,28 @@ const Enrollment = (props)=> {
     }
 
     const onSubmit = () => {
+        let warn = checkBlank(formObj, ["name", "email", "phone", "pass"]);
+        if (warn) { 
+            showInfoModal(Lang(warn));
+            return;
+        }
         let extraProps = {
             currentStatus: "free",
             currentBooking: "free",
             driver: "selectNew",
             role: "rider"
         }
-        addDb(`/users/${formObj.phone}`, { ...formObj, ...extraProps}).then(()=> {
-            props.handleLoginAction("back");
+        getTableRef(`/users/${formObj.phone}`).once('value').then((res)=> {
+            if(res.exists()) {
+                showInfoModal("User Already exist. Please use another phone number.")
+            } else {
+                addDb(`/users/${formObj.phone}`, { ...formObj, ...extraProps}).then(()=> {
+                    //props.handleLoginAction("back");
+                    showInfoModal("Registration is successfull.")
+                })
+            }
+        }).catch((err)=> {
+            console.log(err);
         })
     }
 
@@ -61,7 +76,7 @@ const Enrollment = (props)=> {
                         style={[UI.setScreen(80,80)]}
                     />
                 </View>
-                <View>
+                <View style={[commonStyle.row, commonStyle.vCenter]}>
                     <Text 
                         style={[
                             commonStyle.pb, 
@@ -70,6 +85,11 @@ const Enrollment = (props)=> {
                     >
                         {Lang("enroll.name")}
                     </Text>
+                    <Icons
+                        name="star"
+                        size={12}
+                        style={[commonStyle.pl, commonStyle.pb, UI.setColor("red")]}
+                    />
                 </View>
                 <View>
                     <TextInput
@@ -82,7 +102,33 @@ const Enrollment = (props)=> {
                         ]}
                     />
                 </View>
-                <View style={[commonStyle.ptLg, commonStyle.pb,]}>
+                <View style={[commonStyle.ptLg, commonStyle.pb, commonStyle.row, commonStyle.vCenter]}>
+                    <Text 
+                        style={[
+                            commonStyle.pb, 
+                            commonStyle.themeSkyText
+                        ]}
+                    >
+                        {Lang("enroll.email")}
+                    </Text>
+                    <Icons
+                        name="star"
+                        size={12}
+                        style={[commonStyle.pl, commonStyle.pb, UI.setColor("red")]}
+                    />
+                </View>
+                <View>
+                    <TextInput
+                        placeholder={"Email"}
+                        onChangeText={handleInput.bind(this, 'email')}
+                        style={[
+                            commonStyle.themeTextBox,
+                            commonStyle.bgWhite,
+                            UI.setHeight(50),
+                        ]}
+                    />
+                </View>
+                <View style={[commonStyle.ptLg, commonStyle.pb, commonStyle.row, commonStyle.vCenter]}>
                     <Text 
                         style={[
                             commonStyle.themeSkyText
@@ -90,9 +136,15 @@ const Enrollment = (props)=> {
                     >
                         {Lang("enroll.phone")}
                     </Text>
+                    <Icons
+                        name="star"
+                        size={12}
+                        style={[commonStyle.pl, commonStyle.pb, UI.setColor("red")]}
+                    />
                 </View>
                 <View>
                     <TextInput
+                        placeholder="+91"
                         onChangeText={handleInput.bind(this, 'phone')}
                         style={[
                             commonStyle.themeTextBox,
@@ -101,7 +153,7 @@ const Enrollment = (props)=> {
                         ]}
                     />
                 </View>
-                <View style={[commonStyle.ptLg, commonStyle.pb,]}>
+                <View style={[commonStyle.ptLg, commonStyle.pb, commonStyle.row, commonStyle.vCenter]}>
                     <Text 
                         style={[
                             commonStyle.themeSkyText
@@ -109,10 +161,16 @@ const Enrollment = (props)=> {
                     >
                         {Lang("enroll.pass")}
                     </Text>
+                    <Icons
+                        name="star"
+                        size={12}
+                        style={[commonStyle.pl, commonStyle.pb, UI.setColor("red")]}
+                    />
                 </View>
                 <View>
                     <TextInput
                         onChangeText={handleInput.bind(this, 'pass')}
+                        secureTextEntry={true}
                         style={[
                             commonStyle.themeTextBox,
                             commonStyle.bgWhite,

@@ -1,1 +1,0 @@
-{"isEntrypoint":true,"deps":["flutter_web|lib/material.dart","xml2json|lib/xml2json.dart","test_flutter|lib/view/items/fill_in_the_blanks.dart","test_flutter|lib/view/items/item_test.dart","test_flutter|lib/view/items/multiple_choice.dart"],"parts":[],"conditionalDeps":[],"sdkDeps":["html","js","convert"],"hasMain":false}

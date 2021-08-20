@@ -258,6 +258,12 @@ export function themeAction() {
 				}
 			);
 		},
+		mergeArray: function(oldArray, newData) {
+			if (!oldArray && !newData) {
+				return [];
+			}
+			return Array.isArray(newData) ? [ ...oldArray, ...newData] : [...oldArray, newData];
+		},
 		updateDim : function (_width,_height){
 			height = _height;
 			width = _width;

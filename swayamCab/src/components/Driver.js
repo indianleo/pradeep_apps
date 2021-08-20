@@ -27,7 +27,7 @@ const Driver = (props)=> {
             console.log(tempData.currentBooking);
             if (tempData.currentBooking == "free") {
                 setLayout("noBooking");
-                clearRoutes();
+                //clearRoutes();
             } else {
                 getTableRef(`/booking/${tempData.currentBooking}`).once('value').then((res)=> {
                     let bookings = res.val();
@@ -111,9 +111,9 @@ const Driver = (props)=> {
     }
 
     const onRegionChange = (newRegion)=> {
-        console.log("region change");
-        updateLocationRegion(newRegion);
-        setLayout("onGoing");
+        console.log("region change", currentLayout);
+        //updateLocationRegion(newRegion);
+        //setLayout("onGoing");
     }
 
     const onWait = () => {

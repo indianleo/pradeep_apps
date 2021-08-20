@@ -14,6 +14,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { getTableRef } from '../config/myConfig';
 import Loader from '../libs/Loader';
 import { notifyByTime } from '../config/theme';
+import MyButton from '../libs/MyButton';
 
 const Login = (props)=> {
     const contextOptions = React.useContext(MyContext);
@@ -55,11 +56,7 @@ const Login = (props)=> {
         <MyContext.Consumer>
             {context =>
                 <ScrollView style={[commonStyle.bgWhite, UI.setHeight(98, '%')]}>
-                    <View 
-                        style={[ 
-                            commonStyle.row, 
-                        ]}
-                    >
+                    <View style={[ commonStyle.row]}>
                         <Image
                             source={require('../images/bgBook3.jpeg')}
                             style={[
@@ -79,16 +76,12 @@ const Login = (props)=> {
                                 <Icon 
                                     name="phone-portrait"
                                     size={20}
-                                    style={[
-                                        UI.setColor("#79a6d2")
-                                    ]}
+                                    color="#79a6d2"
                                 />
                             </View>
                             <TextInput
                                 style={styles.TextInput}
-                                //keyboardType="number-pad"
                                 placeholder={Lang("home.phone")}
-                                defaultValue={"7800794002"}
                                 placeholderTextColor="#003f5c"
                                 onChangeText={(email) => setPhone(email)}
                             />
@@ -98,71 +91,42 @@ const Login = (props)=> {
                                 <Icon 
                                     name="barcode"
                                     size={20}
-                                    style={[
-                                        UI.setColor("#79a6d2")
-                                    ]}
+                                    color="#79a6d2"
                                 />
                             </View>
                             <TextInput
                                 style={styles.TextInput}
                                 placeholder={Lang("login.pass")}
                                 placeholderTextColor="#003f5c"
-                                //keyboardType="number-pad"
                                 secureTextEntry={true}
                                 onChangeText={(password) => setOtp(password)}
                             />
                         </View>
-                        <TouchableOpacity 
-                            onPress={getOtp} 
+                        <MyButton
+                            title={Lang("login.forgot")}
                             style={[commonStyle.ptMd]}
-                        >
-                            <Text 
-                                style={[
-                                    commonStyle.themeNormalText, 
-                                    commonStyle.textOffSky,
-                                    commonStyle.textRight
-                                ]}
-                            >
-                                {Lang("login.getOtp")}
-                            </Text>
-                        </TouchableOpacity>
+                            textStyle={[commonStyle.themeNormalText, commonStyle.textOffSky, commonStyle.textRight]}
+                            onPress={getOtp}
+                        />
                         <View style={commonStyle.vCenter}>
-                            <TouchableOpacity 
-                                onPress={handleBtnAction.bind(this, 'login')} 
-                                style={[
-                                    UI.setHeight(50), 
-                                    UI.setWidth(100, '%'), 
-                                    commonStyle.mtmd, 
-                                    commonStyle.middle,
-                                    commonStyle.bgOffSky,
-                                    commonStyle.brSm,
-                                    commonStyle.shadow
-                                ]}
-                            >
-                                <Text 
-                                    style={[
-                                        commonStyle.backFontSize, 
-                                        styles.label, 
-                                        commonStyle.textCenter, 
-                                        commonStyle.textWhite
-                                    ]}
-                                >
-                                    {Lang("login.title")}
-                                </Text>
-                            </TouchableOpacity>
+                            <MyButton
+                                theme="heading"
+                                title={Lang("login.title")}
+                                arg={'login'}
+                                onPress={handleBtnAction} 
+                                style={[UI.setHeight(50), UI.setWidth(100, '%'), commonStyle.mtmd ]}
+                            />
                         </View>
                     </View>
-                    <TouchableOpacity 
-                        onPress={handleBtnAction.bind(this, 'reg')} 
+                    <MyButton
+                        title={Lang("login.new")}
+                        nestedTitle={" " + Lang("login.reg")}
                         style={[UI.setWidth(100, '%'), commonStyle.center]}
-                    >
-                        <Text style={[styles.label]}>
-                            {Lang("login.new")} 
-                            <Text style={[commonStyle.textOffSky]}>
-                                {Lang("login.reg")}
-                            </Text>
-                        </Text>
-                    </TouchableOpacity>
+                        textStyle={[UI.setFont(20)]}
+                        nestedStyle={[commonStyle.textOffSky]}
+                        onPress={handleBtnAction} 
+                        arg={'reg'}
+                    />
                 </ScrollView>
             }
         </MyContext.Consumer>

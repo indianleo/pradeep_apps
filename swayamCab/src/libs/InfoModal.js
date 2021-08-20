@@ -4,12 +4,13 @@ import commonStyle from '../css/commonStyle';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 const InfoModal = React.forwardRef((props, ref) => {
     const [modalVisible, updateModal] = React.useState(false);
-    const [infoData, updateInfoStr] = React.useState()
+    const [infoData, updateInfoStr] = React.useState();
+    const [subText, setSubText] = React.useState(false);
 
     React.useImperativeHandle(ref, ()=> ({
-        showInfoModal: (data)=> {
-            console.log(data);
+        showInfoModal: (data, showSubText)=> {
             updateInfoStr(data || "");
+            setSubText(showSubText ? true : false);
             updateModal(true);
         }
     }) );
@@ -44,17 +45,21 @@ const InfoModal = React.forwardRef((props, ref) => {
                     >
                         {infoData || Lang("home.infoModalData")}
                     </Text>
-                    <Text 
-                        style={[
-                            commonStyle.mt,
-                            commonStyle.textStyle, 
-                            commonStyle.fs6, 
-                            commonStyle.textOrange,
-                            commonStyle.textLightBold
-                        ]}
-                    >
-                        {Lang("home.infoModalSubText")}
-                    </Text>
+                    {subText 
+                        ? 
+                            <Text 
+                                style={[
+                                    commonStyle.mt,
+                                    commonStyle.textStyle, 
+                                    commonStyle.fs6, 
+                                    commonStyle.textOrange,
+                                    commonStyle.textLightBold
+                                ]}
+                            >
+                                {Lang("home.infoModalSubText")}
+                            </Text>
+                        : null
+                    }
                 </View>
             )
         }

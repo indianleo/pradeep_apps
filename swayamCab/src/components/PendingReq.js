@@ -81,7 +81,15 @@ const PendingReq = () => {
     const renderItem = ({item}) => {
         return (
             <View style={[commonStyle.bgWhite, commonStyle.mb, commonStyle.pMd, commonStyle.br, ]}>
-                <View style={[commonStyle.row]}>
+                <View style={[commonStyle.pbMd, UI.setBorderBottom(1, '#ccc')]}>
+                    <Text style={[commonStyle.themeOrangeText]}>
+                        {Lang("pendingReq.bookId")}: 
+                        <Text style={[commonStyle.themeNormalText, commonStyle.textDark]}>
+                            {" "+item.id}
+                        </Text>
+                    </Text>
+                </View>
+                <View style={[commonStyle.row, commonStyle.ptMd]}>
                     <View style={[commonStyle.pbMd, commonStyle.flex1]}>
                         <Text style={[commonStyle.themeOrangeText]}>
                             {Lang("pendingReq.rider")}:

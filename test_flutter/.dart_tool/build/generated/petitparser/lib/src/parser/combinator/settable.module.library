@@ -1,1 +1,0 @@
-{"isEntrypoint":false,"deps":["petitparser|lib/src/core/parser.dart","petitparser|lib/src/parser/combinator/delegate.dart","petitparser|lib/src/parser/misc/failure.dart"],"parts":[],"conditionalDeps":[],"sdkDeps":[],"hasMain":false}
