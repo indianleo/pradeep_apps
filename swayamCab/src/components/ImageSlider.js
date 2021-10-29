@@ -116,10 +116,11 @@ const ImageSlider = (props)=> {
                                     style={[
                                         commonStyle.textDark, 
                                         commonStyle.textBold, 
-                                        commonStyle.textStyle
+                                        commonStyle.textStyle,
+                                        commonStyle.fs4
                                     ]}
                                 >
-                                    Skip
+                                    {Lang("slider.skip")}
                                 </Text>
                             </TouchableOpacity>
                     </View>

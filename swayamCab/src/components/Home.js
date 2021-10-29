@@ -5,6 +5,7 @@ import commonStyle from '../css/commonStyle';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import Driver from './Driver';
 import Rider from './Rider';
+import { notifyByTime } from '../config/theme';
 const TRANSITIONS = ['fade', 'slide', 'none'];
 const Home = (props)=> {
     const contextOptions = React.useContext(MyContext);
@@ -19,6 +20,7 @@ const Home = (props)=> {
 
     useFocusEffect(
         React.useCallback(() => {
+            notifyByTime("testing", 10)
           const onBackPress = () => {
               if (navRoute.name === 'Home') {
                     UI.ask({

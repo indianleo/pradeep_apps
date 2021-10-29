@@ -58,7 +58,7 @@ const App: () => Node = () => {
 
     React.useEffect(()=> {
         UI.initGeoCoading();
-        //notifyConfig()
+        notifyConfig()
         getStoreData("showIntro").then((res)=> {
           if (res && res.oldUser) {
             updateIntro(false);

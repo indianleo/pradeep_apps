@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Svayam Cab</string>
+    <string name="default_notification_channel_id">svayam_fcm_channel</string>
 </resources>

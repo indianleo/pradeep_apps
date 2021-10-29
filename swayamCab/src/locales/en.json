@@ -22,12 +22,13 @@
         "exitWarn": "Are you sure you want to exit the App"
     },
     "slider": {
-      "info1": "Welcome to Svayam Cab",
+      "info1": "Accessible Transport for All",
       "subText1": "Svayam Cab is portal which help you to find your destination",
-      "info2": "Choose whhere you want to go",
+      "info2": "Delhi Made Accessible",
       "subText2": "Svayam Cab is portal which help you to find your destination",
-      "info3": "Select driver according to you",
-      "subText3": "Svayam Cab is portal which help you to find your destination"
+      "info3": "Accessible Last Mile Connectivity",
+      "subText3": "Svayam Cab is portal which help you to find your destination",
+      "skip": "Skip"
     },
     "login": {
       "title": "Login",
@@ -117,7 +118,8 @@
     },
     "feed": {
       "enterMsg": "Enter Your Feedback",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "submit": "Submit"
     },
     "finish": {
       "book": "Finished Bookings",

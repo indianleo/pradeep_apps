@@ -30,7 +30,7 @@ const Feedback = (props) => {
             <View style={[commonStyle.center, commonStyle.ptLg]}>
                 <MyButton
                     theme={true}
-                    title={Lang("feed.cancel")}
+                    title={Lang("feed.submit")}
                     style={[UI.setHeight(40)]}
                     onPress={sendFeedback}
                 />

@@ -18,6 +18,7 @@ import MyButton from '../libs/MyButton';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import Icons from '../libs/Icons';
 import Loader from '../libs/Loader';
+import { notifyByTime } from '../config/theme';
 // getDistance return in meter
 
 const Rider = (props)=> {
@@ -46,6 +47,7 @@ const Rider = (props)=> {
             setUserData({..._td});
             
             if (_td.driver == "selectNew" && _td.currentBooking != "free") {
+                notifyByTime("Driver is not free and canceled your ride request.", 30);
                 setLayout("onCancelFromDriver");
             } else if (_td.currentBooking != "free") {
                 loadCurrentRide(_td);
@@ -716,6 +718,7 @@ const Rider = (props)=> {
                             theme={"sky"}
                             title={Lang("rider.btnBook")}
                             style={[UI.setHeight(50)]}
+                            textStyle={[commonStyle.fs2]}
                             onPress={onBook}
                         />
                     </View>

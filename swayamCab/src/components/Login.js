@@ -26,6 +26,14 @@ const Login = (props)=> {
         updatePhone(phoneNo);
     }
 
+    const handleInput = (name, value) => {
+        if (name == "email") {
+            setPhone(value);
+        } else if (name == "pass") {
+            setOtp(value);
+        }
+    }
+
     const getOtp = () => {
         console.log("getOtp");
         //notifyByTime("Test");
@@ -35,20 +43,30 @@ const Login = (props)=> {
         if (type == 'reg') {
             props.handleAction(type, '');
         } else {
-            setLoading(true);
-            getTableRef(`/users/${phone}`).once("value").then((res)=> {
-                let _data = res.val();
-                if (UI.isValid(_data) && _data.pass == otp) {
-                    contextOptions.handleLogin({userId: phone, ..._data});
-                    props.handleAction(type, '');
-                } else {
-                    showInfoModal("Incorrect UserID or Password");
-                    setLoading(false);
-                }
-            }).catch((err)=> {
-                console.log(err);
-                showInfoModal("Please check your internet");
-            })
+            if (phone.length < 9) {
+                showInfoModal("Please fill Phone no.");
+            } else if (otp.length < 2) {
+                showInfoModal("Please fill password");
+            } else {
+                setLoading(true);
+                getTableRef(`/users/${phone}`).once("value").then((res)=> {
+                    let _data = res.val();
+                    if (UI.isValid(_data) && _data.pass == otp) {
+                        contextOptions.handleLogin({userId: phone, ..._data});
+                        props.handleAction(type, '');
+                    } else {
+                        if (_data.phone != phone) {
+                            showInfoModal("Incorrect UserID");
+                        } else {
+                            showInfoModal("Incorrect Password");
+                        }
+                        setLoading(false);
+                    }
+                }).catch((err)=> {
+                    console.log(err);
+                    showInfoModal("Please check your internet");
+                })
+            }
         }
     }
 
@@ -83,7 +101,7 @@ const Login = (props)=> {
                                 style={styles.TextInput}
                                 placeholder={Lang("home.phone")}
                                 placeholderTextColor="#003f5c"
-                                onChangeText={(email) => setPhone(email)}
+                                onChangeText={handleInput.bind(this, 'email')}
                             />
                         </View>
                         <View style={[commonStyle.textBoxBorderColor, commonStyle.mtmd, commonStyle.row]}>
@@ -99,7 +117,7 @@ const Login = (props)=> {
                                 placeholder={Lang("login.pass")}
                                 placeholderTextColor="#003f5c"
                                 secureTextEntry={true}
-                                onChangeText={(password) => setOtp(password)}
+                                onChangeText={handleInput.bind(this, "pass")}
                             />
                         </View>
                         <MyButton

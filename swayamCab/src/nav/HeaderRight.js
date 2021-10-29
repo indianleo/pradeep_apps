@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { dbOff, getTableRef } from '../config/myConfig';
+import { notifyByTime } from '../config/theme';
 import MyContext from '../context/MyContext';
 import commonStyle from '../css/commonStyle';
 import MyButton from '../libs/MyButton';
@@ -16,6 +17,7 @@ const HeaderRight = (props) => {
             tableRef = getTableRef(`/users/${contextOption.userId}`).on('value', res=> {
                 let dd = res.val();
                 setPending(dd.pendingBooking || 0);
+                notifyByTime("New Ride request is pending.", 30);
             });
         }
         return ()=> tableRef && dbOff(`/users/${contextOption.userId}`, tableRef);
