@@ -1,0 +1,8 @@
+{
+    "svn.delete.ignoredRulesForDeletedFiles": [
+        "ios/Pods/Headers/Private/Flipper-Folly/folly/DiscriminatedPtr.h",
+        "ios/Pods/Headers/Public/Flipper-Folly/folly/DiscriminatedPtr.h",
+        "ios/Pods",
+        "ios/Pods/Headers/Public/React"
+    ]
+}

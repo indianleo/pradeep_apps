@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { dbOff, getTableRef } from '../config/myConfig';
-import { notifyByTime } from '../config/theme';
+import { notify } from '../config/theme';
 import MyContext from '../context/MyContext';
 import commonStyle from '../css/commonStyle';
 import MyButton from '../libs/MyButton';
@@ -10,18 +10,27 @@ const HeaderRight = (props) => {
     const [modalVisible, updateModal] = React.useState(false);
     const [pendingReq, setPending] = React.useState(0);
     const contextOption = React.useContext(MyContext);
-    let tableRef = null;
+    const buffer = {};
 
     React.useEffect(()=> {
         if (!contextOption.isRider) {
-            tableRef = getTableRef(`/users/${contextOption.userId}`).on('value', res=> {
+            buffer['tableRef'] = getTableRef(`/users/${contextOption.userId}`).orderByChild("pendingBooking").on('value', res=> {
                 let dd = res.val();
+                console.log({pending: dd.pendingBooking});
                 setPending(dd.pendingBooking || 0);
-                notifyByTime("New Ride request is pending.", 30);
+                sendMsg();
             });
         }
-        return ()=> tableRef && dbOff(`/users/${contextOption.userId}`, tableRef);
+        return ()=> buffer['tableRef'] && dbOff(`/users/${contextOption.userId}`, buffer['tableRef']);
     },[])
+
+    const sendMsg = () => {
+        if (buffer['notify']) clearTimeout(buffer['notify']);
+        buffer['notify'] = setTimeout(()=> {
+            notify(Lang("rider.newRideReq"));
+        }, 500);
+    }
+
     const handleAction= ()=> {
         //updateModal(!modalVisible);
         props.navigation.reset({

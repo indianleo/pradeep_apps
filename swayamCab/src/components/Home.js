@@ -11,7 +11,6 @@ const Home = (props)=> {
     const contextOptions = React.useContext(MyContext);
     const navRoute = useRoute();
     const getPage = () => {
-        console.log(contextOptions);
         if (contextOptions.isRider) {
             return <Rider />
         }
@@ -20,7 +19,6 @@ const Home = (props)=> {
 
     useFocusEffect(
         React.useCallback(() => {
-            notifyByTime("testing", 10)
           const onBackPress = () => {
               if (navRoute.name === 'Home') {
                     UI.ask({

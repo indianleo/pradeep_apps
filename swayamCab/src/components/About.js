@@ -25,6 +25,11 @@ const About = (props) => {
                         {Lang("about.version")}: <Text  style={[commonStyle.textDark]}>0.1.0</Text>
                     </Text>
                 </View>
+                <View>
+                    <Text style={[commonStyle.themeOrangeText]}>
+                        {Lang("about.copy")}
+                    </Text>
+                </View>
             </View>
         </View>
     )

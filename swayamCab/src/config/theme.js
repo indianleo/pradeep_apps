@@ -157,13 +157,16 @@ export function notifyByTime (msg, sec = 60) {
 		message: msg, // (required)
 		date: new Date(Date.now() + sec * 1000), // in 60 secs
 		allowWhileIdle: false,
+		repeatTime: 1,
 	});
 }
 
-export function notify (res) {
+export function notify (msg) {
 	PushNotification.localNotification({
 		channelId: "svayam_fcm_channel",
-		...res
+		message: msg,
+		//repeatType: "time",
+		repeatTime: 1,
 	});
 	/**
 	 * Android Only Properties 
@@ -220,11 +223,6 @@ export function notifyHandler (data) {
 		}
 		// Add all the required actions handlers
 	});
-}
-
-export function cancelNotify (res) {
-	// In res there should be notification id ex : { id : '123' }
-	PushNotification.cancelLocalNotifications(res);
 }
 
 export function cancelAllNotify (res) {

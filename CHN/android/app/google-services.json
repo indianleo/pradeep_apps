@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "181689472579",
+    "project_id": "mychn-eac78",
+    "storage_bucket": "mychn-eac78.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:181689472579:android:8d66163411c1b20df926f6",
+        "android_client_info": {
+          "package_name": "com.chn"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "181689472579-c826fokai646sajpsvggmr4i859fvkqv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvYhsrnQGJVgIx92vTCgm-PQRmCHpQ5Ro"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "181689472579-c826fokai646sajpsvggmr4i859fvkqv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "181689472579-01c9gnh3jt43gcg60oqpgk3svij95osj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.communityHealth.CHN"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

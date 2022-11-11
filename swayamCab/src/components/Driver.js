@@ -7,6 +7,7 @@ import Geolocation from "react-native-geolocation-service";
 import { dbOff, gAPiKey, getTableRef, pushDb, updatDb } from '../config/myConfig';
 import MapViewDirections from 'react-native-maps-directions';
 import MyButton from '../libs/MyButton';
+import { notify } from '../config/theme';
 
 const Driver = (props)=> {
     const contextOption = React.useContext(MyContext);

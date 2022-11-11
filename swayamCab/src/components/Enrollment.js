@@ -146,6 +146,7 @@ const Enrollment = (props)=> {
                     <TextInput
                         placeholder="+91"
                         onChangeText={handleInput.bind(this, 'phone')}
+                        maxLength={10}
                         style={[
                             commonStyle.themeTextBox,
                             commonStyle.bgWhite,
@@ -171,6 +172,7 @@ const Enrollment = (props)=> {
                     <TextInput
                         onChangeText={handleInput.bind(this, 'pass')}
                         secureTextEntry={true}
+                        maxLength={10}
                         style={[
                             commonStyle.themeTextBox,
                             commonStyle.bgWhite,

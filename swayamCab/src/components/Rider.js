@@ -18,7 +18,7 @@ import MyButton from '../libs/MyButton';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import Icons from '../libs/Icons';
 import Loader from '../libs/Loader';
-import { notifyByTime } from '../config/theme';
+import { notify, notifyByTime } from '../config/theme';
 // getDistance return in meter
 
 const Rider = (props)=> {
@@ -40,6 +40,8 @@ const Rider = (props)=> {
     let pickRef = React.useRef();
     const mapRef = React.useRef();
     const bookingFlags = ["onGoing", "onWait", "pending"];
+    const buffer = {};
+    const constextOption = React.useContext(MyContext);
 
     React.useEffect(()=> {
         const userRef = getTableRef(`/users/${contextOption.userId}`).on('value', snapshot => {
@@ -47,7 +49,7 @@ const Rider = (props)=> {
             setUserData({..._td});
             
             if (_td.driver == "selectNew" && _td.currentBooking != "free") {
-                notifyByTime("Driver is not free and canceled your ride request.", 30);
+                notifyByTime("Driver is not free and canceled your ride request.", 5);
                 setLayout("onCancelFromDriver");
             } else if (_td.currentBooking != "free") {
                 loadCurrentRide(_td);
@@ -403,15 +405,24 @@ const Rider = (props)=> {
         resetSelect();
     }
 
+    const sendMsg = (str) => {
+        if (!str || str.length < 5) return false;
+        if (buffer['notify']) clearTimeout(buffer['notify']);
+        buffer['notify'] = setTimeout(()=> {
+            notify(str);
+        }, 2000);
+    }
+
     const resetSelect = () => {
-        console.log("Reset", locationMarkers.length);
-        if (locationMarkers.length > 1) {
+        console.log("Reset", locationMarkers);
+        //if (locationMarkers.length > 1) {
             updateMarkers([]);
             updateRoute([]);
-            setCurrentDriver("");
+            //setCurrentDriver("");
             handleAddress('destination', "");
+            handleAddress('pickup', "");
             setCurrentBooking("");
-        } 
+        //} 
         (currentLayout != "selectArea") && setLayout("selectArea");
     }
 
@@ -462,11 +473,14 @@ const Rider = (props)=> {
             case 'Completed': text = Lang("rider.completed");
             break;
         }
+
+        sendMsg(text);
+
         return (
             <View>
                 {
                     userData.currentStatus == "pending" || userData.currentStatus == "onWait" 
-                        ? <Loader loading={true} style={[commonStyle.vPadLg]}/>
+                        ? null
                         : details
                             
                 }
@@ -674,6 +688,20 @@ const Rider = (props)=> {
                         <View style={[commonStyle.pbLg]}>
                             {getStatus(textStyle)}
                         </View>
+                        <View style={[commonStyle.pbLg]}>
+                            <Text style={textStyle}>
+                                {Lang("rider.desti") + ": "}
+                                <Text style={[commonStyle.textDark]}>{query.destination}</Text>
+                            </Text>
+                            <Text style={textStyle}> 
+                                {Lang("rider.distance") + ": "} 
+                                <Text style={[commonStyle.textDark]}>{distance} K.M</Text>
+                            </Text>
+                            <Text style={textStyle}>
+                                {Lang("rider.fare") + ": "}
+                                <Text style={[commonStyle.textDark]}>{fare} Rs.</Text>
+                            </Text>
+                        </View>
                         <View style={[commonStyle.center, commonStyle.pMd]}>
                             <MyButton
                                 theme={"sky"}
@@ -691,12 +719,12 @@ const Rider = (props)=> {
                             {getStatus(textStyle)}
                         </View>
                         <View style={[commonStyle.row, commonStyle.center, commonStyle.pMd]}>
-                            <MyButton
+                            {/* <MyButton
                                 theme={"sky"}
                                 title={Lang("rider.fetch")}
                                 style={[UI.setHeight(50)]}
                                 onPress={fetchLive}
-                            />
+                            /> */}
                             <MyButton
                                 theme={"sky"}
                                 title={Lang("rider.cancel")}
@@ -730,7 +758,7 @@ const Rider = (props)=> {
         <MyContext.Consumer>
             {context=>
                 <KeyboardAvoidingView style={[UI.setScreen()]} behavior={"height"}>
-                    <View style={[UI.setWidth(), UI.setHeight(UI.height()/1.4)]}>
+                    <View style={[UI.setWidth(), UI.setHeight(UI.height()/1.58)]}>
                         <MapView
                             ref={mapRef}
                             provider={UI.ios ? null : PROVIDER_GOOGLE}

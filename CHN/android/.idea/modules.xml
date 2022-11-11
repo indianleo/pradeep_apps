@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CHN.iml" filepath="$PROJECT_DIR$/.idea/modules/CHN.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/CHN.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/CHN.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/CHN.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/CHN.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/CHN.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/CHN.app.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-730232502/CHN.ihealth_ihealthlibrary-react-native.iml" filepath="$PROJECT_DIR$/.idea/modules/-730232502/CHN.ihealth_ihealthlibrary-react-native.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-730232502/CHN.ihealth_ihealthlibrary-react-native.main.iml" filepath="$PROJECT_DIR$/.idea/modules/-730232502/CHN.ihealth_ihealthlibrary-react-native.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-730232502/CHN.ihealth_ihealthlibrary-react-native.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/-730232502/CHN.ihealth_ihealthlibrary-react-native.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1352934234/CHN.react-native-async-storage_async-storage.iml" filepath="$PROJECT_DIR$/.idea/modules/1352934234/CHN.react-native-async-storage_async-storage.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1258441915/CHN.react-native-async-storage_async-storage.main.iml" filepath="$PROJECT_DIR$/.idea/modules/-1258441915/CHN.react-native-async-storage_async-storage.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1258441915/CHN.react-native-async-storage_async-storage.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/-1258441915/CHN.react-native-async-storage_async-storage.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1390502294/CHN.react-native-community_masked-view.iml" filepath="$PROJECT_DIR$/.idea/modules/1390502294/CHN.react-native-community_masked-view.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1644954175/CHN.react-native-community_masked-view.main.iml" filepath="$PROJECT_DIR$/.idea/modules/-1644954175/CHN.react-native-community_masked-view.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1644954175/CHN.react-native-community_masked-view.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/-1644954175/CHN.react-native-community_masked-view.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1318646811/CHN.react-native-community_netinfo.iml" filepath="$PROJECT_DIR$/.idea/modules/-1318646811/CHN.react-native-community_netinfo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1318646811/CHN.react-native-community_netinfo.main.iml" filepath="$PROJECT_DIR$/.idea/modules/-1318646811/CHN.react-native-community_netinfo.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1318646811/CHN.react-native-community_netinfo.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/-1318646811/CHN.react-native-community_netinfo.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/57764505/CHN.react-native-firebase_app.iml" filepath="$PROJECT_DIR$/.idea/modules/57764505/CHN.react-native-firebase_app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/57764505/CHN.react-native-firebase_app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/57764505/CHN.react-native-firebase_app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/57764505/CHN.react-native-firebase_app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/57764505/CHN.react-native-firebase_app.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1958776482/CHN.react-native-geolocation-service.iml" filepath="$PROJECT_DIR$/.idea/modules/-1958776482/CHN.react-native-geolocation-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1958776482/CHN.react-native-geolocation-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/-1958776482/CHN.react-native-geolocation-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1958776482/CHN.react-native-geolocation-service.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/-1958776482/CHN.react-native-geolocation-service.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/284909569/CHN.react-native-gesture-handler.iml" filepath="$PROJECT_DIR$/.idea/modules/284909569/CHN.react-native-gesture-handler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1776242230/CHN.react-native-gesture-handler.main.iml" filepath="$PROJECT_DIR$/.idea/modules/1776242230/CHN.react-native-gesture-handler.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1776242230/CHN.react-native-gesture-handler.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/1776242230/CHN.react-native-gesture-handler.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/904860691/CHN.react-native-linear-gradient.iml" filepath="$PROJECT_DIR$/.idea/modules/904860691/CHN.react-native-linear-gradient.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1898773944/CHN.react-native-linear-gradient.main.iml" filepath="$PROJECT_DIR$/.idea/modules/-1898773944/CHN.react-native-linear-gradient.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1898773944/CHN.react-native-linear-gradient.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/-1898773944/CHN.react-native-linear-gradient.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1118238194/CHN.react-native-maps.iml" filepath="$PROJECT_DIR$/.idea/modules/1118238194/CHN.react-native-maps.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1849071267/CHN.react-native-maps.main.iml" filepath="$PROJECT_DIR$/.idea/modules/-1849071267/CHN.react-native-maps.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1849071267/CHN.react-native-maps.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/-1849071267/CHN.react-native-maps.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1502884932/CHN.react-native-picker_picker.iml" filepath="$PROJECT_DIR$/.idea/modules/1502884932/CHN.react-native-picker_picker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-804312209/CHN.react-native-picker_picker.main.iml" filepath="$PROJECT_DIR$/.idea/modules/-804312209/CHN.react-native-picker_picker.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-804312209/CHN.react-native-picker_picker.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/-804312209/CHN.react-native-picker_picker.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1522871342/CHN.react-native-push-notification.iml" filepath="$PROJECT_DIR$/.idea/modules/1522871342/CHN.react-native-push-notification.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1522871342/CHN.react-native-push-notification.main.iml" filepath="$PROJECT_DIR$/.idea/modules/1522871342/CHN.react-native-push-notification.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1522871342/CHN.react-native-push-notification.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/1522871342/CHN.react-native-push-notification.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1199865477/CHN.react-native-reanimated.iml" filepath="$PROJECT_DIR$/.idea/modules/-1199865477/CHN.react-native-reanimated.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-428442582/CHN.react-native-safe-area-context.iml" filepath="$PROJECT_DIR$/.idea/modules/-428442582/CHN.react-native-safe-area-context.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1776832225/CHN.react-native-safe-area-context.main.iml" filepath="$PROJECT_DIR$/.idea/modules/-1776832225/CHN.react-native-safe-area-context.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1776832225/CHN.react-native-safe-area-context.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/-1776832225/CHN.react-native-safe-area-context.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-2123552574/CHN.react-native-screens.iml" filepath="$PROJECT_DIR$/.idea/modules/-2123552574/CHN.react-native-screens.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1110893577/CHN.react-native-screens.main.iml" filepath="$PROJECT_DIR$/.idea/modules/-1110893577/CHN.react-native-screens.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1110893577/CHN.react-native-screens.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/-1110893577/CHN.react-native-screens.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1517642099/CHN.react-native-splash-screen.iml" filepath="$PROJECT_DIR$/.idea/modules/-1517642099/CHN.react-native-splash-screen.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1871615490/CHN.react-native-splash-screen.main.iml" filepath="$PROJECT_DIR$/.idea/modules/1871615490/CHN.react-native-splash-screen.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1871615490/CHN.react-native-splash-screen.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/1871615490/CHN.react-native-splash-screen.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/989325268/CHN.react-native-svg.iml" filepath="$PROJECT_DIR$/.idea/modules/989325268/CHN.react-native-svg.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/989325268/CHN.react-native-svg.main.iml" filepath="$PROJECT_DIR$/.idea/modules/989325268/CHN.react-native-svg.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/989325268/CHN.react-native-svg.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/989325268/CHN.react-native-svg.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/672767861/CHN.react-native-vector-icons.iml" filepath="$PROJECT_DIR$/.idea/modules/672767861/CHN.react-native-vector-icons.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1890477408/CHN.react-native-vector-icons.main.iml" filepath="$PROJECT_DIR$/.idea/modules/1890477408/CHN.react-native-vector-icons.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1890477408/CHN.react-native-vector-icons.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/1890477408/CHN.react-native-vector-icons.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1851950999/CHN.react-native-webview.iml" filepath="$PROJECT_DIR$/.idea/modules/-1851950999/CHN.react-native-webview.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1851950999/CHN.react-native-webview.main.iml" filepath="$PROJECT_DIR$/.idea/modules/-1851950999/CHN.react-native-webview.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1851950999/CHN.react-native-webview.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/-1851950999/CHN.react-native-webview.unitTest.iml" />
+    </modules>
+  </component>
+</project>

@@ -57,7 +57,7 @@
       "locate": "Your Closest Location"
     },
     "rider": {
-      "pendingSt": "Driver did not accepted your request yet. You can wait or cancel to book again.",
+      "pendingSt": "Waiting for driver to accept. You can wait or cancel to book again.",
       "waitSt": "Driver requested to Wait for half an hour otherwise you can cancel and book again for another driver.",
       "goingSt": "Your request accepted by driver. Driver moving towards you.",
       "sendNew": "Send New Request",
@@ -85,7 +85,8 @@
       "emailReq": "Please enter email",
       "phoneReq": "Please enter phone number",
       "pickupLocWarn": "Pickup location is not selected yet.",
-      "confirmPickup": "Please confirm Pickup location first"
+      "confirmPickup": "Please confirm Pickup location first",
+      "newRideReq": "New Ride request is pending."
     },
     "driver": {
       "fetch": "Fetch Ongoing Ride",
@@ -99,7 +100,8 @@
     },
     "about": {
       "name": "Name",
-      "version": "Version"
+      "version": "Version",
+      "copy": "All rights of this App reserved with Svayam- Global Centre of Inclusive Environments."
     },
     "cancel": {
       "cancelBook": "Canceled Bookings",

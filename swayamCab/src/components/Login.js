@@ -101,6 +101,8 @@ const Login = (props)=> {
                                 style={styles.TextInput}
                                 placeholder={Lang("home.phone")}
                                 placeholderTextColor="#003f5c"
+                                keyboardType="number-pad"
+                                maxLength={10}
                                 onChangeText={handleInput.bind(this, 'email')}
                             />
                         </View>

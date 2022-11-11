@@ -1,0 +1,121 @@
+{
+  "appName": "Mychn",
+  "user": " Chn",
+  "welUsr": " Chào mừng% {user}",
+  "submit": " Gửi đi",
+  "fullName": " Họ và tên",
+  "name": "Tên",
+  "message": " Thông điệp",
+  "dob": " Ngày sinh",
+  "date": " DD / MM / YYYY",
+  "close": " Đóng",
+  "address": "Địa chỉ",
+  "setLang": "Chọn ngôn ngữ",
+  "navigation": {
+    "home": " Trang Chủ",
+    "highScores": " Điểm cao",
+    "settings": " Cài đặt"
+  },
+  "home": {
+    "title": " Trang Chủ",
+    "slide1": " Truy cập chất lượng hầu như từ mọi nơi",
+    "slide2": " Kiểm soát sức sống của bạn và quản lý các tình trạng mãn tính",
+    "slide3": " MyHeatlth Education: Học cách giữ gìn sức khỏe mỗi ngày"
+  },
+  "welcome": {
+    "title": "Chào mừng bạn đến với% {appName}",
+    "portAcc": " Quyền truy cập MyPortal",
+    "patientEnroll": " Ghi danh bệnh nhân",
+    "services": " Dịch vụ",
+    "edu": " MyHealth Education",
+    "search": " Tìm kiếm"
+  },
+  "enrollment": {
+    "title": " Ghi danh",
+    "insInfo": " Thông tin bảo hiểm"
+  },
+  "login": {
+    "title": " Đăng nhập",
+    "ins1": " Vui lòng đăng nhập vào tài khoản của bạn",
+    "email": " E-mail",
+    "pass": " Mật khẩu",
+    "reg": " Đăng ký ở đây",
+    "guest": " Tiếp tục với tư cách khách"
+  },
+  "reg": {
+    "title": " Đăng ký"
+  },
+  "portal": {
+    "title": " Quyền truy cập MyPortal",
+    "schApp": " lịch hẹn",
+    "vitals": " Vitals của tôi",
+    "hRecords": " Hồ sơ sức khỏe của tôi",
+    "acc": " Tài khoản của tôi",
+    "refill": " Yêu cầu nạp tiền"
+  },
+  "education": {
+    "title": " MyHealth Education",
+    "res": "Tài nguyên",
+    "test": "Kiểm tra",
+    "blog": "Blog",
+    "pageTitle": "Giáo dục",
+    "article": "Bài báo phổ biến"
+  },
+  "services": {
+    "title": " Dịch vụ",
+    "vs": " Dịch vụ ảo",
+    "obGyn": " OB / GYN",
+    "menHealth": " Sức khỏe nam giới",
+    "mentalHealth": " Sức khỏe tinh thần",
+    "dental": " Nha khoa",
+    "pc": " Ưu tiên hàng đầu",
+    "cm": " Quản lý chăm sóc",
+    "ph": " Tiệm thuốc",
+    "pd": " Khoa nhi",
+    "appoint": " Đặt lịch hẹn"
+  },
+  "contact": {
+    "title": " Liên hệ chúng tôi",
+    "title2": " Tiếp xúc"
+  },
+  "appointment": {
+    "title": " Cuộc hẹn",
+    "pageTitle": "Lên lịch ứng dụng",
+    "reason": "Chọn lý do",
+    "vr": "Ảo",
+    "ip": "Mặt đối mặt"
+  },
+  "account": {
+    "title": " Tài khoản của tôi",
+    "chPass": "Đổi mật khẩu",
+    "fId": "Khuôn mặt TÔI",
+    "pInf": "Thông tin cá nhân",
+    "noti": "Thông báo"
+  },
+  "healthRecords": {
+    "title": "Sức khỏe của tôi Hồ sơ",
+    "tResult": "Kết quả kiểm tra",
+    "med": "Thuốc",
+    "medRecordReq": "Yêu cầu hồ sơ y tế",
+    "bill": "Thanh toán"
+  },
+  "vitals": {
+    "title": " Vitals của tôi",
+    "dm": "Quản lý thiết bị",
+    "cal": "Lịch của tôi",
+    "pOxymeter": "Đo oxy xung",
+    "weight": "Cân nặng",
+    "glucometer": "Máy đo đường huyết",
+    "bp": "Huyết áp"
+  },
+  "personProvider": {
+    "title": "Các nhà cung cấp",
+    "pageTitle": "Chọn nhà cung cấp"
+  },
+  "location": {
+    "title": "Vị trí",
+    "pageTitle": "Chọn địa điểm",
+    "address": "Nhập địa chỉ của bạn",
+    "locate": "Vị trí gần nhất của bạn"
+  }
+}
