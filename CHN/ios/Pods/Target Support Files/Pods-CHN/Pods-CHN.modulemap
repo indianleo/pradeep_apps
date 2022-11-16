@@ -1,6 +1,0 @@
-module Pods_CHN {
-  umbrella header "Pods-CHN-umbrella.h"
-
-  export *
-  module * { export * }
-}

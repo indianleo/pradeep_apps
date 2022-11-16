@@ -1,1 +1,0 @@
-../../../../../node_modules/@ihealth/ihealthlibrary-react-native/ios/ReactNativeIOSLibrary/AMProfileModule.h

@@ -1,6 +1,0 @@
-module Pods_CHN_CHNTests {
-  umbrella header "Pods-CHN-CHNTests-umbrella.h"
-
-  export *
-  module * { export * }
-}

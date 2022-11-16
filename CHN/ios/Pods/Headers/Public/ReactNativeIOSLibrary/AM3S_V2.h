@@ -1,1 +1,0 @@
-../../../../../node_modules/@ihealth/ihealthlibrary-react-native/ios/ReactNativeIOSLibrary/Communication_SDK/Headers/AM3S_V2.h
