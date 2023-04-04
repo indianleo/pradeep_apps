@@ -5,6 +5,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Home from "./features/home/Home";
 import Login from "./features/login/Login";
+import VideoPlayer from "./features/videos/VideoPlayer";
+import EditImage from "./features/edit/EditImage";
 
 const Stack = createStackNavigator();
 function App(): JSX.Element {
@@ -31,6 +33,14 @@ function App(): JSX.Element {
                 <Stack.Screen
                     name="Home"
                     component={Home}
+                />
+                <Stack.Screen
+                    name="VideoPlayer"
+                    component={VideoPlayer}
+                />
+                <Stack.Screen
+                    name="EditImage"
+                    component={EditImage}
                 />
             </Stack.Navigator>
         )

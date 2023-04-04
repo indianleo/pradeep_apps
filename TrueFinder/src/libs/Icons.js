@@ -11,8 +11,8 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const Icons = (props)=> {
     const getIcon = ()=> {
-        switch(props.iconSet) {
-            case 'antDesign': 
+        switch(props.iconSet.toLowerCase()) {
+            case 'antdesign': 
                 return (
                     <AntDesign 
                         name={props.name}
@@ -28,7 +28,7 @@ const Icons = (props)=> {
                         style={props.style}
                     />
                 )
-            case 'evilIcons':
+            case 'evilicons':
                 return (
                     <EvilIcons 
                         name={props.name}
@@ -44,7 +44,7 @@ const Icons = (props)=> {
                         style={props.style}
                     />
                 )
-            case 'materialComIcons':
+            case 'materialcommunityicons':
                 return (
                     <MaterialCommunityIcons 
                         name={props.name}
@@ -52,7 +52,7 @@ const Icons = (props)=> {
                         style={props.style}
                     />
                 )
-            case 'materialIcons':
+            case 'materialicons':
                 return (
                     <MaterialIcons 
                         name={props.name}

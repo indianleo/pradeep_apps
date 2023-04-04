@@ -1,12 +1,13 @@
 import { Dimensions } from "react-native";
 const statusBarHeight = ()=> (Platform.OS === 'ios' ? 0 : StatusBar.currentHeight);
-
+const sWidth = Dimensions.get('window').width;
+const sHeight = Dimensions.get('window').height;
 export const cssConfig = {
 	ios: Platform.OS === 'ios' ? true : false,
 	width: ()=> Dimensions.get('window').width,
 	statusBarHeight,
 	height: ()=> Dimensions.get('window').height - statusBarHeight(),
-	fontFamily: "ROBOTO",
+	fontFamily: Platform.OS === 'ios' ? "Arial Hebrew" : "ROBOTO",
 }
 
 export const getDynamicStyle = {
@@ -213,19 +214,19 @@ export const getDynamicStyle = {
 	},
 	setScreen: function (_width, _height, isPercent) {
 		return {
-			width: isPercent ? _width + '%' : (_width || width),
-			height: isPercent ? _height + '%' : (_height || height),
+			width: isPercent ? _width + '%' : (_width || sWidth),
+			height: isPercent ? _height + '%' : (_height || sHeight),
 		}
 	},
 	setWidth: function (n, isPercent) {
 		return {
-			width: isPercent ? n + '%' : (n || width),
+			width: isPercent ? n + '%' : (n || sWidth),
 		};
 	},
 
 	setHeight: function (n, isPercent) {
 		return {
-			height: isPercent ? n + '%' : (n || height),
+			height: isPercent ? n + '%' : (n || sHeight),
 		};
 	},
 
@@ -376,6 +377,7 @@ export const colors = {
 	primary20: '#BDF2EF',
 	primary40: '#71DAD2',
 	primary100: '#70ECE3',
+	primaryDark: '#0f716a',
 	white: '#fff',
 	black: '#000',
 	orangeText: '#d8440e'

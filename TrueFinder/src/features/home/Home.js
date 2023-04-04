@@ -1,6 +1,8 @@
 import React from "react";
 import {SafeAreaView, StatusBar, Text, View} from "react-native";
+import { colors } from "../../css/cssConfig";
 import CallLogs from "./CallLogs";
+import Dashboard from "./Dashboard";
 
 const Home = () => {
     const TRANSITIONS = ['fade', 'slide', 'none'];
@@ -10,11 +12,11 @@ const Home = () => {
             <StatusBar
                 animated={true}
                 translucent={true}
-                backgroundColor={"transparent"}
+                backgroundColor={colors.primary100}
                 showHideTransition={TRANSITIONS[2]}
                 networkActivityIndicatorVisible={true}
             />
-            <CallLogs />
+            <Dashboard />
         </SafeAreaView>
     )
 }

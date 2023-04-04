@@ -46,6 +46,7 @@ target 'TrueFinder' do
   target 'TrueFinderTests' do
     inherit! :complete
     # Pods for testing
+    pod 'react-native-contacts', :path => '../node_modules/react-native-contacts'
   end
 
   post_install do |installer|
